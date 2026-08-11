@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+/* ============================================================
+   DiuLa! Design Tokens  (from design.md)
+   These become Tailwind utilities automatically, e.g.
+   --color-card  -> bg-card / text-card / border-card
+   --font-round  -> font-round
+   ============================================================ */
+@theme {
+  --color-brown: #492c13;   /* 品牌主色・標題・按鈕文字 */
+  --color-base:  #ffffff;   /* App 背景・未選中 tab */
+  --color-card:  #f3f0e1;   /* 米色大卡片按鈕 */
+  --color-input: #f5f5f5;   /* 輸入框・次要按鈕 */
+  --color-blue:  #dfeaf5;   /* banner・TabBar・選中態 */
+  --color-error: #c72f02;   /* 刪除・警告 */
+  --color-navy:  #1e3050;   /* 表單 icon（日曆・地點・下拉箭頭） */
+
+  /* 中文用源泉圓體、英數用 Comfortaa；正式字型檔可用 @font-face 補上，
+     這裡先給圓體 fallback（Mac 會落到圓體，接近設計稿）。 */
+  --font-round: "GenSenRounded2 TW", "Comfortaa", "Yuanti SC",
+                "Hiragino Maru Gothic ProN", "LiHei Pro", "Noto Sans TC",
+                system-ui, sans-serif;
+}
+
+/* ---- Global base ---- */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-base);
+  color: var(--color-brown);
+  font-family: var(--font-round);
+  -webkit-font-smoothing: antialiased;
+  /* Flat Design 2.0 — 全站零陰影 */
+}
+
+/* 手機直向、避免橡皮筋捲動時露出底色 */
+#root {
+  overscroll-behavior-y: none;
+}
