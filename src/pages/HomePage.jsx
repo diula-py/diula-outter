@@ -5,14 +5,16 @@ import PillButton from '../components/PillButton'
 // 首頁選單資料 —— 之後要改連結或加項目，改這裡就好。
 //   href      → 外部頁面（其他技術做的），整頁跳轉
 //   to        → React 內部路由（尚未實作的佔位頁）
+import { asset } from '../lib/asset'
+
 const FIND_ITEMS = [
-  { icon: '/icons/search.png', label: '跨平台尋找遺失物', to: '/search' },
-  { icon: '/icons/threads.png', label: 'Threads尋找遺失物', to: '/search/threads' },
+  { icon: asset('/icons/search.png'), label: '跨平台尋找遺失物', to: '/search' },
+  { icon: asset('/icons/threads.png'), label: 'Threads尋找遺失物', to: '/search/threads' },
 ]
 
 const REGISTER_ITEMS = [
-  { icon: '/icons/address-card.png', label: '證件類遺失物登錄', to: '/register/id' },
-  { icon: '/icons/clipboard-question.png', label: '非證件類遺失物登錄', to: '/register/other' },
+  { icon: asset('/icons/address-card.png'), label: '證件類遺失物登錄', to: '/register/id' },
+  { icon: asset('/icons/clipboard-question.png'), label: '非證件類遺失物登錄', to: '/register/other' },
 ]
 
 export default function HomePage() {

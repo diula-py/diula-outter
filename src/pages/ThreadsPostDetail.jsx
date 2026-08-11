@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ChevronLeftIcon, CalendarIcon } from '../components/icons'
 
 import { spring } from '../lib/api'
+import { asset } from '../lib/asset'
 
 const POSTS_API = spring('/api/posts')
 const IMAGE_PROXY = spring('/api/image?url=')
@@ -95,7 +96,7 @@ export default function ThreadsPostDetail() {
               rel="noopener noreferrer"
               className="flex items-center gap-3 no-underline"
             >
-              <img src="/icons/threads.png" alt="Threads" className="h-9 w-9 shrink-0 object-contain" />
+              <img src={asset('/icons/threads.png')} alt="Threads" className="h-9 w-9 shrink-0 object-contain" />
               <div className="flex h-11 min-w-0 flex-1 items-center rounded-[50px] border border-black/15 bg-white px-4">
                 <span className="min-w-0 flex-1 truncate text-sm text-brown underline underline-offset-2">
                   {post.url}

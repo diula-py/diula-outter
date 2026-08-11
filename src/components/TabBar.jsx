@@ -1,8 +1,10 @@
 import { NavLink } from 'react-router-dom'
 
+import { asset } from '../lib/asset'
+
 const TABS = [
-  { to: '/', icon: '/icons/house.png', label: '首頁', end: true },
-  { to: '/profile', icon: '/icons/user.png', label: '個人' },
+  { to: '/', icon: asset('/icons/house.png'), label: '首頁', end: true },
+  { to: '/profile', icon: asset('/icons/user.png'), label: '個人' },
 ]
 
 /** 底部導覽列：淺藍膠囊，選中的分頁底色轉白（圓角 42px）。 */
