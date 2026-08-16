@@ -3,6 +3,7 @@
  * 相機用線條版（Lucide 風格），顏色跟 stroke=currentColor。
  * 用法：<CalendarIcon className="h-9 w-9 text-navy" />
  */
+import { asset } from '../lib/asset'
 
 export function ChevronLeftIcon(props) {
   return (
@@ -92,6 +93,14 @@ export function PlusIcon(props) {
   )
 }
 
+export function PersonChalkboardIcon(props) {
+  return (
+    <svg viewBox="0 0 640 512" fill="currentColor" {...props}>
+      <path d="M192 96a48 48 0 1 0 0-96 48 48 0 1 0 0 96zm-8 384l0-128 16 0 0 128c0 17.7 14.3 32 32 32s32-14.3 32-32l0-288 56 0 64 0 16 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-16 0 0-64 192 0 0 192-192 0 0-32-64 0 0 48c0 26.5 21.5 48 48 48l224 0c26.5 0 48-21.5 48-48l0-224c0-26.5-21.5-48-48-48L368 0c-26.5 0-48 21.5-48 48l0 80-76.9 0-65.9 0c-33.7 0-64.9 17.7-82.3 46.6l-58.3 97c-9.1 15.1-4.2 34.8 10.9 43.9s34.8 4.2 43.9-10.9L120 256.9 120 480c0 17.7 14.3 32 32 32s32-14.3 32-32z" />
+    </svg>
+  )
+}
+
 export function CameraIcon(props) {
   return (
     <svg
@@ -106,5 +115,21 @@ export function CameraIcon(props) {
       <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" />
       <circle cx="12" cy="13" r="3" />
     </svg>
+  )
+}
+
+/**
+ * DiuLa! 品牌標記（地標＋放大鏡＋點，整體像驚嘆號）。無圖時的縮圖／預覽 placeholder 用。
+ * 用官方 PNG 素材（public/icons/diula-icon.png）；className 控制尺寸，需淡化用 opacity-*。
+ */
+export function DiulaPinIcon({ className = '', ...props }) {
+  return (
+    <img
+      src={asset('/icons/diula-icon.png')}
+      alt=""
+      aria-hidden="true"
+      className={`object-contain ${className}`}
+      {...props}
+    />
   )
 }

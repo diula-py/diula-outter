@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CubesIcon, FolderIcon, UserRegularIcon } from '../components/icons'
+import { asset } from '../lib/asset'
 
 // TODO: 接登入／使用者 API 後換成真實資料。目前為設計稿範例值。
 const USER = { name: '張寧寧', code: 'G26043F2W' }
@@ -37,9 +38,8 @@ export default function ProfilePage() {
   return (
     <div>
       {/* 藍色 header + logo */}
-      <header className="flex h-[109px] items-end justify-center rounded-b-[20px] bg-blue pb-5 pt-[env(safe-area-inset-top)]">
-        {/* TODO: 換成正式 logo 素材（DiuLa! 去背 PNG）。目前為文字 placeholder。 */}
-        <span className="text-[30px] font-bold tracking-wide text-brown">DiuLa!</span>
+      <header className="flex h-[109px] items-end justify-center rounded-b-[20px] bg-blue pb-4 pt-[env(safe-area-inset-top)]">
+        <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="h-9 w-auto object-contain" />
       </header>
 
       <div className="flex flex-col gap-5 px-[18px] pt-4">

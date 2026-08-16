@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, CircleCheckIcon } from '../components/icons'
+import PhotoMaskModal from '../components/PhotoMaskModal'
 import { addItem } from '../lib/myItems'
 import { flask } from '../lib/api'
 
@@ -26,16 +27,14 @@ function downscale(dataUrl, maxSide = 1280, quality = 0.82) {
   })
 }
 
-// 文案模版（對齊設計稿圖二）
+// 文案模版（對齊設計稿預覽頁）
 function buildText({ name, date, place, note }) {
   return [
-    `🔍【協尋】${name || '（未填）'}`,
-    '',
-    `📅 遺失日期：${(date || '').replaceAll('-', '/') || '（未填）'}`,
-    `📍 遺失地點：${place || '（未填）'}`,
-    ...(note ? [`📝 ${note}`] : []),
-    '',
-    '有看到或撿到的朋友，請在這篇貼文底下留言，感謝你的幫忙 🙏',
+    `🔍協尋遺失物：${name || '（未填）'}`,
+    `📅遺失日期：${(date || '').replaceAll('-', '/') || '（未填）'}`,
+    `📍遺失地點：${place || '（未填）'}`,
+    ...(note ? [`📝${note}`] : []),
+    '若您拾獲，請私訊 DiuLa 官方帳號🙏',
     '#協尋 #遺失物 #DiuLa',
   ].join('\n')
 }
@@ -55,16 +54,26 @@ export default function SosPostPage() {
   const q = state.query || {}
   const rawImage = state.base64Image || null // 預覽直接用原圖；送出時才縮圖
 
+  const [editedImage, setEditedImage] = useState(null) // 打碼後的圖（有的話優先用）
+  const [maskOpen, setMaskOpen] = useState(false)
+  const displayImage = editedImage || rawImage         // 預覽／送出都用這張
+
   const date = q.date || ''    // 鎖死：來自比對條件
   const place = q.place || ''   // 鎖死：來自比對條件
 
   const [name, setName] = useState((q.tags && q.tags.join('、')) || '')
   const [detail, setDetail] = useState('') // 詳細遺失地點（選填）
   const [note, setNote] = useState('')     // 備註（選填）
-  const [agree, setAgree] = useState(false)
+  const [step, setStep] = useState('form') // form | preview
   const [status, setStatus] = useState('idle') // idle | submitting | success
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
+
+  function goPreview() {
+    setError('')
+    if (!name.trim()) { setError('請填物品名稱'); return }
+    setStep('preview')
+  }
 
   const fullPlace = [place, detail.trim()].filter(Boolean).join(' ')
   const text = buildText({ name, date, place: fullPlace, note: note.trim() })
@@ -72,11 +81,11 @@ export default function SosPostPage() {
   async function submit() {
     setError('')
     if (!name.trim()) { setError('請填物品名稱'); return }
-    if (!agree) { setError('請先勾選授權同意'); return }
     setStatus('submitting')
     try {
       // 送出當下才縮圖，保證不會送到還沒縮的原圖（Threads 抓大圖會逾時 2207003）。
-      const image = rawImage ? await downscale(rawImage) : null
+      // 有打碼就送打碼後的圖，原圖不外流。
+      const image = displayImage ? await downscale(displayImage) : null
       const res = await fetch(flask('/threads/submit'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -108,76 +117,114 @@ export default function SosPostPage() {
     }
   }
 
-  const lockedBox = 'flex h-11 items-center rounded-[10px] bg-white px-4 text-sm text-brown'
-  const inputBox = 'w-full rounded-[10px] bg-white px-4 py-2.5 text-sm text-brown outline-none placeholder:text-brown/50'
+  // 可編輯欄位（pill）／唯讀欄位（帶入比對條件，不可改）
+  const editBox = 'h-10 w-full rounded-[50px] border border-black bg-input px-4 text-xs text-brown outline-none placeholder:text-brown/50'
+  const lockedBox = 'flex h-10 w-full items-center rounded-[10px] bg-input px-4 text-xs text-brown/70'
+  const labelClass = 'mb-1.5 block text-xs font-medium text-brown'
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-base pb-10">
-      <header className="relative flex h-20 items-center justify-center rounded-b-[20px] bg-card pt-[env(safe-area-inset-top)]">
-        <button type="button" onClick={() => navigate(-1)} aria-label="返回"
-          className="absolute left-[22px] top-1/2 -translate-y-1/2 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown">
+    <div className="pb-6">
+      <header className="relative flex h-[90px] items-end justify-center rounded-b-[20px] bg-card pb-4 pt-[env(safe-area-inset-top)]">
+        <button type="button" onClick={() => (step === 'preview' ? setStep('form') : navigate(-1))} aria-label="返回"
+          className="absolute bottom-4 left-[22px] p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown">
           <ChevronLeftIcon className="h-[26px] w-[26px] text-brown" />
         </button>
-        <h1 className="text-xl font-bold text-brown">發布協尋文</h1>
+        <h1 className="text-xl font-bold text-brown">幫你發Threads的協尋文</h1>
       </header>
 
-      <div className="flex flex-col gap-5 px-[26px] pt-5">
-          <p className="text-xs leading-relaxed text-brown/70">
-            由 <b className="text-brown">DiuLa 官方帳號</b> 幫你把協尋資訊發到 Threads，擴大協尋範圍。
-          </p>
-
-          <div className="flex flex-col gap-3 rounded-[10px] bg-card p-4">
-            <label className="text-sm font-medium text-brown">物品名稱
-              <input value={name} onChange={(e) => setName(e.target.value)} placeholder="例：黑色折疊傘" className={`mt-1 ${inputBox}`} />
-            </label>
-            <div className="text-sm font-medium text-brown">遺失日期
-              <div className={`mt-1 ${lockedBox}`}>{(date || '').replaceAll('-', '/') || '—'}</div>
-            </div>
-            <div className="text-sm font-medium text-brown">遺失地點
-              <div className={`mt-1 ${lockedBox}`}>{place || '—'}</div>
-            </div>
-            <label className="text-sm font-medium text-brown">詳細遺失地點（選填）
-              <input value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="例：捷運出口、某櫃檯、幾號門…" className={`mt-1 ${inputBox}`} />
-            </label>
-            <label className="text-sm font-medium text-brown">備註（選填）
-              <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="補充特徵、顏色、聯絡方式…" className={`mt-1 ${inputBox}`} />
-            </label>
+      {/* 步驟一：填表單 */}
+      {step === 'form' && (
+        <div className="flex flex-col gap-4 px-[26px] pt-5">
+          <div className="rounded-[10px] bg-card p-4 text-xs font-medium leading-relaxed text-brown">
+            照欄位填，系統會套用統一模版由 <b>DiuLa 官方帳號</b> 發佈到 Threads 協尋，你的個人帳號不會露出。
           </div>
 
-          {/* 官方帳號實際會發出的貼文（即時預覽） */}
           <div>
-            <p className="mb-1.5 text-sm font-medium text-brown">📤 官方帳號實際會發出這篇（即時預覽）</p>
-            <div className="rounded-2xl border border-black/10 bg-white p-4">
-              <div className="mb-3 flex items-center gap-2.5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brown text-lg font-bold text-white">@</div>
-                <div className="leading-tight">
-                  <p className="text-sm font-bold text-brown">DiuLa 協尋</p>
-                  <p className="text-xs text-brown/50">diula_official</p>
-                </div>
-              </div>
-              <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-brown">{text}</pre>
-              {rawImage && (
-                <img src={rawImage} alt="協尋照片" className="mt-3 w-full rounded-xl border border-black/5 object-cover" />
-              )}
-            </div>
+            <label className={labelClass}>物品名稱
+              <input value={name} onChange={(e) => setName(e.target.value)} placeholder="皮夾 / 錢包" className={`mt-1.5 ${editBox}`} />
+            </label>
           </div>
-
-          {/* 授權同意 */}
-          <label className="flex items-start gap-3 rounded-[10px] bg-[#ece8f5] p-3 text-xs leading-relaxed text-brown">
-            <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-[#492c13]" />
-            <span>我同意授權「DiuLa 官方帳號」依上方模版代為發佈，並瞭解找到後可隨時要求刪除。</span>
-          </label>
+          <div>
+            <p className={labelClass}>遺失日期</p>
+            <div className={lockedBox}>{(date || '').replaceAll('-', '/') || '—'}</div>
+          </div>
+          <div>
+            <p className={labelClass}>遺失地點</p>
+            <div className={lockedBox}>{place || '—'}</div>
+          </div>
+          <div>
+            <label className={labelClass}>詳細地點（選填）
+              <input value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="如：世新山洞口、景美站2號出口" className={`mt-1.5 ${editBox}`} />
+            </label>
+          </div>
+          <div>
+            <label className={labelClass}>備註
+              <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="如：對我很有紀念意義，謝謝大家幫忙留意" className={`mt-1.5 ${editBox}`} />
+            </label>
+          </div>
 
           {error && <p className="text-sm text-error">{error}</p>}
 
-          <button type="button" onClick={submit} disabled={status === 'submitting' || !agree}
-            className="mt-1 flex h-[60px] w-full items-center justify-center gap-3 rounded-[50px] border border-black bg-blue
-                       text-base font-medium text-brown transition hover:brightness-[.98] disabled:opacity-50
+          <button type="button" onClick={goPreview}
+            className="mt-2 flex h-[60px] w-full items-center justify-center gap-3 rounded-[50px] border border-black bg-card
+                       text-base font-medium text-brown transition hover:bg-[#eee8d7]
                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown">
             <CircleCheckIcon className="h-9 w-9 shrink-0 text-brown" />
-            {status === 'submitting' ? '發布中…' : '發布協尋文'}
+            填寫完成！查看貼文預覽
           </button>
-      </div>
+        </div>
+      )}
+
+      {/* 步驟二：貼文預覽 + 圖片預覽 + 實際發佈 */}
+      {step === 'preview' && (
+        <div className="flex flex-col gap-4 px-[26px] pt-5">
+          <div className="rounded-[10px] bg-card p-4 text-xs font-medium leading-[20px] text-brown">
+            由 <b>DiuLa！官方帳號</b> 幫你把協尋資訊發到 Threads，擴大協尋範圍。貼文圖片將沿用比對尋找時上傳的圖片！
+            <b>會公開發到 Threads，發佈前可框住路人臉、車牌、地址等個資。</b>
+          </div>
+
+          <div>
+            <p className="mb-1.5 text-xs font-medium text-brown">貼文預覽</p>
+            <pre className="whitespace-pre-wrap rounded-[10px] bg-input p-4 font-sans text-xs leading-[15px] text-brown">{text}</pre>
+          </div>
+
+          {displayImage && (
+            <div>
+              <div className="mb-1.5 flex items-center justify-between">
+                <p className="text-xs font-medium text-brown">圖片預覽</p>
+                <button
+                  type="button"
+                  onClick={() => setMaskOpen(true)}
+                  className="rounded-full border border-black bg-input px-3 py-1 text-xs font-medium text-brown
+                             transition hover:bg-[#ececec] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+                >
+                  {editedImage ? '重新打碼' : '為圖片打碼'}
+                </button>
+              </div>
+              <img src={displayImage} alt="協尋照片" className="w-full rounded-[10px] object-cover" />
+            </div>
+          )}
+
+          {error && <p className="text-sm text-error">{error}</p>}
+
+          <button type="button" onClick={submit} disabled={status === 'submitting'}
+            className="mt-2 flex h-[60px] w-full items-center justify-center gap-3 rounded-[50px] border border-black bg-card
+                       text-base font-medium text-brown transition hover:bg-[#eee8d7] disabled:opacity-50
+                       focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown">
+            <CircleCheckIcon className="h-9 w-9 shrink-0 text-brown" />
+            {status === 'submitting' ? '發布中…' : '確認！發佈此則Threads文'}
+          </button>
+        </div>
+      )}
+
+      {/* 圖片打碼視窗（一律以原圖為底，重開＝從頭打碼，可還原） */}
+      {maskOpen && rawImage && (
+        <PhotoMaskModal
+          src={rawImage}
+          onCancel={() => setMaskOpen(false)}
+          onConfirm={(url) => { setEditedImage(url); setMaskOpen(false) }}
+        />
+      )}
 
       {/* 發布成功彈窗 */}
       {status === 'success' && (

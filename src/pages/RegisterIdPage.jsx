@@ -5,11 +5,12 @@ import {
   ChevronDownIcon,
   CalendarIcon,
   LocationIcon,
+  PersonChalkboardIcon,
   CircleCheckIcon,
   CameraIcon,
 } from '../components/icons'
 import MaskingModal from '../components/MaskingModal'
-import RegionPicker from '../components/RegionPicker'
+import { CITY_ORDER, TAIWAN_REGIONS } from '../data/taiwanRegions'
 import { addItem } from '../lib/myItems'
 import { spring } from '../lib/api'
 
@@ -39,7 +40,31 @@ function Field({ left, chevron, children }) {
 }
 
 const inputClass =
-  'min-w-0 flex-1 bg-transparent text-xs text-brown outline-none placeholder:text-brown/70'
+  'min-w-0 flex-1 bg-transparent text-xs text-brown outline-none placeholder:text-hint'
+
+// 地點下拉：select 佔滿整格、箭頭疊在右側且 pointer-events-none，
+// 這樣連箭頭都能點開原生下拉（不用 Field 自帶的箭頭）。
+function SelectField({ left, value, onChange, disabled, placeholder, children }) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex w-[46px] shrink-0 items-center justify-center">{left}</div>
+      <div className="relative flex h-10 min-w-0 flex-1 items-center rounded-[50px] border border-black bg-white px-4">
+        <select
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+          aria-label={placeholder}
+          className={`min-w-0 flex-1 appearance-none bg-transparent pr-6 text-xs outline-none disabled:opacity-50
+            ${value ? 'text-brown' : 'text-hint'}`}
+        >
+          <option value="">{placeholder}</option>
+          {children}
+        </select>
+        <ChevronDownIcon className="pointer-events-none absolute right-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-navy" />
+      </div>
+    </div>
+  )
+}
 
 export default function RegisterIdPage() {
   const navigate = useNavigate()
@@ -50,12 +75,14 @@ export default function RegisterIdPage() {
   const [maskedImage, setMaskedImage] = useState('')     // 打碼後 JPEG data URL（唯一會送出的圖）
   const [maskInfo, setMaskInfo] = useState(null)         // { maskRegionCount, manual }
   const [date, setDate] = useState('2026-05-07')
-  const [foundAt, setFoundAt] = useState('')
-  const [foundAtOpen, setFoundAtOpen] = useState(false)
+  const [foundCity, setFoundCity] = useState('')       // 拾獲地點：縣市
+  const [foundDistrict, setFoundDistrict] = useState('') // 拾獲地點：地區
   const [sendTo, setSendTo] = useState('')
   const [note, setNote] = useState('')
   const [status, setStatus] = useState('idle') // idle | submitting | success | error
   const [error, setError] = useState('')
+
+  const foundAt = [foundCity, foundDistrict].filter(Boolean).join(' ') // 拾獲地點合併字串
 
   function handlePhoto(e) {
     const file = e.target.files?.[0]
@@ -119,7 +146,7 @@ export default function RegisterIdPage() {
 
   function resetForm() {
     setMaskedImage(''); setMaskInfo(null)
-    setFoundAt(''); setSendTo(''); setNote('')
+    setFoundCity(''); setFoundDistrict(''); setSendTo(''); setNote('')
     setStatus('idle'); setError('')
   }
 
@@ -191,16 +218,24 @@ export default function RegisterIdPage() {
               className={`${inputClass} [&::-webkit-calendar-picker-indicator]:hidden`}
             />
           </Field>
-          <Field left={<LocationIcon className="h-[30px] w-[26px] text-navy" />} chevron>
-            <button
-              type="button"
-              onClick={() => setFoundAtOpen(true)}
-              className={`${inputClass} text-left ${foundAt ? 'text-brown' : 'text-brown/70'}`}
-            >
-              {foundAt || '拾獲的地點'}
-            </button>
-          </Field>
-          <Field left={<LocationIcon className="h-[30px] w-[26px] text-navy" />}>
+          <SelectField
+            left={<LocationIcon className="h-[30px] w-[26px] text-navy" />}
+            value={foundCity}
+            onChange={(e) => { setFoundCity(e.target.value); setFoundDistrict('') }}
+            placeholder="拾獲的地點（縣市）"
+          >
+            {CITY_ORDER.map((c) => <option key={c} value={c}>{c}</option>)}
+          </SelectField>
+          <SelectField
+            left={<LocationIcon className="h-[30px] w-[26px] text-navy" />}
+            value={foundDistrict}
+            onChange={(e) => setFoundDistrict(e.target.value)}
+            disabled={!foundCity}
+            placeholder="拾獲的地點（地區）"
+          >
+            {(TAIWAN_REGIONS[foundCity] || []).map((d) => <option key={d} value={d}>{d}</option>)}
+          </SelectField>
+          <Field left={<PersonChalkboardIcon className="h-[26px] w-[32px] text-navy" />}>
             <input type="text" value={sendTo} onChange={(e) => setSendTo(e.target.value)} placeholder="送往的地點 *" className={inputClass} />
           </Field>
           <Field left={<span className="text-base text-brown">備註</span>}>
@@ -246,14 +281,6 @@ export default function RegisterIdPage() {
           onConfirm={onMaskDone}
         />
       )}
-
-      <RegionPicker
-        open={foundAtOpen}
-        value={foundAt}
-        title="拾獲的地點"
-        onClose={() => setFoundAtOpen(false)}
-        onConfirm={setFoundAt}
-      />
     </div>
   )
 }

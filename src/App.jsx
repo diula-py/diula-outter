@@ -29,13 +29,13 @@ export default function App() {
         <Route path="/search/threads/:id" element={<ThreadsPostDetail />} />
         <Route path="/search/results" element={<ResultsPage />} />
         <Route path="/search/results/:id" element={<ResultDetailPage />} />
+        <Route path="/search/sos" element={<SosPostPage />} />
       </Route>
 
       {/* 首頁按鈕的目的地 —— 尚未做的先用 placeholder */}
       <Route path="/search" element={<CrossSearchPage />} />
       <Route path="/search/analyzing" element={<AiAnalyzingPage />} />
       <Route path="/search/confirm" element={<ConfirmTagsPage />} />
-      <Route path="/search/sos" element={<SosPostPage />} />
       <Route path="/search/subscribe" element={<SubscribePage />} />
 
       {/* 個人頁的目的地 —— 待做 */}

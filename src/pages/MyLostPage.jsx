@@ -5,6 +5,7 @@ import {
   ChevronDownIcon,
   CalendarIcon,
   MagnifyingGlassIcon,
+  DiulaPinIcon,
 } from '../components/icons'
 import { loadItems } from '../lib/myItems'
 
@@ -15,7 +16,7 @@ function ItemThumb({ img }) {
       {img ? (
         <img src={img} alt="" className="h-full w-full object-cover" />
       ) : (
-        <span className="text-4xl font-bold leading-none text-[#28324a]">!</span>
+        <DiulaPinIcon className="h-[52px] w-[52px] text-brown" />
       )}
     </div>
   )

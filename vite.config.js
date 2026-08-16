@@ -4,9 +4,9 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
-  // GitHub Pages 會放在 saamiin.github.io/diula-app/ → prod build 要加 base；dev 維持根路徑。
-  // ⚠️ 若你的 repo 不叫 diula-app，改這裡的 '/diula-app/' 成 '/<你的repo名>/'。
-  base: mode === 'production' ? '/diula-app/' : '/',
+  // GitHub Pages 放在 diula-py.github.io/diula-outter/ → prod build 要加 base；dev 維持根路徑。
+  // ⚠️ base 必須等於 GitHub repo 名。repo 改名時這裡要一起改。
+  base: mode === 'production' ? '/diula-outter/' : '/',
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {

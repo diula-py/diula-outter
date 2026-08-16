@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ChevronLeftIcon, CalendarIcon, LocationIcon, CircleCheckIcon } from '../components/icons'
+import { ChevronLeftIcon, CalendarIcon, LocationIcon, CircleCheckIcon, DiulaPinIcon } from '../components/icons'
 import { updateItem } from '../lib/myItems'
 import { flask } from '../lib/api'
 
@@ -99,11 +99,10 @@ export default function MyLostDetailPage() {
       </header>
 
       <div className="flex flex-col gap-4 px-[22px] pt-4">
-        {/* 徽章：狀態 + 編號 */}
-        <div className="flex gap-3">
+        {/* 徽章：狀態（左）＋ 編號（靠右） */}
+        <div className="flex items-center gap-3">
           <span className="rounded-[10px] bg-blue px-4 py-1.5 text-base text-brown">{status}</span>
-          {!found && <span className="rounded-[10px] bg-blue px-4 py-1.5 text-base text-brown">{item.code}</span>}
-          {found && <span className="ml-auto rounded-[10px] bg-blue px-4 py-1.5 text-base text-brown">{item.code}</span>}
+          <span className="ml-auto rounded-[10px] bg-blue px-4 py-1.5 text-base text-brown">{item.code}</span>
         </div>
 
         {/* 圖片 */}
@@ -111,9 +110,7 @@ export default function MyLostDetailPage() {
           {item.img ? (
             <img src={item.img} alt="" className="h-full w-full object-cover" />
           ) : (
-            <svg viewBox="0 0 24 24" className="h-14 w-14 text-brown/30" fill="currentColor" aria-hidden="true">
-              <path d="M12 2C8.1 2 5 5.1 5 9c0 5 7 13 7 13s7-8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z" />
-            </svg>
+            <DiulaPinIcon className="h-20 w-20 opacity-40" />
           )}
         </div>
 

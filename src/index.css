@@ -14,6 +14,7 @@
   --color-blue:  #dfeaf5;   /* banner・TabBar・選中態 */
   --color-error: #c72f02;   /* 刪除・警告 */
   --color-navy:  #1e3050;   /* 表單 icon（日曆・地點・下拉箭頭） */
+  --color-hint:  #b5a692;   /* placeholder / 未選取文字（同 wireframe） */
 
   /* 中文用源泉圓體、英數用 Comfortaa；正式字型檔可用 @font-face 補上，
      這裡先給圓體 fallback（Mac 會落到圓體，接近設計稿）。 */

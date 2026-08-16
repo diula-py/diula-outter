@@ -34,8 +34,7 @@ export default function HomePage() {
     <div>
       {/* 頂部 banner：淺藍、下圓角，避開 LIFF safe-area */}
       <header className="flex h-[150px] items-end justify-center rounded-b-[20px] bg-blue pb-6 pt-[env(safe-area-inset-top)]">
-        {/* TODO: 換成正式 logo 素材（SVG/PNG）。目前為文字 placeholder。 */}
-        <span className="text-[34px] font-bold tracking-wide text-brown">DiuLa!</span>
+        <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="h-11 w-auto object-contain" />
       </header>
 
       <div className="flex flex-col gap-8 px-6 pt-6">

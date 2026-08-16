@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ChevronLeftIcon } from '../components/icons'
+import { ChevronLeftIcon, DiulaPinIcon } from '../components/icons'
 
 function CloseIcon(props) {
   return (
@@ -28,7 +28,7 @@ function ResultThumb({ src }) {
       {ok ? (
         <img src={src} alt="" className="h-full w-full object-cover" onError={() => setBroken(true)} />
       ) : (
-        <span className="text-4xl font-bold leading-none text-[#28324a]">!</span>
+        <DiulaPinIcon className="h-[52px] w-[52px] text-brown" />
       )}
     </div>
   )
