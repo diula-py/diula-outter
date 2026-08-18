@@ -187,7 +187,7 @@ export default function RegisterIdPage() {
         </div>
 
         {/* 拍照上傳（點擊 → 選圖 → 打碼視窗） */}
-        <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={handlePhoto} className="hidden" />
+        <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
         <button
           type="button"
           onClick={() => fileRef.current?.click()}

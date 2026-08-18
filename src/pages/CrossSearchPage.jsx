@@ -134,7 +134,7 @@ export default function CrossSearchPage() {
         {/* 圖片模式：拍照上傳 / 文字模式：描述 */}
         {mode === 'image' ? (
           <>
-            <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={handlePhoto} className="hidden" />
+            <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
