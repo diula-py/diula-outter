@@ -1,0 +1,26 @@
+/* ---- 源泉圓體 GenSenRounded TW 自架字型（R/M/B 三個字重）----
+   刻意放在「純 CSS」而非 Tailwind 進入點 index.css：
+   Tailwind v4 的 Vite plugin 在 dev 不會改寫 url()，會讓字型路徑 404；
+   純 CSS 走 Vite 標準管線，dev / prod（含 GitHub Pages base）都會正確改寫並加 hash。
+   font-display: swap → 下載完成前先用 fallback，不卡白畫面。 */
+@font-face {
+  font-family: "GenSenRounded TW";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("./assets/fonts/gensen-tw-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "GenSenRounded TW";
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url("./assets/fonts/gensen-tw-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "GenSenRounded TW";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("./assets/fonts/gensen-tw-700.woff2") format("woff2");
+}
