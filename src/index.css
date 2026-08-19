@@ -37,7 +37,14 @@ body {
   background: var(--color-base);
   color: var(--color-brown);
   font-family: var(--font-round);
+  /* 字體平滑：antialiased 讓桌機字較細；grayscale 補 Firefox/macOS。
+     注意 iOS Safari / Android 會忽略 -webkit-font-smoothing，手機仍偏粗（平台限制）。 */
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  /* 防 iOS 直向→橫向自動放大字，避免看起來更粗更大 */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   /* Flat Design 2.0 — 全站零陰影 */
 }
 
