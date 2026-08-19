@@ -48,7 +48,7 @@ export default function TagPickerModal({ open, value, onClose, onConfirm }) {
         {/* header: 取消 / 確認 */}
         <div className="flex items-center justify-between px-5 pt-4">
           <button type="button" onClick={onClose} aria-label="取消" className="p-1">
-            <XIcon className="h-6 w-6" />
+            <XIcon className="h-8 w-8" />
           </button>
           <button
             type="button"
@@ -56,32 +56,32 @@ export default function TagPickerModal({ open, value, onClose, onConfirm }) {
             aria-label="確認"
             className="p-1 text-navy"
           >
-            <CheckIcon className="h-6 w-6" />
+            <CheckIcon className="h-8 w-8" />
           </button>
         </div>
 
         {/* 已選標籤 */}
-        <div className="px-5 pb-3 pt-1">
-          <p className="mb-2 text-sm font-medium text-brown">已選標籤</p>
-          <div className="flex flex-wrap gap-2">
+        <div className="px-5 pb-4 pt-1">
+          <p className="mb-2.5 text-lg font-bold text-brown">已選標籤</p>
+          <div className="flex flex-wrap gap-2.5">
             {selected.length === 0 && <span className="text-xs text-brown/50">尚未選擇</span>}
             {selected.map((tag) => (
-              <span key={tag} className="flex items-center gap-1.5 rounded-[50px] border border-black bg-blue px-3.5 py-1 text-xs text-brown">
+              <span key={tag} className="flex items-center gap-2 rounded-full border border-black bg-blue px-4 py-2 text-sm text-brown">
                 {tag}
                 <button type="button" onClick={() => toggle(tag)} aria-label={`移除 ${tag}`} className="p-0.5">
-                  <TagXIcon className="h-3 w-3" />
+                  <TagXIcon className="h-3.5 w-3.5" />
                 </button>
               </span>
             ))}
           </div>
         </div>
 
-        {/* 分類標籤（可捲動） */}
+        {/* 分類標籤（每一類左右滑動，不換行） */}
         <div className="min-h-0 flex-1 overflow-y-auto border-t border-black/10 px-5 py-3">
           {TAG_TAXONOMY.map((cat) => (
-            <div key={cat.category} className="mb-4">
-              <p className="mb-2 font-bold text-brown">{cat.category}</p>
-              <div className="flex flex-wrap gap-2">
+            <div key={cat.category} className="mb-5">
+              <p className="mb-2.5 text-lg font-bold text-brown">{cat.category}</p>
+              <div className="flex gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {cat.tags.map((tag) => {
                   const on = selected.includes(tag)
                   return (
@@ -89,8 +89,8 @@ export default function TagPickerModal({ open, value, onClose, onConfirm }) {
                       key={tag}
                       type="button"
                       onClick={() => toggle(tag)}
-                      className={`rounded-[50px] border border-black px-3.5 py-1 text-xs text-brown transition
-                        ${on ? 'bg-blue font-medium' : 'bg-white'}`}
+                      className={`shrink-0 whitespace-nowrap rounded-full border border-black bg-blue px-5 py-2.5 text-base text-brown transition
+                        ${on ? 'font-semibold ring-2 ring-inset ring-navy' : 'font-normal'}`}
                     >
                       {tag}
                     </button>
