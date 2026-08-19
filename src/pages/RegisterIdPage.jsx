@@ -11,6 +11,7 @@ import {
 } from '../components/icons'
 import MaskingModal from '../components/MaskingModal'
 import RegionRow from '../components/RegionRow'
+import TagPickerModal from '../components/TagPickerModal'
 import { addItem } from '../lib/myItems'
 import { spring } from '../lib/api'
 import { todayStr } from '../lib/date'
@@ -28,6 +29,8 @@ const ID_TYPES = Object.keys(DOCTYPE_MAP)
 // 「其他」證件的細分類型（身分證／健保卡／學生證已是獨立分頁）。選了拿來當品名/標籤，
 // 後端 docType 仍送 'other'（列舉只有 4 種），細類型記在本機紀錄的 name/tags 供顯示。
 const OTHER_DOC_TYPES = ['護照', '存摺', '印章', '駕照', '行照', '居留證', '自然人憑證', '執照', '證書']
+// 給 TagPickerModal 用的分類清單（只有「其他證件」這一組）
+const OTHER_DOC_TAXONOMY = [{ category: '其他證件', tags: OTHER_DOC_TYPES }]
 
 // ⚠️ Spring Boot /api/id-cards 故意只允許同源。dev 走 proxy；prod 需前端與 Spring Boot
 // 同網域，或在 IdCardController 加 CORS，否則會被擋。
@@ -54,6 +57,7 @@ export default function RegisterIdPage() {
 
   const [type, setType] = useState('身份證')
   const [otherType, setOtherType] = useState('')         // 「其他」分頁選的細證件類型（單選）
+  const [pickerOpen, setPickerOpen] = useState(false)    // 其他證件類型選擇彈窗
   const [pendingFile, setPendingFile] = useState(null)   // 待打碼的原始照片（只留在本機）
   const [maskedImage, setMaskedImage] = useState('')     // 打碼後 JPEG data URL（唯一會送出的圖）
   const [maskInfo, setMaskInfo] = useState(null)         // { maskRegionCount, manual }
@@ -157,7 +161,11 @@ export default function RegisterIdPage() {
               <button
                 key={t}
                 type="button"
-                onClick={() => { setType(t); if (t !== '其他') setOtherType('') }}
+                onClick={() => {
+                  setType(t)
+                  if (t === '其他') setPickerOpen(true) // 點「其他」直接跳選擇彈窗
+                  else setOtherType('')
+                }}
                 aria-pressed={active}
                 className={`h-[45px] w-20 rounded-[50px] text-base text-brown transition
                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
@@ -169,26 +177,17 @@ export default function RegisterIdPage() {
           })}
         </div>
 
-        {/* 「其他」→ 展開細證件類型（單選） */}
+        {/* 「其他」已選的證件類型 → 顯示一顆可再點開重選的膠囊 */}
         {type === '其他' && (
-          <div className="-mt-1 flex flex-wrap gap-2">
-            {OTHER_DOC_TYPES.map((t) => {
-              const on = otherType === t
-              return (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setOtherType(on ? '' : t)}
-                  aria-pressed={on}
-                  className={`rounded-[50px] border border-black px-3.5 py-1.5 text-sm text-brown transition
-                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
-                    ${on ? 'bg-blue font-medium' : 'bg-white'}`}
-                >
-                  {t}
-                </button>
-              )
-            })}
-          </div>
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            className={`-mt-1 w-fit rounded-[50px] border border-black px-4 py-1.5 text-sm transition
+              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
+              ${otherType ? 'bg-blue font-medium text-brown' : 'bg-white text-hint'}`}
+          >
+            {otherType || '選擇證件類型'}
+          </button>
         )}
 
         {/* 拍照上傳（點擊 → 選圖 → 打碼視窗） */}
@@ -261,6 +260,16 @@ export default function RegisterIdPage() {
           onConfirm={onMaskDone}
         />
       )}
+
+      {/* 其他證件類型選擇彈窗（單選、只有其他證件那組） */}
+      <TagPickerModal
+        open={pickerOpen}
+        value={otherType ? [otherType] : []}
+        taxonomy={OTHER_DOC_TAXONOMY}
+        single
+        onClose={() => setPickerOpen(false)}
+        onConfirm={(arr) => setOtherType(arr[0] || '')}
+      />
     </div>
   )
 }

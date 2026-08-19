@@ -25,9 +25,12 @@ function TagXIcon(props) {
 
 /**
  * 新增標籤彈窗：依分類挑標籤。
- * props: open, value(已選標籤陣列), onClose, onConfirm(tags)
+ * props:
+ *   open, value(已選標籤陣列), onClose, onConfirm(tags)
+ *   taxonomy 自訂分類清單（預設全部 TAG_TAXONOMY）
+ *   single   單選模式（選一個會取代前一個；證件登錄用）
  */
-export default function TagPickerModal({ open, value, onClose, onConfirm }) {
+export default function TagPickerModal({ open, value, onClose, onConfirm, taxonomy = TAG_TAXONOMY, single = false }) {
   const [selected, setSelected] = useState([])
 
   useEffect(() => {
@@ -37,7 +40,10 @@ export default function TagPickerModal({ open, value, onClose, onConfirm }) {
   if (!open) return null
 
   const toggle = (tag) =>
-    setSelected((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]))
+    setSelected((prev) => {
+      if (single) return prev.includes(tag) ? [] : [tag]
+      return prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    })
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-5" onClick={onClose}>
@@ -78,7 +84,7 @@ export default function TagPickerModal({ open, value, onClose, onConfirm }) {
 
         {/* 分類標籤（每一類左右滑動，不換行） */}
         <div className="min-h-0 flex-1 overflow-y-auto border-t border-black/10 px-5 py-3">
-          {TAG_TAXONOMY.map((cat) => (
+          {taxonomy.map((cat) => (
             <div key={cat.category} className="mb-5">
               <p className="mb-2.5 text-lg font-bold text-brown">{cat.category}</p>
               <div className="flex gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
