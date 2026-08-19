@@ -7,9 +7,10 @@ import {
   CircleCheckIcon,
   PlusIcon,
 } from '../components/icons'
-import { CITY_ORDER, TAIWAN_REGIONS } from '../data/taiwanRegions'
+import RegionRow from '../components/RegionRow'
 import TagPickerModal from '../components/TagPickerModal'
 import { flask } from '../lib/api'
+import { todayStr } from '../lib/date'
 
 function TagXIcon(props) {
   return (
@@ -34,35 +35,12 @@ function Field({ left, children }) {
 
 const inputClass = 'min-w-0 flex-1 bg-transparent text-xs text-brown outline-none placeholder:text-hint'
 
-// 地點下拉：select 佔滿整格、箭頭疊右側 pointer-events-none，連箭頭都能點開原生下拉。
-function SelectField({ left, value, onChange, disabled, placeholder, children }) {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="flex w-[46px] shrink-0 items-center justify-center">{left}</div>
-      <div className="relative flex h-10 min-w-0 flex-1 items-center rounded-[10px] bg-white px-4">
-        <select
-          value={value}
-          onChange={onChange}
-          disabled={disabled}
-          aria-label={placeholder}
-          className={`min-w-0 flex-1 appearance-none bg-transparent pr-6 text-xs outline-none disabled:opacity-50
-            ${value ? 'text-brown' : 'text-hint'}`}
-        >
-          <option value="">{placeholder}</option>
-          {children}
-        </select>
-        <ChevronDownIcon className="pointer-events-none absolute right-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-navy" />
-      </div>
-    </div>
-  )
-}
-
 export default function ConfirmTagsPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const data = location.state || {}
 
-  const [date, setDate] = useState(data.date || '2026-05-07')
+  const [date, setDate] = useState(data.date || todayStr())
   const [placeCity, setPlaceCity] = useState((data.place || '').split(' ')[0] || '')
   const [placeDistrict, setPlaceDistrict] = useState((data.place || '').split(' ')[1] || '')
   const [remark, setRemark] = useState(data.remark || '')
@@ -126,23 +104,13 @@ export default function ConfirmTagsPage() {
             <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="遺失日期"
               className={`${inputClass} [&::-webkit-calendar-picker-indicator]:hidden`} />
           </Field>
-          <SelectField
+          <RegionRow
             left={<LocationIcon className="h-[30px] w-[26px] text-navy" />}
-            value={placeCity}
-            onChange={(e) => { setPlaceCity(e.target.value); setPlaceDistrict('') }}
-            placeholder="遺失的地點（縣市）"
-          >
-            {CITY_ORDER.map((c) => <option key={c} value={c}>{c}</option>)}
-          </SelectField>
-          <SelectField
-            left={<LocationIcon className="h-[30px] w-[26px] text-navy" />}
-            value={placeDistrict}
-            onChange={(e) => setPlaceDistrict(e.target.value)}
-            disabled={!placeCity}
-            placeholder="遺失的地點（地區）"
-          >
-            {(TAIWAN_REGIONS[placeCity] || []).map((d) => <option key={d} value={d}>{d}</option>)}
-          </SelectField>
+            prefix="遺失的"
+            variant="plain"
+            city={placeCity} setCity={setPlaceCity}
+            district={placeDistrict} setDistrict={setPlaceDistrict}
+          />
           <Field left={<span className="text-base text-brown">備註</span>}>
             <input type="text" value={remark} onChange={(e) => setRemark(e.target.value)} placeholder="--" className={inputClass} />
           </Field>

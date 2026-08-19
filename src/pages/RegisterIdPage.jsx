@@ -10,9 +10,11 @@ import {
   CameraIcon,
 } from '../components/icons'
 import MaskingModal from '../components/MaskingModal'
-import { CITY_ORDER, TAIWAN_REGIONS } from '../data/taiwanRegions'
+import RegionRow from '../components/RegionRow'
 import { addItem } from '../lib/myItems'
 import { spring } from '../lib/api'
+import { todayStr } from '../lib/date'
+import { downscale } from '../lib/image'
 
 // 分頁中文 → 後端 docType 列舉
 const DOCTYPE_MAP = {
@@ -22,6 +24,10 @@ const DOCTYPE_MAP = {
   其他: 'other',
 }
 const ID_TYPES = Object.keys(DOCTYPE_MAP)
+
+// 「其他」證件的細分類型（身分證／健保卡／學生證已是獨立分頁）。選了拿來當品名/標籤，
+// 後端 docType 仍送 'other'（列舉只有 4 種），細類型記在本機紀錄的 name/tags 供顯示。
+const OTHER_DOC_TYPES = ['護照', '存摺', '印章', '駕照', '行照', '居留證', '自然人憑證', '執照', '證書']
 
 // ⚠️ Spring Boot /api/id-cards 故意只允許同源。dev 走 proxy；prod 需前端與 Spring Boot
 // 同網域，或在 IdCardController 加 CORS，否則會被擋。
@@ -42,39 +48,16 @@ function Field({ left, chevron, children }) {
 const inputClass =
   'min-w-0 flex-1 bg-transparent text-xs text-brown outline-none placeholder:text-hint'
 
-// 地點下拉：select 佔滿整格、箭頭疊在右側且 pointer-events-none，
-// 這樣連箭頭都能點開原生下拉（不用 Field 自帶的箭頭）。
-function SelectField({ left, value, onChange, disabled, placeholder, children }) {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="flex w-[46px] shrink-0 items-center justify-center">{left}</div>
-      <div className="relative flex h-10 min-w-0 flex-1 items-center rounded-[50px] border border-black bg-white px-4">
-        <select
-          value={value}
-          onChange={onChange}
-          disabled={disabled}
-          aria-label={placeholder}
-          className={`min-w-0 flex-1 appearance-none bg-transparent pr-6 text-xs outline-none disabled:opacity-50
-            ${value ? 'text-brown' : 'text-hint'}`}
-        >
-          <option value="">{placeholder}</option>
-          {children}
-        </select>
-        <ChevronDownIcon className="pointer-events-none absolute right-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-navy" />
-      </div>
-    </div>
-  )
-}
-
 export default function RegisterIdPage() {
   const navigate = useNavigate()
   const fileRef = useRef(null)
 
   const [type, setType] = useState('身份證')
+  const [otherType, setOtherType] = useState('')         // 「其他」分頁選的細證件類型（單選）
   const [pendingFile, setPendingFile] = useState(null)   // 待打碼的原始照片（只留在本機）
   const [maskedImage, setMaskedImage] = useState('')     // 打碼後 JPEG data URL（唯一會送出的圖）
   const [maskInfo, setMaskInfo] = useState(null)         // { maskRegionCount, manual }
-  const [date, setDate] = useState('2026-05-07')
+  const [date, setDate] = useState(todayStr())
   const [foundCity, setFoundCity] = useState('')       // 拾獲地點：縣市
   const [foundDistrict, setFoundDistrict] = useState('') // 拾獲地點：地區
   const [sendTo, setSendTo] = useState('')
@@ -99,8 +82,14 @@ export default function RegisterIdPage() {
   async function handleSubmit() {
     setError('')
     if (!maskedImage || !maskInfo) { setError('請先拍照並完成打碼'); return }
+    if (type === '其他' && !otherType) { setError('請選擇證件類型'); return }
     if (!sendTo.trim()) { setError('請填寫送往的地點'); return }
 
+    // 品名/標籤用實際證件類型：「其他」用選的細類（護照…），其餘用分頁名。
+    const docLabel = type === '其他' ? otherType : type
+    setStatus('submitting')
+    // 手機實拍照片打碼後 base64 常達數 MB，超過後端 2MB 上限會 413（顯示 Load failed）→ 先縮圖。
+    const uploadImage = await downscale(maskedImage)
     const payload = {
       docType: DOCTYPE_MAP[type],
       maskRegionCount: maskInfo.maskRegionCount,
@@ -109,10 +98,9 @@ export default function RegisterIdPage() {
       location: foundAt,    // 拾獲地點
       dropLocation: sendTo, // 送往地點
       remark: note,         // 備註
-      image: maskedImage,
+      image: uploadImage,
     }
 
-    setStatus('submitting')
     try {
       const res = await fetch(SUBMIT_ENDPOINT, {
         method: 'POST',
@@ -127,27 +115,22 @@ export default function RegisterIdPage() {
         id: 'found_' + Date.now(),
         kind: 'found',
         code: '#' + (data.id ? String(data.id).slice(-6) : Date.now().toString().slice(-6)),
-        name: type,                    // 證件別（身份證／健保卡…）
+        name: docLabel,                // 證件別（身份證／健保卡／護照…）
         date,                          // 拾獲日 YYYY-MM-DD
         place: foundAt,                // 拾獲地點
         dropLocation: sendTo,          // 送往地點
         remark: note.trim(),
-        tags: [type],
-        image: maskedImage,
+        tags: [docLabel],
+        image: uploadImage,
         docType: DOCTYPE_MAP[type],
         created_at: new Date().toISOString(),
       })
-      setStatus('success')
+      // 登錄成功 → 直接跳「我的拾獲物」，新登錄那筆會出現在清單。
+      navigate('/my/found')
     } catch (e) {
       setStatus('error')
       setError(`送出失敗：${e.message}`)
     }
-  }
-
-  function resetForm() {
-    setMaskedImage(''); setMaskInfo(null)
-    setFoundCity(''); setFoundDistrict(''); setSendTo(''); setNote('')
-    setStatus('idle'); setError('')
   }
 
   return (
@@ -174,7 +157,7 @@ export default function RegisterIdPage() {
               <button
                 key={t}
                 type="button"
-                onClick={() => setType(t)}
+                onClick={() => { setType(t); if (t !== '其他') setOtherType('') }}
                 aria-pressed={active}
                 className={`h-[45px] w-20 rounded-[50px] text-base text-brown transition
                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
@@ -185,6 +168,28 @@ export default function RegisterIdPage() {
             )
           })}
         </div>
+
+        {/* 「其他」→ 展開細證件類型（單選） */}
+        {type === '其他' && (
+          <div className="-mt-1 flex flex-wrap gap-2">
+            {OTHER_DOC_TYPES.map((t) => {
+              const on = otherType === t
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setOtherType(on ? '' : t)}
+                  aria-pressed={on}
+                  className={`rounded-[50px] border border-black px-3.5 py-1.5 text-sm text-brown transition
+                    focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
+                    ${on ? 'bg-blue font-medium' : 'bg-white'}`}
+                >
+                  {t}
+                </button>
+              )
+            })}
+          </div>
+        )}
 
         {/* 拍照上傳（點擊 → 選圖 → 打碼視窗） */}
         <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
@@ -218,23 +223,12 @@ export default function RegisterIdPage() {
               className={`${inputClass} [&::-webkit-calendar-picker-indicator]:hidden`}
             />
           </Field>
-          <SelectField
+          <RegionRow
             left={<LocationIcon className="h-[30px] w-[26px] text-navy" />}
-            value={foundCity}
-            onChange={(e) => { setFoundCity(e.target.value); setFoundDistrict('') }}
-            placeholder="拾獲的地點（縣市）"
-          >
-            {CITY_ORDER.map((c) => <option key={c} value={c}>{c}</option>)}
-          </SelectField>
-          <SelectField
-            left={<LocationIcon className="h-[30px] w-[26px] text-navy" />}
-            value={foundDistrict}
-            onChange={(e) => setFoundDistrict(e.target.value)}
-            disabled={!foundCity}
-            placeholder="拾獲的地點（地區）"
-          >
-            {(TAIWAN_REGIONS[foundCity] || []).map((d) => <option key={d} value={d}>{d}</option>)}
-          </SelectField>
+            prefix="拾獲的"
+            city={foundCity} setCity={setFoundCity}
+            district={foundDistrict} setDistrict={setFoundDistrict}
+          />
           <Field left={<PersonChalkboardIcon className="h-[26px] w-[32px] text-navy" />}>
             <input type="text" value={sendTo} onChange={(e) => setSendTo(e.target.value)} placeholder="送往的地點 *" className={inputClass} />
           </Field>
@@ -243,33 +237,19 @@ export default function RegisterIdPage() {
           </Field>
         </div>
 
-        {/* 送出 / 結果 */}
-        {status === 'success' ? (
-          <div className="mt-2 flex flex-col items-center gap-3 rounded-[50px] border border-black bg-blue px-6 py-5 text-center">
-            <div className="flex items-center gap-2 text-base font-medium text-brown">
-              <CircleCheckIcon className="h-7 w-7 text-brown" />
-              已送出，並為該筆資料新增標籤
-            </div>
-            <button type="button" onClick={resetForm} className="text-sm text-brown underline underline-offset-4">
-              再登錄一筆
-            </button>
-          </div>
-        ) : (
-          <>
-            {error && <p className="text-sm text-error">{error}</p>}
-            <button
-              type="button"
-              onClick={handleSubmit}
-              disabled={status === 'submitting'}
-              className="mt-2 flex h-[60px] w-full items-center justify-center gap-4 rounded-[50px] border border-black bg-blue
-                         text-base font-medium text-brown transition hover:brightness-[.98] disabled:opacity-60
-                         focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-            >
-              <CircleCheckIcon className="h-10 w-10 shrink-0 text-brown" />
-              {status === 'submitting' ? '送出中…' : '填寫完成，為該筆資料新增標籤'}
-            </button>
-          </>
-        )}
+        {/* 送出 */}
+        {error && <p className="text-sm text-error">{error}</p>}
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={status === 'submitting'}
+          className="mt-2 flex h-[60px] w-full items-center justify-center gap-4 rounded-[50px] border border-black bg-blue
+                     text-base font-medium text-brown transition hover:brightness-[.98] disabled:opacity-60
+                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+        >
+          <CircleCheckIcon className="h-10 w-10 shrink-0 text-brown" />
+          {status === 'submitting' ? '送出中…' : '填寫完成，為該筆資料新增標籤'}
+        </button>
       </div>
 
       {/* 打碼視窗 */}
