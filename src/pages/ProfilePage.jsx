@@ -110,7 +110,7 @@ export default function ProfilePage() {
               <CloseIcon className="h-[26px] w-[26px]" />
             </button>
 
-            <p className="mt-2 text-center text-xl font-medium text-brown">是否要登出呢？：(</p>
+            <p className="mt-2 text-center text-xl font-medium text-brown">是否要登出呢？</p>
 
             <div className="mt-7 flex items-center justify-center gap-5">
               <button

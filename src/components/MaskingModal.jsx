@@ -29,7 +29,7 @@ const getMaskRegions = (t) => MASK_REGIONS[t] || MASK_REGIONS.national_id
 const SUGGESTED_MASKS = {
   national_id: ['姓名', '身分證字號', '照片', '出生日期'],
   health_card: ['姓名', '身分證字號', '照片', '卡號'],
-  student_id: ['姓名', '學號', '系所', '照片'],
+  student_id: ['部分姓名', '學號', '照片', '條碼'],
   other: ['姓名', '證件號碼／編號', '照片', '出生日期', '地址', '電話', '條碼／QR Code'],
 }
 
