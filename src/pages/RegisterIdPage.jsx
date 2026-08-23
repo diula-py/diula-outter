@@ -26,9 +26,9 @@ const DOCTYPE_MAP = {
 }
 const ID_TYPES = Object.keys(DOCTYPE_MAP)
 
-// 「其他」證件的細分類型（身分證／健保卡／學生證已是獨立分頁）。選了拿來當品名/標籤，
+// 「其他」證件的細分類型。身分證／健保卡／學生證雖有獨立分頁，仍一併列入供選（依需求）。
 // 後端 docType 仍送 'other'（列舉只有 4 種），細類型記在本機紀錄的 name/tags 供顯示。
-const OTHER_DOC_TYPES = ['護照', '存摺', '印章', '駕照', '行照', '居留證', '自然人憑證', '執照', '證書']
+const OTHER_DOC_TYPES = ['身分證', '健保卡', '學生證', '護照', '存摺', '印章', '駕照', '行照', '居留證', '自然人憑證', '執照', '證書']
 // 給 TagPickerModal 用的分類清單（只有「其他證件」這一組）
 const OTHER_DOC_TAXONOMY = [{ category: '其他證件', tags: OTHER_DOC_TYPES }]
 
