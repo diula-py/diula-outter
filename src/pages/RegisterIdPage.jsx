@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ChevronLeftIcon,
@@ -12,7 +12,6 @@ import {
 import MaskingModal from '../components/MaskingModal'
 import RegionRow from '../components/RegionRow'
 import TagPickerModal from '../components/TagPickerModal'
-import { addItem } from '../lib/myItems'
 import { spring } from '../lib/api'
 import { todayStr } from '../lib/date'
 import { downscale } from '../lib/image'
@@ -71,6 +70,13 @@ export default function RegisterIdPage() {
 
   const foundAt = [foundCity, foundDistrict].filter(Boolean).join(' ') // 拾獲地點合併字串
 
+  // 進頁就先喚醒 Spring 後端。Render 免費方案閒置會休眠，冷啟動 ~60 秒；
+  // 若等到按送出才醒，Safari 的 fetch 會先逾時（顯示 "Load failed"）。
+  // 使用者填表的空檔先喚醒，送出時多半已就緒。fire-and-forget、失敗無所謂。
+  useEffect(() => {
+    fetch(SUBMIT_ENDPOINT, { method: 'GET' }).catch(() => {})
+  }, [])
+
   function handlePhoto(e) {
     const file = e.target.files?.[0]
     if (file) setPendingFile(file) // → 開打碼視窗
@@ -92,8 +98,8 @@ export default function RegisterIdPage() {
     // 品名/標籤用實際證件類型：「其他」用選的細類（護照…），其餘用分頁名。
     const docLabel = type === '其他' ? otherType : type
     setStatus('submitting')
-    // 手機實拍照片打碼後 base64 常達數 MB，超過後端 2MB 上限會 413（顯示 Load failed）→ 先縮圖。
-    const uploadImage = await downscale(maskedImage)
+    // 縮到 1280px / 0.72：base64 通常 <500KB，穩穩落在後端 900K 字元上限內，上傳也快。
+    const uploadImage = await downscale(maskedImage, 1280, 0.72)
     const payload = {
       docType: DOCTYPE_MAP[type],
       maskRegionCount: maskInfo.maskRegionCount,
@@ -106,16 +112,30 @@ export default function RegisterIdPage() {
     }
 
     try {
-      const res = await fetch(SUBMIT_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
+      // 冷啟動時第一次 fetch 可能逾時（Load failed）；網路層失敗就等一下重試一次，
+      // 這時後端多半已醒。非網路錯誤（如 413）不重試，直接往下拋。
+      let res
+      try {
+        res = await fetch(SUBMIT_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+      } catch {
+        setError('伺服器喚醒中，請稍候…')
+        await new Promise((r) => setTimeout(r, 3000))
+        res = await fetch(SUBMIT_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        })
+      }
+      setError('')
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.error || `伺服器回應 ${res.status}`)
-      // 存進「我的拾獲物」本機紀錄（kind: 'found'），讓登錄的拾獲物出現在清單。
-      // TODO: 接使用者後端後改讀 API，這段本機保存可移除。
-      addItem({
+      // 這筆拾獲物的本機紀錄（kind: 'found'）。先不 addItem——交給 AI 過場頁，
+      // 讓它補上 AI 自動標籤後再一次存進「我的拾獲物」，避免存兩次。
+      const item = {
         id: 'found_' + Date.now(),
         kind: 'found',
         code: '#' + (data.id ? String(data.id).slice(-6) : Date.now().toString().slice(-6)),
@@ -124,13 +144,15 @@ export default function RegisterIdPage() {
         place: foundAt,                // 拾獲地點
         dropLocation: sendTo,          // 送往地點
         remark: note.trim(),
-        tags: [docLabel],
+        tags: [docLabel],             // 基本標籤（證件別）；AI 會再補
         image: uploadImage,
         docType: DOCTYPE_MAP[type],
         created_at: new Date().toISOString(),
+      }
+      // 送出成功 → AI 辨識過場頁：自動補標籤後存進「我的拾獲物」。
+      navigate('/register/analyzing', {
+        state: { item, base64Image: uploadImage, desc: docLabel },
       })
-      // 登錄成功 → 直接跳「我的拾獲物」，新登錄那筆會出現在清單。
-      navigate('/my/found')
     } catch (e) {
       setStatus('error')
       setError(`送出失敗：${e.message}`)

@@ -3,6 +3,7 @@ import AppLayout from './layouts/AppLayout'
 import HomePage from './pages/HomePage'
 import ProfilePage from './pages/ProfilePage'
 import RegisterIdPage from './pages/RegisterIdPage'
+import RegisterAnalyzingPage from './pages/RegisterAnalyzingPage'
 import ThreadsSearchPage from './pages/ThreadsSearchPage'
 import ThreadsPostDetail from './pages/ThreadsPostDetail'
 import CrossSearchPage from './pages/CrossSearchPage'
@@ -45,6 +46,7 @@ export default function App() {
       <Route path="/my/found/:id" element={<MyFoundDetailPage />} />
       <Route path="/about" element={<PlaceholderPage title="關於 DiuLa!" />} />
       <Route path="/register/id" element={<RegisterIdPage />} />
+      <Route path="/register/analyzing" element={<RegisterAnalyzingPage />} />
       <Route path="/register/other" element={<PlaceholderPage title="非證件類遺失物登錄" />} />
     </Routes>
   )
