@@ -96,7 +96,7 @@ export default function TagPickerModal({ open, value, onClose, onConfirm, taxono
                       type="button"
                       onClick={() => toggle(tag)}
                       className={`shrink-0 whitespace-nowrap rounded-full border border-black bg-blue px-4 py-1.5 text-xs text-brown transition
-                        ${on ? 'font-medium ring-2 ring-inset ring-navy' : 'font-normal'}`}
+                        ${on ? 'font-medium ring-1 ring-inset ring-navy' : 'font-normal'}`}
                     >
                       {tag}
                     </button>
