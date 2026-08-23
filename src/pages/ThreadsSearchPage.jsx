@@ -5,6 +5,7 @@ import {
   ChevronDownIcon,
   CalendarIcon,
   MagnifyingGlassIcon,
+  DiulaPinIcon,
 } from '../components/icons'
 
 import { spring } from '../lib/api'
@@ -33,9 +34,7 @@ function Thumb({ url }) {
           onError={() => setBroken(true)}
         />
       ) : (
-        <svg viewBox="0 0 24 24" className="h-9 w-9 text-brown/40" fill="currentColor" aria-hidden="true">
-          <path d="M12 2C8.1 2 5 5.1 5 9c0 5 7 13 7 13s7-8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z" />
-        </svg>
+        <DiulaPinIcon className="h-[52px] w-[52px]" />
       )}
     </div>
   )

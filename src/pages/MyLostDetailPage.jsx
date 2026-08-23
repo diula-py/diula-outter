@@ -110,7 +110,7 @@ export default function MyLostDetailPage() {
           {item.img ? (
             <img src={item.img} alt="" className="h-full w-full object-cover" />
           ) : (
-            <DiulaPinIcon className="h-20 w-20 opacity-40" />
+            <DiulaPinIcon className="h-20 w-20" />
           )}
         </div>
 

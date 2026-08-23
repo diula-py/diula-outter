@@ -87,7 +87,8 @@ export default function ResultsPage() {
         {list.map((r) => {
           const it = r.item || {}
           const lines = [
-            it.description,
+            // 品名（粗體首行）：北捷 description 為 null、品名在 free_tags[0]，退回它才顯示得出來
+            it.description || (it.free_tags && it.free_tags[0]),
             [it.city, it.district].filter(Boolean).join(''),
             it.holding_place || it.station,
             fmtDate(it.found_date),

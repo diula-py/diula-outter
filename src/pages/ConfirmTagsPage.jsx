@@ -6,6 +6,7 @@ import {
   LocationIcon,
   CircleCheckIcon,
   PlusIcon,
+  DiulaPinIcon,
 } from '../components/icons'
 import RegionRow from '../components/RegionRow'
 import TagPickerModal from '../components/TagPickerModal'
@@ -92,9 +93,7 @@ export default function ConfirmTagsPage() {
           {data.photoUrl ? (
             <img src={data.photoUrl} alt="" className="h-full w-full object-cover" />
           ) : (
-            <svg viewBox="0 0 24 24" className="h-14 w-14 text-brown/30" fill="currentColor" aria-hidden="true">
-              <path d="M12 2C8.1 2 5 5.1 5 9c0 5 7 13 7 13s7-8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z" />
-            </svg>
+            <DiulaPinIcon className="h-20 w-20" />
           )}
         </div>
 

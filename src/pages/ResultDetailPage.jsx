@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ChevronLeftIcon, CalendarIcon, LocationIcon } from '../components/icons'
+import { ChevronLeftIcon, CalendarIcon, LocationIcon, DiulaPinIcon } from '../components/icons'
 
 // 各來源官方遺失物查詢系統（點卡片詳情底部的按鈕連過去）。
 const SOURCE_LINK = {
@@ -11,11 +11,7 @@ const SOURCE_LINK = {
 const fmtDate = (s) => (s ? String(s).slice(0, 10).replaceAll('-', '/') : '')
 
 function Placeholder() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-14 w-14 text-brown/30" fill="currentColor" aria-hidden="true">
-      <path d="M12 2C8.1 2 5 5.1 5 9c0 5 7 13 7 13s7-8 7-13c0-3.9-3.1-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z" />
-    </svg>
-  )
+  return <DiulaPinIcon className="h-20 w-20" />
 }
 
 export default function ResultDetailPage() {
