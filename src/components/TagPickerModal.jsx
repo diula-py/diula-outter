@@ -59,8 +59,9 @@ export default function TagPickerModal({ open, value, onClose, onConfirm, taxono
           <button
             type="button"
             onClick={() => { onConfirm(selected); onClose() }}
+            disabled={selected.length === 0}
             aria-label="確認"
-            className="p-1 text-navy"
+            className="p-1 text-brown transition disabled:opacity-40"
           >
             <CheckIcon className="h-[26px] w-[26px]" />
           </button>
@@ -82,12 +83,12 @@ export default function TagPickerModal({ open, value, onClose, onConfirm, taxono
           </div>
         </div>
 
-        {/* 分類標籤（每一類左右滑動，不換行） */}
+        {/* 分類標籤（每一類換行顯示；未選=白底、已選=藍底） */}
         <div className="min-h-0 flex-1 overflow-y-auto border-t border-black/10 px-4 py-3">
           {taxonomy.map((cat) => (
             <div key={cat.category} className="mb-4">
               <p className="mb-2 text-base font-medium text-brown">{cat.category}</p>
-              <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex flex-wrap gap-2">
                 {cat.tags.map((tag) => {
                   const on = selected.includes(tag)
                   return (
@@ -95,8 +96,8 @@ export default function TagPickerModal({ open, value, onClose, onConfirm, taxono
                       key={tag}
                       type="button"
                       onClick={() => toggle(tag)}
-                      className={`shrink-0 whitespace-nowrap rounded-full border border-black bg-blue px-4 py-1.5 text-xs text-brown transition
-                        ${on ? 'font-medium ring-1 ring-inset ring-navy' : 'font-normal'}`}
+                      className={`whitespace-nowrap rounded-full border border-black px-4 py-1.5 text-xs text-brown transition
+                        ${on ? 'bg-blue' : 'bg-white'}`}
                     >
                       {tag}
                     </button>
