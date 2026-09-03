@@ -229,7 +229,7 @@ export default function RegisterIdPage() {
               </span>
             </>
           ) : (
-            <img src={asset('/icons/camera.png')} alt="上傳照片" className="h-10 w-auto object-contain" />
+            <img src={asset('/icons/camera.png')} alt="上傳照片" className="h-8 w-auto object-contain" />
           )}
         </button>
 

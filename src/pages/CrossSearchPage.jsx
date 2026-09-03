@@ -125,7 +125,7 @@ export default function CrossSearchPage() {
               {photoUrl ? (
                 <img src={photoUrl} alt="預覽" className="h-full w-full object-contain" />
               ) : (
-                <img src={asset('/icons/camera.png')} alt="上傳照片" className="h-10 w-auto object-contain" />
+                <img src={asset('/icons/camera.png')} alt="上傳照片" className="h-8 w-auto object-contain" />
               )}
             </button>
           </>
