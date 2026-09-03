@@ -39,10 +39,20 @@ export default function ResultsPage() {
   const location = useLocation()
   const results = location.state?.results || []
 
-  // 預設選第一個「有結果」的來源
+  // 預設選第一個「有結果」的來源；若之前選過（存在 history state）則沿用，
+  // 這樣點進詳情再返回時不會跳回預設分頁。
   const firstWith = SOURCES.find((s) => results.some((r) => r.item?.source === s.key))
-  const [source, setSource] = useState(firstWith?.key || 'npa')
+  const [source, setSource] = useState(location.state?.source || firstWith?.key || 'npa')
   const [sosOpen, setSosOpen] = useState(false)
+
+  // 切換分頁：記進當前 history entry 的 state（保留 results），返回時還原。
+  function selectSource(key) {
+    setSource(key)
+    navigate(location.pathname + location.search, {
+      replace: true,
+      state: { ...location.state, source: key },
+    })
+  }
 
   const list = useMemo(
     () => results.filter((r) => r.item?.source === source),
@@ -65,7 +75,7 @@ export default function ResultsPage() {
               <button
                 key={s.key}
                 type="button"
-                onClick={() => setSource(s.key)}
+                onClick={() => selectSource(s.key)}
                 className={`h-[45px] w-20 rounded-[50px] text-base text-brown transition
                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
                   ${active ? 'border-[1.5px] border-black bg-card font-medium' : 'border border-black bg-input font-normal'}`}

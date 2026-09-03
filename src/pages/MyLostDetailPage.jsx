@@ -3,20 +3,13 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, CalendarIcon, LocationIcon, CircleCheckIcon, DiulaPinIcon } from '../components/icons'
 import { updateItem } from '../lib/myItems'
 import { flask } from '../lib/api'
+import { asset } from '../lib/asset'
 
 function XIcon(props) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="#1e1e1e" strokeWidth="3" strokeLinecap="round" {...props}>
       <line x1="5" y1="5" x2="19" y2="19" />
       <line x1="19" y1="5" x2="5" y2="19" />
-    </svg>
-  )
-}
-
-function ThreadsIcon(props) {
-  return (
-    <svg viewBox="0 0 192 192" fill="currentColor" aria-hidden="true" {...props}>
-      <path d="M141.5 88.2c-.7-.3-1.4-.6-2.1-.9-1.2-22.8-13.7-35.9-34.6-36-.1 0-.2 0-.3 0-12.5 0-22.9 5.3-29.3 15l11.5 7.9c4.8-7.3 12.4-8.9 17.8-8.9h.2c6.7 0 11.8 2 15 5.8 2.3 2.8 3.9 6.6 4.6 11.5-5.6-.9-11.7-1.2-18.1-.8-18.2 1-29.9 11.7-29.1 26.5.4 7.5 4.2 14 10.6 18.2 5.4 3.6 12.4 5.3 19.7 4.9 9.6-.5 17.2-4.2 22.4-10.9 4-5.1 6.5-11.7 7.6-20 4.6 2.8 8 6.4 9.9 10.8 3.2 7.4 3.4 19.5-6.5 29.4-8.7 8.7-19.1 12.4-34.8 12.6-17.5-.1-30.7-5.7-39.3-16.6-8.1-10.2-12.2-25-12.4-44 .2-19 4.3-33.8 12.4-44 8.6-10.9 21.8-16.5 39.3-16.6 17.6.1 31.1 5.8 40 16.7 4.4 5.4 7.7 12.1 9.9 19.9l13.5-3.6c-2.7-9.6-6.9-17.9-12.6-24.8-11.4-14-28.1-21.2-49.6-21.4h-.1c-21.5.2-38 7.4-49.1 21.5C29.8 61 25.2 78.4 25 99.9v.2c.2 21.5 4.8 38.9 15.9 53.1 11.1 14.1 27.6 21.3 49.1 21.5h.1c19.1-.1 32.6-5.1 43.7-16.2 14.5-14.5 14.1-32.7 9.3-43.9-3.4-8-9.9-14.5-18.8-18.9zm-36.2 47.6c-8.1.5-16.5-3.2-16.9-11-.3-5.8 4.1-12.2 17.4-13 1.5-.1 3-.1 4.4-.1 4.8 0 9.3.5 13.4 1.4-1.5 19.1-10.5 22.2-18.3 22.7z" />
     </svg>
   )
 }
@@ -147,7 +140,7 @@ export default function MyLostDetailPage() {
         {/* Threads 協尋文連結（僅 Threads 自動發文的項目有；非 Threads 不顯示） */}
         {threadUrl && (
           <div className="flex items-center gap-2.5 rounded-[10px] bg-card p-2.5">
-            <ThreadsIcon className="h-10 w-10 shrink-0 text-brown" />
+            <img src={asset('/icons/threads.png')} alt="Threads" className="h-9 w-9 shrink-0 object-contain" />
             <a
               href={threadUrl}
               target="_blank"

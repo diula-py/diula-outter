@@ -7,7 +7,6 @@ import {
   LocationIcon,
   PersonChalkboardIcon,
   CircleCheckIcon,
-  CameraIcon,
 } from '../components/icons'
 import MaskingModal from '../components/MaskingModal'
 import RegionRow from '../components/RegionRow'
@@ -15,6 +14,7 @@ import TagPickerModal from '../components/TagPickerModal'
 import { spring } from '../lib/api'
 import { todayStr } from '../lib/date'
 import { downscale } from '../lib/image'
+import { asset } from '../lib/asset'
 
 // 分頁中文 → 後端 docType 列舉
 const DOCTYPE_MAP = {
@@ -229,7 +229,7 @@ export default function RegisterIdPage() {
               </span>
             </>
           ) : (
-            <CameraIcon className="h-11 w-11 text-[#1e1e1e]" />
+            <img src={asset('/icons/camera.png')} alt="上傳照片" className="h-10 w-auto object-contain" />
           )}
         </button>
 

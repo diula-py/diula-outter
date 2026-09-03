@@ -6,11 +6,11 @@ import {
   CalendarIcon,
   LocationIcon,
   CircleCheckIcon,
-  CameraIcon,
 } from '../components/icons'
 import RegionRow from '../components/RegionRow'
 import { todayStr } from '../lib/date'
 import { downscale } from '../lib/image'
+import { asset } from '../lib/asset'
 
 function Field({ left, chevron, children }) {
   return (
@@ -125,7 +125,7 @@ export default function CrossSearchPage() {
               {photoUrl ? (
                 <img src={photoUrl} alt="預覽" className="h-full w-full object-contain" />
               ) : (
-                <CameraIcon className="h-11 w-11 text-[#1e1e1e]" />
+                <img src={asset('/icons/camera.png')} alt="上傳照片" className="h-10 w-auto object-contain" />
               )}
             </button>
           </>
