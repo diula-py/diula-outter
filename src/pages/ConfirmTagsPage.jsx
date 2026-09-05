@@ -67,7 +67,9 @@ export default function ConfirmTagsPage() {
         body: JSON.stringify({
           lost_date: date,       // YYYY-MM-DD
           tags,                  // 後端用標籤正規化出分類與顏色
-          detail: place,         // 詳細地點
+          city: placeCity || null,          // 縣市：後端的硬條件閘門要用（沒送＝不篩＝跨縣市）
+          district: placeDistrict || null,  // 行政區：後端用於計分細分
+          detail: place,         // 詳細地點（會接在協尋文後、也用於地點加分）
         }),
       })
       const json = await res.json().catch(() => ({}))
