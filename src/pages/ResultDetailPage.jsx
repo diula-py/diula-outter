@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, CalendarIcon, LocationIcon, DiulaPinIcon } from '../components/icons'
+import { itemTitle } from '../lib/text'
 
 // 各來源官方遺失物查詢系統（點卡片詳情底部的按鈕連過去）。
 const SOURCE_LINK = {
@@ -18,7 +19,7 @@ export default function ResultDetailPage() {
   const navigate = useNavigate()
   const item = useLocation().state?.item || {}
 
-  const title = item.description || item.free_tags?.[0] || '遺失物'
+  const title = itemTitle(item) || '遺失物'
   const place = [item.city, item.district].filter(Boolean).join('') || item.holding_place || item.station || ''
   const isDiula = item.source === 'diula'
   const link = SOURCE_LINK[item.source]
