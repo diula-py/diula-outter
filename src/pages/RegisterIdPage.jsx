@@ -18,7 +18,7 @@ import { asset } from '../lib/asset'
 
 // 分頁中文 → 後端 docType 列舉
 const DOCTYPE_MAP = {
-  身份證: 'national_id',
+  身分證: 'national_id',
   健保卡: 'health_card',
   學生證: 'student_id',
   其他: 'other',
@@ -54,7 +54,7 @@ export default function RegisterIdPage() {
   const navigate = useNavigate()
   const fileRef = useRef(null)
 
-  const [type, setType] = useState('身份證')
+  const [type, setType] = useState('身分證')
   const [otherType, setOtherType] = useState('')         // 「其他」分頁選的細證件類型（單選）
   const [pickerOpen, setPickerOpen] = useState(false)    // 其他證件類型選擇彈窗
   const [pendingFile, setPendingFile] = useState(null)   // 待打碼的原始照片（只留在本機）
@@ -139,7 +139,7 @@ export default function RegisterIdPage() {
         id: 'found_' + Date.now(),
         kind: 'found',
         code: '#' + (data.id ? String(data.id).slice(-6) : Date.now().toString().slice(-6)),
-        name: docLabel,                // 證件別（身份證／健保卡／護照…）
+        name: docLabel,                // 證件別（身分證／健保卡／護照…）
         date,                          // 拾獲日 YYYY-MM-DD
         place: foundAt,                // 拾獲地點
         dropLocation: sendTo,          // 送往地點
