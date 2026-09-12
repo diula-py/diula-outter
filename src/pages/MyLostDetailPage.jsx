@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, CalendarIcon, LocationIcon, CircleCheckIcon, DiulaPinIcon } from '../components/icons'
-import { updateItem } from '../lib/myItems'
+import { updateMyItem } from '../lib/items'
 import { flask } from '../lib/api'
 import { asset } from '../lib/asset'
 
@@ -48,7 +48,7 @@ export default function MyLostDetailPage() {
         })
       }
     } catch { /* 網路錯誤也照樣把本機連結清掉，避免卡在已刪的貼文 */ }
-    if (passed?.id) updateItem(passed.id, { thread_post_url: '', thread_post_id: '' })
+    if (passed?.id) updateMyItem(passed.kind || 'lost', passed.id, { thread_post_url: '', thread_post_id: '' })
     setThreadUrl('')
     setDeletingThread(false)
   }
@@ -70,7 +70,7 @@ export default function MyLostDetailPage() {
         })
       }
     } catch { /* 網路錯誤也照樣標記已找到 */ }
-    if (passed?.id) updateItem(passed.id, { status: '已找到' })
+    if (passed?.id) updateMyItem(passed.kind || 'lost', passed.id, { status: '已找到' })
     setStatus('已找到')
     setBusy(false)
     setDialog(null)

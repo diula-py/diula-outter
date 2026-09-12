@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { WandIcon } from '../components/icons'
-import { addItem } from '../lib/myItems'
+import { addMyItem } from '../lib/items'
+import { useAuth } from '../context/AuthContext'
 import { aiApi } from '../lib/api'
 
 const AI_API = aiApi('/analyze-item') // dev 走 /ext-ai proxy；prod 直連 Render AI
@@ -12,6 +13,7 @@ const AI_API = aiApi('/analyze-item') // dev 走 /ext-ai proxy；prod 直連 Ren
 export default function RegisterAnalyzingPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { userId } = useAuth()
   const data = location.state || {}
   const item = data.item
   const [pct, setPct] = useState(6)
@@ -24,12 +26,16 @@ export default function RegisterAnalyzingPage() {
     const grow = setInterval(() => setPct((p) => (p < 90 ? p + (90 - p) * 0.05 : p)), 250)
 
     // 有 AI 結果就合併標籤，沒有就用原本的基本標籤；最後一律存檔 + 進清單。
-    const finish = (extraTags) => {
+    const finish = async (extraTags) => {
       if (!alive) return
       clearInterval(grow)
       setPct(100)
       const tags = [...new Set([...(item.tags || []), ...extraTags])]
-      addItem({ ...item, tags })
+      try {
+        await addMyItem('found', userId, { ...item, tags })
+      } catch (e) {
+        console.error('存進「我的拾獲物」失敗:', e)
+      }
       setTimeout(() => navigate('/my/found', { replace: true }), 350)
     }
 
@@ -47,10 +53,10 @@ export default function RegisterAnalyzingPage() {
           if (it.sub_tag) tags.push(it.sub_tag)
           for (const c of it.colors || []) tags.push(c)
         }
-        finish(tags)
+        await finish(tags)
       } catch {
         // AI 掛了或沒認出東西 → 不擋登錄，用基本標籤存檔就好。
-        finish([])
+        await finish([])
       }
     })()
 

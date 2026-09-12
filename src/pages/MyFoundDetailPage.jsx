@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, CalendarIcon, LocationIcon, CircleCheckIcon, DiulaPinIcon } from '../components/icons'
-import { updateItem } from '../lib/myItems'
+import { updateMyItem } from '../lib/items'
 
 function XIcon(props) {
   return (
@@ -146,7 +146,7 @@ export default function MyFoundDetailPage() {
               <button
                 type="button"
                 onClick={() => {
-                  if (passed?.id) updateItem(passed.id, { status: '已找到' })
+                  if (passed?.id) updateMyItem('found', passed.id, { status: '已找到' })
                   setDone(true)
                   setDialog(null)
                 }}

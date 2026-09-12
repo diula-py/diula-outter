@@ -5,6 +5,7 @@ import './fonts.css'
 import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
+import './lib/debugItems.js'
 
 // GitHub Pages 沒有伺服器路由，重整/直連深層網址會 404 → 用 HashRouter（網址帶 #）。
 createRoot(document.getElementById('root')).render(
