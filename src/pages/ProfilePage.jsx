@@ -2,9 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CubesIcon, FolderIcon, UserRegularIcon } from '../components/icons'
 import { asset } from '../lib/asset'
-
-// TODO: 接登入／使用者 API 後換成真實資料。目前為設計稿範例值。
-const USER = { name: '張寧寧', code: 'G26043F2W' }
+import { useAuth } from '../context/AuthContext'
 
 function CloseIcon(props) {
   return (
@@ -33,7 +31,17 @@ function MenuButton({ icon, label, onClick }) {
 
 export default function ProfilePage() {
   const navigate = useNavigate()
+  const { user, logout } = useAuth()
   const [confirmLogout, setConfirmLogout] = useState(false)
+
+  const displayName = user?.displayName || '訪客'
+  const displayCode = user?.userId || '—'
+
+  async function handleConfirmLogout() {
+    await logout()
+    setConfirmLogout(false)
+    navigate('/login', { replace: true })
+  }
 
   return (
     <div>
@@ -45,12 +53,16 @@ export default function ProfilePage() {
       <div className="flex flex-col gap-5 px-[18px] pt-4">
         {/* 使用者卡 */}
         <div className="flex flex-col items-center gap-4 rounded-[20px] bg-card/50 px-6 py-8">
-          <div className="flex h-[70px] w-[70px] items-center justify-center rounded-full border border-black bg-white">
-            <UserRegularIcon className="h-10 w-10 text-navy" />
+          <div className="flex h-[70px] w-[70px] items-center justify-center overflow-hidden rounded-full border border-black bg-white">
+            {user?.photoURL ? (
+              <img src={user.photoURL} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <UserRegularIcon className="h-10 w-10 text-navy" />
+            )}
           </div>
           <div className="flex flex-col items-center gap-1.5">
-            <span className="text-base font-medium text-brown">{USER.name}</span>
-            <span className="text-xs font-medium text-brown">用戶編號：{USER.code}</span>
+            <span className="text-base font-medium text-brown">{displayName}</span>
+            <span className="text-xs font-medium text-brown">用戶編號：{displayCode}</span>
           </div>
         </div>
 
@@ -115,7 +127,7 @@ export default function ProfilePage() {
             <div className="mt-7 flex items-center justify-center gap-5">
               <button
                 type="button"
-                onClick={() => navigate('/')}
+                onClick={handleConfirmLogout}
                 className="h-[60px] w-[90px] rounded-[50px] border border-black bg-white text-xl font-medium text-brown
                            transition hover:bg-[#f4f4f4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
               >
