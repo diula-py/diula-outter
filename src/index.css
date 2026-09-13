@@ -16,9 +16,9 @@
   --color-navy:  #1e3050;   /* 表單 icon（日曆・地點・下拉箭頭） */
   --color-hint:  #b5a692;   /* placeholder / 未選取文字（同 wireframe） */
 
-  /* 源泉圓體 GenSenRounded TW（自架 woff2，見下方 @font-face）；
+  /* 源泉圓體 GenSenRounded2 TW（自架 woff2，見下方 @font-face）；
      後面保留系統圓體 fallback，字型下載前先顯示相近字。 */
-  --font-round: "GenSenRounded TW", "Comfortaa", "Yuanti SC",
+  --font-round: "GenSenRounded2 TW", "Comfortaa", "Yuanti SC",
                 "Hiragino Maru Gothic ProN", "LiHei Pro", "Noto Sans TC",
                 system-ui, sans-serif;
 }
