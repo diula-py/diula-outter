@@ -4,6 +4,7 @@ import { ChevronLeftIcon, CircleCheckIcon } from '../components/icons'
 import { addMyItem } from '../lib/items'
 import { useAuth } from '../context/AuthContext'
 import { flask } from '../lib/api'
+import { LOST_STATUS } from '../data/itemStatus'
 
 export default function SubscribePage() {
   const navigate = useNavigate()
@@ -53,7 +54,7 @@ export default function SubscribePage() {
         place: q.place,
         tags: q.tags || [],
         image: null,
-        status: '自動尋找中',
+        status: LOST_STATUS.BROADCASTING,
         sub_id: json.id,
       })
       setStatus('success')
