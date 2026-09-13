@@ -4,6 +4,7 @@ import { ChevronLeftIcon, CalendarIcon, LocationIcon, CircleCheckIcon, DiulaPinI
 import { updateItem } from '../lib/myItems'
 import { flask } from '../lib/api'
 import { asset } from '../lib/asset'
+import { LOST_STATUS } from '../data/itemStatus'
 
 function XIcon(props) {
   return (
@@ -29,13 +30,13 @@ export default function MyLostDetailPage() {
     img: passed?.image || passed?.img || null,
   }
 
-  const [status, setStatus] = useState(passed?.status || '自動推播中')
+  const [status, setStatus] = useState(passed?.status || LOST_STATUS.BROADCASTING)
   const [dialog, setDialog] = useState(null) // null | 'confirm' | 'success'
   const [busy, setBusy] = useState(false)
   // Threads 自動發文的貼文連結；非 Threads 的協尋物沒有這欄 → 不顯示連結列。
   const [threadUrl, setThreadUrl] = useState(passed?.thread_post_url || '')
   const [deletingThread, setDeletingThread] = useState(false)
-  const found = status === '已找到'
+  const found = status === LOST_STATUS.FOUND
 
   // 刪除 Threads 協尋文：呼官方 API 刪文 → 清掉本機貼文欄位 → 連結列消失。
   async function deleteThreadPost() {
@@ -70,8 +71,8 @@ export default function MyLostDetailPage() {
         })
       }
     } catch { /* 網路錯誤也照樣標記已找到 */ }
-    if (passed?.id) updateItem(passed.id, { status: '已找到' })
-    setStatus('已找到')
+    if (passed?.id) updateItem(passed.id, { status: LOST_STATUS.FOUND })
+    setStatus(LOST_STATUS.FOUND)
     setBusy(false)
     setDialog(null)
   }

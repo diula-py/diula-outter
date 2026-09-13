@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, CircleCheckIcon } from '../components/icons'
 import { addItem } from '../lib/myItems'
 import { flask } from '../lib/api'
+import { LOST_STATUS } from '../data/itemStatus'
 
 export default function SubscribePage() {
   const navigate = useNavigate()
@@ -52,7 +53,7 @@ export default function SubscribePage() {
         place: q.place,
         tags: q.tags || [],
         image: null,
-        status: '自動尋找中',
+        status: LOST_STATUS.BROADCASTING,
         sub_id: json.id,
         created_at: new Date().toISOString(),
       })

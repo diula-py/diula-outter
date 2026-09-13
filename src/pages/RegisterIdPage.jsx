@@ -15,6 +15,7 @@ import { spring } from '../lib/api'
 import { todayStr } from '../lib/date'
 import { downscale } from '../lib/image'
 import { asset } from '../lib/asset'
+import { FOUND_STATUS } from '../data/itemStatus'
 
 // 分頁中文 → 後端 docType 列舉
 const DOCTYPE_MAP = {
@@ -147,6 +148,7 @@ export default function RegisterIdPage() {
         tags: [docLabel],             // 基本標籤（證件別）；AI 會再補
         image: uploadImage,
         docType: DOCTYPE_MAP[type],
+        status: FOUND_STATUS.KEEPING,
         created_at: new Date().toISOString(),
       }
       // 送出成功 → AI 辨識過場頁：自動補標籤後存進「我的拾獲物」。

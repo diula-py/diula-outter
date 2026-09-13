@@ -4,6 +4,7 @@ import { ChevronLeftIcon, CircleCheckIcon } from '../components/icons'
 import PhotoMaskModal from '../components/PhotoMaskModal'
 import { addItem } from '../lib/myItems'
 import { flask } from '../lib/api'
+import { LOST_STATUS } from '../data/itemStatus'
 
 // Threads 抓外部圖有下載逾時上限，原始手機照太大會 2207003（下載逾時）→ 先縮圖再送。
 function downscale(dataUrl, maxSide = 1280, quality = 0.82) {
@@ -104,7 +105,7 @@ export default function SosPostPage() {
         remark: note.trim(),
         tags: q.tags || [],
         image,
-        status: '自動推播中',
+        status: LOST_STATUS.POSTED,
         thread_post_id: json.post_id,
         thread_post_url: json.permalink,
         created_at: new Date().toISOString(),
