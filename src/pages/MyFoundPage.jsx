@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ChevronLeftIcon,
@@ -7,7 +7,8 @@ import {
   MagnifyingGlassIcon,
   DiulaPinIcon,
 } from '../components/icons'
-import { loadItems } from '../lib/myItems'
+import { listMyItems } from '../lib/items'
+import { useAuth } from '../context/AuthContext'
 
 /** 無照片時的 DiuLa「!」pin 佔位（淺藍底）。 */
 function ItemThumb({ img }) {
@@ -26,7 +27,17 @@ export default function MyFoundPage() {
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
   const [dateFilter, setDateFilter] = useState('')
-  const [items] = useState(() => loadItems().filter((it) => it.kind === 'found')) // 進頁時讀本機拾獲紀錄
+  const { userId } = useAuth()
+  const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let alive = true
+    listMyItems('found', userId).then((list) => {
+      if (alive) { setItems(list); setLoading(false) }
+    })
+    return () => { alive = false }
+  }, [userId])
 
   const filtered = useMemo(() => {
     const q = query.trim()
@@ -81,12 +92,13 @@ export default function MyFoundPage() {
         </div>
 
         {/* 清單 */}
-        {items.length === 0 && (
+        {loading && <p className="py-10 text-center text-sm text-brown/60">載入中…</p>}
+        {!loading && items.length === 0 && (
           <p className="py-10 text-center text-sm text-brown/60">
             還沒有拾獲物紀錄。<br />去「登錄拾獲物」登錄你撿到的東西吧！
           </p>
         )}
-        {items.length > 0 && filtered.length === 0 && (
+        {!loading && items.length > 0 && filtered.length === 0 && (
           <p className="py-10 text-center text-sm text-brown/60">沒有符合的項目</p>
         )}
 

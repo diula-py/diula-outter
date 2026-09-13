@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, CircleCheckIcon } from '../components/icons'
 import PhotoMaskModal from '../components/PhotoMaskModal'
-import { addItem } from '../lib/myItems'
+import { addMyItem } from '../lib/items'
+import { useAuth } from '../context/AuthContext'
 import { flask } from '../lib/api'
 
 // Threads 抓外部圖有下載逾時上限，原始手機照太大會 2207003（下載逾時）→ 先縮圖再送。
@@ -50,6 +51,7 @@ function XIcon(props) {
 
 export default function SosPostPage() {
   const navigate = useNavigate()
+  const { userId } = useAuth()
   const state = useLocation().state || {}
   const q = state.query || {}
   const rawImage = state.base64Image || null // 預覽直接用原圖；送出時才縮圖
@@ -94,8 +96,7 @@ export default function SosPostPage() {
       const json = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`)
       // 存進「我的遺失物」本機紀錄，讓發出去的協尋出現在清單。
-      addItem({
-        id: 'sos_' + Date.now(),
+      await addMyItem('lost', userId, {
         kind: 'threads',
         code: '#' + (json.post_id ? String(json.post_id).slice(-6) : Date.now().toString().slice(-6)),
         name: name.trim(),
@@ -107,7 +108,6 @@ export default function SosPostPage() {
         status: '自動推播中',
         thread_post_id: json.post_id,
         thread_post_url: json.permalink,
-        created_at: new Date().toISOString(),
       })
       setResult(json)
       setStatus('success')
