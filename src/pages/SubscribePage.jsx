@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, CircleCheckIcon } from '../components/icons'
-import { addItem } from '../lib/myItems'
+import { addMyItem } from '../lib/items'
+import { useAuth } from '../context/AuthContext'
 import { flask } from '../lib/api'
 import { LOST_STATUS } from '../data/itemStatus'
 
 export default function SubscribePage() {
   const navigate = useNavigate()
+  const { userId } = useAuth()
   const state = useLocation().state || {}
   const q = state.query || {}
   const resolved = state.resolved || {}
@@ -44,8 +46,7 @@ export default function SubscribePage() {
       })
       const json = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`)
-      addItem({
-        id: 'sub_' + Date.now(),
+      await addMyItem('lost', userId, {
         kind: 'subscription',
         code: '#' + (json.id ? String(json.id).slice(-6) : Date.now().toString().slice(-6)),
         name: resolved.category_name || (q.tags || []).join('、') || '協尋',
@@ -55,7 +56,6 @@ export default function SubscribePage() {
         image: null,
         status: LOST_STATUS.BROADCASTING,
         sub_id: json.id,
-        created_at: new Date().toISOString(),
       })
       setStatus('success')
     } catch (e) {

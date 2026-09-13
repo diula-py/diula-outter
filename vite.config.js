@@ -10,13 +10,15 @@ export default defineConfig(({ mode }) => ({
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
-      // 證件 / Threads 貼文：Spring Boot :8080
-      '/api': { target: 'http://localhost:8080', changeOrigin: true },
-      // 智慧比對 / 協尋發文 / 訂閱推播：Flask :5001
-      '/match': { target: 'http://localhost:5001', changeOrigin: true },
-      '/categories': { target: 'http://localhost:5001', changeOrigin: true },
-      '/threads': { target: 'http://localhost:5001', changeOrigin: true },
-      '/subscriptions': { target: 'http://localhost:5001', changeOrigin: true },
+      // 證件 / Threads 貼文：Spring Boot。
+      // ⚠️ 暫時改指向線上 Render（本機沒在跑 8080 時測試用）。
+      // 謝旻本機有跑 Spring Boot 的話，改回 'http://localhost:8080' 再測。
+      '/api': { target: 'https://diula-api.onrender.com', changeOrigin: true },
+      // 智慧比對 / 協尋發文 / 訂閱推播：Flask。同上，暫時改指向線上 Render。
+      '/match': { target: 'https://diula.onrender.com', changeOrigin: true },
+      '/categories': { target: 'https://diula.onrender.com', changeOrigin: true },
+      '/threads': { target: 'https://diula.onrender.com', changeOrigin: true },
+      '/subscriptions': { target: 'https://diula.onrender.com', changeOrigin: true },
       // AI 圖片辨識：外部 Render 服務（避免 CORS，伺服器端轉發）
       '/ext-ai': {
         target: 'https://diula-backend-api.onrender.com',
