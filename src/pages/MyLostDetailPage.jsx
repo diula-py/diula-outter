@@ -78,7 +78,7 @@ export default function MyLostDetailPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-base pb-10">
+    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col bg-base pb-10">
       {/* Header（cream，90px） */}
       <header className="relative flex h-[90px] items-end justify-center rounded-b-[20px] bg-card pb-4 pt-[env(safe-area-inset-top)]">
         <button
@@ -87,7 +87,7 @@ export default function MyLostDetailPage() {
           aria-label="返回"
           className="absolute bottom-4 left-[21px] p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >
-          <ChevronLeftIcon className="h-[26px] w-[26px] text-brown" />
+          <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
         </button>
         <h1 className="max-w-[220px] truncate text-xl font-bold text-brown">{item.name}</h1>
       </header>

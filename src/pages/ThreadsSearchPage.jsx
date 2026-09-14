@@ -75,7 +75,7 @@ export default function ThreadsSearchPage() {
           aria-label="返回"
           className="absolute left-[22px] top-1/2 -translate-y-1/2 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >
-          <ChevronLeftIcon className="h-6 w-6 text-brown" />
+          <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
         </button>
         <h1 className="text-xl font-bold text-brown">Threads尋找遺失物</h1>
       </header>

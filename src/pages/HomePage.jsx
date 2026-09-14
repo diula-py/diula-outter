@@ -32,12 +32,12 @@ export default function HomePage() {
 
   return (
     <div>
-      {/* 頂部 banner：淺藍、下圓角，避開 LIFF safe-area */}
-      <header className="flex h-[150px] items-end justify-center rounded-b-[20px] bg-blue pb-6 pt-[env(safe-area-inset-top)]">
+      {/* 頂部 banner：淺藍、下圓角，避開 LIFF safe-area（比照 inner：109px 高） */}
+      <header className="flex h-[109px] items-end justify-center rounded-b-[20px] bg-blue pb-[10px] pt-[env(safe-area-inset-top)]">
         <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="h-[35px] w-auto object-contain" />
       </header>
 
-      <div className="flex flex-col gap-8 px-6 pt-6">
+      <div className="flex flex-col gap-8 px-6 pt-[10px]">
         <section className="flex flex-col gap-5">
           <SectionTitle>尋找遺失物</SectionTitle>
           {FIND_ITEMS.map(renderItem)}

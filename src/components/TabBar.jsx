@@ -23,7 +23,7 @@ export default function TabBar() {
             }`
           }
         >
-          <img src={tab.icon} alt="" aria-hidden="true" className="h-[30px] w-[30px] object-contain" />
+          <img src={tab.icon} alt="" aria-hidden="true" className="h-[35px] w-[35px] object-contain" />
         </NavLink>
       ))}
     </nav>

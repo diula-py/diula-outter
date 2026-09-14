@@ -128,7 +128,7 @@ export default function ResultsPage() {
 
       {/* 都沒有我的物品 FAB（浮在右下、TabBar 之上） */}
       <div className="pointer-events-none fixed inset-x-0 bottom-[92px] z-20">
-        <div className="mx-auto flex max-w-[430px] justify-end px-5">
+        <div className="mx-auto flex max-w-[393px] justify-end px-5">
           <button
             type="button"
             onClick={() => setSosOpen(true)}

@@ -128,7 +128,7 @@ export default function SosPostPage() {
       <header className="relative flex h-[90px] items-end justify-center rounded-b-[20px] bg-card pb-4 pt-[env(safe-area-inset-top)]">
         <button type="button" onClick={() => (step === 'preview' ? setStep('form') : navigate(-1))} aria-label="返回"
           className="absolute bottom-4 left-[22px] p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown">
-          <ChevronLeftIcon className="h-[26px] w-[26px] text-brown" />
+          <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
         </button>
         <h1 className="text-xl font-bold text-brown">幫你發Threads的協尋文</h1>
       </header>

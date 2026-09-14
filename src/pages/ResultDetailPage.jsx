@@ -35,7 +35,7 @@ export default function ResultDetailPage() {
           aria-label="返回"
           className="absolute left-[22px] top-1/2 -translate-y-1/2 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >
-          <ChevronLeftIcon className="h-[26px] w-[26px] text-brown" />
+          <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
         </button>
         <h1 className="max-w-[240px] truncate text-xl font-bold text-brown">{title}</h1>
       </header>

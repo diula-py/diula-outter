@@ -83,7 +83,7 @@ export default function ConfirmTagsPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-base pb-10">
+    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col bg-base pb-10">
       {/* Header（cream，80px，僅標題） */}
       <header className="flex h-20 items-center justify-center rounded-b-[20px] bg-card pt-[env(safe-area-inset-top)]">
         <h1 className="text-xl font-bold text-brown">{data.name || '確認標籤'}</h1>
@@ -101,12 +101,12 @@ export default function ConfirmTagsPage() {
 
         {/* 日期 / 地點 / 備註 */}
         <div className="flex flex-col gap-[15px] rounded-[10px] bg-card px-4 py-5">
-          <Field left={<CalendarIcon className="h-[30px] w-[30px] text-navy" />}>
+          <Field left={<CalendarIcon className="h-[35px] w-[35px] text-navy" />}>
             <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="遺失日期"
               className={`${inputClass} [&::-webkit-calendar-picker-indicator]:hidden`} />
           </Field>
           <RegionRow
-            left={<LocationIcon className="h-[30px] w-[26px] text-navy" />}
+            left={<LocationIcon className="h-[35px] w-[35px] text-navy" />}
             prefix="遺失的"
             variant="plain"
             city={placeCity} setCity={setPlaceCity}

@@ -54,7 +54,7 @@ export default function AiAnalyzingPage() {
   }, [])
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col items-center justify-center gap-8 bg-[#cddcf0] px-10">
+    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col items-center justify-center gap-8 bg-[#cddcf0] px-10">
       <div className="flex h-[170px] w-[170px] items-center justify-center rounded-full bg-card">
         <WandIcon className="h-20 w-20 text-navy" />
       </div>

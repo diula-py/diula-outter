@@ -74,7 +74,7 @@ export default function CrossSearchPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-base pb-10">
+    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col bg-base pb-10">
       {/* Header（cream，80px） */}
       <header className="relative flex h-20 items-center justify-center rounded-b-[20px] bg-card pt-[env(safe-area-inset-top)]">
         <button
@@ -83,7 +83,7 @@ export default function CrossSearchPage() {
           aria-label="返回"
           className="absolute left-[22px] top-1/2 -translate-y-1/2 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >
-          <ChevronLeftIcon className="h-[26px] w-[26px] text-brown" />
+          <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
         </button>
         <h1 className="text-xl font-bold text-brown">跨平台尋找遺失物</h1>
       </header>
@@ -140,7 +140,7 @@ export default function CrossSearchPage() {
 
         {/* 日期 / 地點 / 備註 */}
         <div className="flex flex-col gap-[15px] rounded-[10px] bg-card px-4 py-5">
-          <Field left={<CalendarIcon className="h-[30px] w-[30px] text-navy" />} chevron>
+          <Field left={<CalendarIcon className="h-[35px] w-[35px] text-navy" />} chevron>
             <input
               type="date"
               value={date}
@@ -150,7 +150,7 @@ export default function CrossSearchPage() {
             />
           </Field>
           <RegionRow
-            left={<LocationIcon className="h-[30px] w-[26px] text-navy" />}
+            left={<LocationIcon className="h-[35px] w-[35px] text-navy" />}
             prefix="遺失的"
             city={placeCity} setCity={setPlaceCity}
             district={placeDistrict} setDistrict={setPlaceDistrict}

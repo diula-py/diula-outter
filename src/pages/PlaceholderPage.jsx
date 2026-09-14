@@ -5,7 +5,7 @@ export default function PlaceholderPage({ title }) {
   const navigate = useNavigate()
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-base px-6 pt-[calc(env(safe-area-inset-top)+16px)] pb-6">
+    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col bg-base px-6 pt-[calc(env(safe-area-inset-top)+16px)] pb-6">
       <button
         type="button"
         onClick={() => navigate(-1)}
