@@ -94,7 +94,7 @@ export default function RegisterOtherPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-base pb-10">
+    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col bg-base pb-10">
       {/* Header */}
       <header className="relative flex h-20 items-center justify-center rounded-b-[20px] bg-card pt-[env(safe-area-inset-top)]">
         <button
@@ -103,7 +103,7 @@ export default function RegisterOtherPage() {
           aria-label="返回"
           className="absolute left-[22px] top-1/2 -translate-y-1/2 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >
-          <ChevronLeftIcon className="h-6 w-6 text-brown" />
+          <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
         </button>
         <h1 className="text-xl font-bold text-brown">非證件類遺失物登錄</h1>
       </header>
@@ -127,7 +127,7 @@ export default function RegisterOtherPage() {
 
         {/* 表單卡片 */}
         <div className="flex flex-col gap-[15px] rounded-[10px] bg-card px-4 py-5">
-          <Field left={<CalendarIcon className="h-[30px] w-[30px] text-navy" />} chevron>
+          <Field left={<CalendarIcon className="h-[35px] w-[35px] text-navy" />} chevron>
             <input
               type="date"
               value={date}
@@ -137,12 +137,12 @@ export default function RegisterOtherPage() {
             />
           </Field>
           <RegionRow
-            left={<LocationIcon className="h-[30px] w-[26px] text-navy" />}
+            left={<LocationIcon className="h-[35px] w-[35px] text-navy" />}
             prefix="拾獲的"
             city={foundCity} setCity={setFoundCity}
             district={foundDistrict} setDistrict={setFoundDistrict}
           />
-          <Field left={<PersonChalkboardIcon className="h-[26px] w-[32px] text-navy" />}>
+          <Field left={<PersonChalkboardIcon className="h-[35px] w-[35px] text-navy" />}>
             <input type="text" value={sendTo} onChange={(e) => setSendTo(e.target.value)} placeholder="送往的地點 *" className={inputClass} />
           </Field>
           <Field left={<span className="text-base text-brown">備註</span>}>

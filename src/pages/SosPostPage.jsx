@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ChevronLeftIcon, CircleCheckIcon } from '../components/icons'
+import { ChevronLeftIcon, CircleCheckIcon, XmarkIcon } from '../components/icons'
 import PhotoMaskModal from '../components/PhotoMaskModal'
 import { addMyItem } from '../lib/items'
 import { useAuth } from '../context/AuthContext'
@@ -39,15 +39,6 @@ function buildText({ name, date, place, note }) {
     '若您拾獲，請私訊 DiuLa 官方帳號🙏',
     '#協尋 #遺失物 #DiuLa',
   ].join('\n')
-}
-
-function XIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="#1e1e1e" strokeWidth="3" strokeLinecap="round" {...props}>
-      <line x1="5" y1="5" x2="19" y2="19" />
-      <line x1="19" y1="5" x2="5" y2="19" />
-    </svg>
-  )
 }
 
 export default function SosPostPage() {
@@ -125,10 +116,10 @@ export default function SosPostPage() {
 
   return (
     <div className="pb-6">
-      <header className="relative flex h-[90px] items-end justify-center rounded-b-[20px] bg-card pb-4 pt-[env(safe-area-inset-top)]">
+      <header className="relative flex h-[109px] items-end justify-center rounded-b-[20px] bg-card pb-4 pt-[env(safe-area-inset-top)]">
         <button type="button" onClick={() => (step === 'preview' ? setStep('form') : navigate(-1))} aria-label="返回"
-          className="absolute bottom-4 left-[22px] p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown">
-          <ChevronLeftIcon className="h-[26px] w-[26px] text-brown" />
+          className="absolute bottom-4 left-[26px] p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown">
+          <ChevronLeftIcon className="h-[35px] w-[35px] text-brown" />
         </button>
         <h1 className="text-xl font-bold text-brown">幫你發Threads的協尋文</h1>
       </header>
@@ -237,7 +228,7 @@ export default function SosPostPage() {
               aria-label="關閉"
               className="absolute left-4 top-4 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
             >
-              <XIcon className="h-6 w-6" />
+              <XmarkIcon className="h-[35px] w-[35px]" />
             </button>
             <p className="mb-7 text-center text-xl font-medium text-brown">Threads串文已排定發佈！</p>
             <button

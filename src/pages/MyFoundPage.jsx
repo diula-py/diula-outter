@@ -49,7 +49,7 @@ export default function MyFoundPage() {
   }, [items, query, dateFilter])
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-base pb-10">
+    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col bg-base pb-10">
       {/* Header（cream，109px，標題靠下） */}
       <header className="relative flex h-[109px] items-end justify-center rounded-b-[20px] bg-card pb-4 pt-[env(safe-area-inset-top)]">
         <button
@@ -58,7 +58,7 @@ export default function MyFoundPage() {
           aria-label="返回"
           className="absolute bottom-4 left-[26px] p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >
-          <ChevronLeftIcon className="h-[26px] w-[26px] text-brown" />
+          <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
         </button>
         <h1 className="text-xl font-bold text-brown">我的拾獲物</h1>
       </header>
@@ -67,7 +67,7 @@ export default function MyFoundPage() {
         {/* 篩選列：日期 + 搜尋 */}
         <div className="flex gap-3">
           <label className="relative flex h-[45px] w-[95px] shrink-0 items-center justify-center gap-2 rounded-[50px] border border-black bg-card">
-            <CalendarIcon className="h-[26px] w-[26px] text-brown" />
+            <CalendarIcon className="h-5 w-5 text-brown" />
             <ChevronDownIcon className="h-4 w-4 text-brown" />
             {dateFilter && <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-error" />}
             <input
@@ -80,7 +80,7 @@ export default function MyFoundPage() {
           </label>
 
           <div className="flex h-[45px] min-w-0 flex-1 items-center gap-2.5 rounded-[50px] border border-black bg-input px-4">
-            <MagnifyingGlassIcon className="h-[22px] w-[22px] shrink-0 text-brown" />
+            <MagnifyingGlassIcon className="h-4 w-4 shrink-0 text-brown" />
             <input
               type="text"
               value={query}
@@ -107,15 +107,15 @@ export default function MyFoundPage() {
             key={it.id}
             type="button"
             onClick={() => navigate(`/my/found/${it.id}`, { state: { item: it } })}
-            className="flex items-center gap-5 rounded-[10px] border border-black bg-input p-[25px] text-left
-                       transition hover:bg-[#efefef] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+            className="flex items-center gap-[15px] rounded-[10px] border border-black bg-card p-[10px] text-left
+                       transition hover:bg-[#eee8d7] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
           >
             <ItemThumb img={it.image} />
-            <div className="min-w-0 flex-1 text-sm leading-relaxed text-brown">
-              <p className="truncate">{it.code}</p>
-              <p className="truncate">{it.name}</p>
-              <p className="text-brown/80">{(it.date || '').replaceAll('-', '/')}</p>
-              {it.status && <p className="mt-0.5 font-medium text-error">{it.status}</p>}
+            <div className="min-w-0 flex-1 text-brown">
+              <p className="truncate text-xs font-bold">{it.code}</p>
+              <p className="truncate text-sm font-bold">{it.name}</p>
+              <p className="text-xs">{(it.date || '').replaceAll('-', '/')}</p>
+              {it.status && <p className="text-xs font-medium text-error">{it.status}</p>}
             </div>
             <ChevronLeftIcon className="h-5 w-5 shrink-0 -scale-x-100 text-brown" />
           </button>

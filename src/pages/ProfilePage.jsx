@@ -1,17 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CubesIcon, FolderIcon, UserRegularIcon } from '../components/icons'
+import { CubesIcon, FolderIcon, UserRegularIcon, XmarkIcon } from '../components/icons'
 import { asset } from '../lib/asset'
 import { useAuth } from '../context/AuthContext'
-
-function CloseIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="4" strokeLinecap="round" {...props}>
-      <line x1="6" y1="6" x2="18" y2="18" />
-      <line x1="18" y1="6" x2="6" y2="18" />
-    </svg>
-  )
-}
 
 function MenuButton({ icon, label, onClick }) {
   return (
@@ -47,7 +38,9 @@ export default function ProfilePage() {
     <div>
       {/* 藍色 header + logo */}
       <header className="flex h-[109px] items-end justify-center rounded-b-[20px] bg-blue pb-4 pt-[env(safe-area-inset-top)]">
-        <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="h-9 w-auto object-contain" />
+        <div className="flex h-[35px] w-[106px] items-center justify-center overflow-hidden">
+          <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="w-full" />
+        </div>
       </header>
 
       <div className="flex flex-col gap-5 px-[18px] pt-4">
@@ -119,7 +112,7 @@ export default function ProfilePage() {
               aria-label="關閉"
               className="absolute left-3 top-3 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
             >
-              <CloseIcon className="h-[26px] w-[26px]" />
+              <XmarkIcon className="h-[35px] w-[35px]" />
             </button>
 
             <p className="mt-2 text-center text-xl font-medium text-brown">是否要登出呢？</p>

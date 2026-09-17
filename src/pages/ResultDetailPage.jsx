@@ -35,7 +35,7 @@ export default function ResultDetailPage() {
           aria-label="返回"
           className="absolute left-[22px] top-1/2 -translate-y-1/2 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >
-          <ChevronLeftIcon className="h-[26px] w-[26px] text-brown" />
+          <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
         </button>
         <h1 className="max-w-[240px] truncate text-xl font-bold text-brown">{title}</h1>
       </header>
@@ -55,11 +55,11 @@ export default function ResultDetailPage() {
             {/* DiuLa! 自家資料：日期 / 地點 / 備註 + AI 標籤 */}
             <div className="flex flex-col gap-2.5 rounded-[10px] bg-card p-4">
               <div className="flex items-center gap-3">
-                <div className="flex w-[46px] shrink-0 items-center justify-center"><CalendarIcon className="h-[28px] w-[28px] text-navy" /></div>
+                <div className="flex w-[46px] shrink-0 items-center justify-center"><CalendarIcon className="h-[35px] w-[35px] text-navy" /></div>
                 <div className="flex h-10 min-w-0 flex-1 items-center rounded-[10px] bg-white px-4 text-xs text-brown">{fmtDate(item.found_date)}</div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="flex w-[46px] shrink-0 items-center justify-center"><LocationIcon className="h-[28px] w-[24px] text-navy" /></div>
+                <div className="flex w-[46px] shrink-0 items-center justify-center"><LocationIcon className="h-[35px] w-[35px] text-navy" /></div>
                 <div className="flex h-10 min-w-0 flex-1 items-center rounded-[10px] bg-white px-4 text-xs text-brown">{place || '--'}</div>
               </div>
               <div className="flex items-center gap-3">
@@ -84,7 +84,7 @@ export default function ResultDetailPage() {
             {/* 官方來源：日期 + 內文 */}
             <div className="flex flex-col gap-3 rounded-[10px] bg-card p-5">
               <div className="flex items-center gap-2.5">
-                <CalendarIcon className="h-[28px] w-[28px] text-navy" />
+                <CalendarIcon className="h-[35px] w-[35px] text-navy" />
                 <span className="text-base text-brown">{fmtDate(item.found_date)}</span>
               </div>
               <span className="text-base font-medium text-brown">內文</span>

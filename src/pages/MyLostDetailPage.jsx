@@ -1,19 +1,10 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ChevronLeftIcon, CalendarIcon, LocationIcon, CircleCheckIcon, DiulaPinIcon } from '../components/icons'
+import { ChevronLeftIcon, CalendarIcon, LocationIcon, CircleCheckIcon, DiulaPinIcon, XmarkIcon } from '../components/icons'
 import { updateMyItem } from '../lib/items'
 import { flask } from '../lib/api'
 import { asset } from '../lib/asset'
 import { LOST_STATUS } from '../data/itemStatus'
-
-function XIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="#1e1e1e" strokeWidth="3" strokeLinecap="round" {...props}>
-      <line x1="5" y1="5" x2="19" y2="19" />
-      <line x1="19" y1="5" x2="5" y2="19" />
-    </svg>
-  )
-}
 
 export default function MyLostDetailPage() {
   const navigate = useNavigate()
@@ -78,7 +69,7 @@ export default function MyLostDetailPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-base pb-10">
+    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col bg-base pb-10">
       {/* Header（cream，90px） */}
       <header className="relative flex h-[90px] items-end justify-center rounded-b-[20px] bg-card pb-4 pt-[env(safe-area-inset-top)]">
         <button
@@ -87,7 +78,7 @@ export default function MyLostDetailPage() {
           aria-label="返回"
           className="absolute bottom-4 left-[21px] p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >
-          <ChevronLeftIcon className="h-[26px] w-[26px] text-brown" />
+          <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
         </button>
         <h1 className="max-w-[220px] truncate text-xl font-bold text-brown">{item.name}</h1>
       </header>
@@ -111,8 +102,8 @@ export default function MyLostDetailPage() {
         {/* 資訊卡：日期 / 地點 / 備註（唯讀） */}
         <div className="flex flex-col gap-2.5 rounded-[10px] bg-card p-4">
           {[
-            { icon: <CalendarIcon className="h-[30px] w-[30px] text-navy" />, val: item.date },
-            { icon: <LocationIcon className="h-[30px] w-[26px] text-navy" />, val: item.place },
+            { icon: <CalendarIcon className="h-[35px] w-[35px] text-navy" />, val: item.date },
+            { icon: <LocationIcon className="h-[35px] w-[35px] text-navy" />, val: item.place },
             { icon: <span className="text-base text-brown">備註</span>, val: item.remark },
           ].map((row, i) => (
             <div key={i} className="flex items-center gap-3">
@@ -169,8 +160,8 @@ export default function MyLostDetailPage() {
           <button
             type="button"
             onClick={() => setDialog('confirm')}
-            className="mt-1 flex h-[60px] w-full items-center justify-center gap-4 rounded-[50px] border border-black bg-card
-                       text-base font-medium text-brown transition hover:bg-[#eee8d7]
+            className="mt-1 flex h-[60px] w-full items-center justify-center gap-4 rounded-[50px] border border-black bg-blue
+                       text-base font-medium text-brown transition hover:brightness-[.98]
                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
           >
             <CircleCheckIcon className="h-10 w-10 shrink-0 text-brown" />
@@ -189,7 +180,7 @@ export default function MyLostDetailPage() {
               aria-label="關閉"
               className="absolute left-4 top-4 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
             >
-              <XIcon className="h-6 w-6" />
+              <XmarkIcon className="h-[35px] w-[35px]" />
             </button>
             <p className="mb-7 text-center text-xl font-medium text-brown">是否確認已找到？</p>
             <div className="flex justify-center gap-5">

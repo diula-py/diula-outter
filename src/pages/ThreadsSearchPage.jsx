@@ -75,7 +75,7 @@ export default function ThreadsSearchPage() {
           aria-label="返回"
           className="absolute left-[22px] top-1/2 -translate-y-1/2 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >
-          <ChevronLeftIcon className="h-6 w-6 text-brown" />
+          <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
         </button>
         <h1 className="text-xl font-bold text-brown">Threads尋找遺失物</h1>
       </header>
@@ -84,7 +84,7 @@ export default function ThreadsSearchPage() {
         {/* 篩選列：日期 + 搜尋 */}
         <div className="flex gap-3">
           <label className="relative flex h-[45px] w-[95px] shrink-0 items-center justify-center gap-2 rounded-[50px] border border-black bg-card">
-            <CalendarIcon className="h-[26px] w-[26px] text-brown" />
+            <CalendarIcon className="h-5 w-5 text-brown" />
             <ChevronDownIcon className="h-4 w-4 text-brown" />
             {dateFilter && <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-error" />}
             <input
@@ -97,7 +97,7 @@ export default function ThreadsSearchPage() {
           </label>
 
           <div className="flex h-[45px] min-w-0 flex-1 items-center gap-2.5 rounded-[50px] border border-black bg-input px-4">
-            <MagnifyingGlassIcon className="h-[22px] w-[22px] shrink-0 text-brown" />
+            <MagnifyingGlassIcon className="h-4 w-4 shrink-0 text-brown" />
             <input
               type="text"
               value={query}
@@ -125,7 +125,7 @@ export default function ThreadsSearchPage() {
               key={p.id}
               to={`/search/threads/${p.id}`}
               state={{ post: p }}
-              className="flex items-center gap-5 rounded-[10px] border border-black bg-input p-[25px] no-underline
+              className="flex items-center gap-[15px] rounded-[10px] border border-black bg-input p-5 no-underline
                          transition hover:bg-[#efefef] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
             >
               <Thumb url={p.image} />

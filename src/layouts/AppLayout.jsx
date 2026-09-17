@@ -7,7 +7,7 @@ import TabBar from '../components/TabBar'
  */
 export default function AppLayout() {
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[430px] flex-col bg-base">
+    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col bg-base">
       <main className="flex-1">
         <Outlet />
       </main>

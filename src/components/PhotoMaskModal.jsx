@@ -94,7 +94,7 @@ export default function PhotoMaskModal({ src, onCancel, onConfirm }) {
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-black/70 p-4">
-      <div className="mx-auto flex max-h-full w-full max-w-[430px] flex-col overflow-hidden rounded-2xl bg-base">
+      <div className="mx-auto flex max-h-full w-full max-w-[393px] flex-col overflow-hidden rounded-2xl bg-base">
         <div className="flex items-center justify-between border-b border-black/10 px-4 py-3">
           <button type="button" onClick={onCancel} className="text-sm text-brown">取消</button>
           <span className="text-base font-bold text-brown">為圖片打碼</span>

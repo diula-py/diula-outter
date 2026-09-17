@@ -1,16 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ChevronLeftIcon, DiulaPinIcon } from '../components/icons'
+import { ChevronLeftIcon, DiulaPinIcon, XmarkIcon } from '../components/icons'
 import { itemTitle } from '../lib/text'
-
-function CloseIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="4" strokeLinecap="round" {...props}>
-      <line x1="6" y1="6" x2="18" y2="18" />
-      <line x1="18" y1="6" x2="6" y2="18" />
-    </svg>
-  )
-}
 
 const SOURCES = [
   { key: 'npa', label: '警政署' },
@@ -109,13 +100,13 @@ export default function ResultsPage() {
               key={it.external_id || r.id}
               type="button"
               onClick={() => navigate(`/search/results/${it.external_id || r.id}`, { state: { item: it } })}
-              className="flex items-center gap-5 rounded-[10px] border border-black bg-input p-[25px] text-left
+              className="flex items-center gap-[15px] rounded-[10px] border border-black bg-input p-5 text-left
                          transition hover:bg-[#efefef] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
             >
               <ResultThumb src={it.image_ref} />
-              <div className="min-w-0 flex-1 text-sm leading-relaxed text-brown">
+              <div className="min-w-0 flex-1 text-brown">
                 {lines.map((l, i) => (
-                  <p key={i} className={i === 0 ? 'truncate font-medium' : 'truncate text-xs text-brown/80'}>
+                  <p key={i} className={i === 0 ? 'truncate text-base font-bold' : 'truncate text-xs text-brown/70'}>
                     {l}
                   </p>
                 ))}
@@ -128,7 +119,7 @@ export default function ResultsPage() {
 
       {/* 都沒有我的物品 FAB（浮在右下、TabBar 之上） */}
       <div className="pointer-events-none fixed inset-x-0 bottom-[92px] z-20">
-        <div className="mx-auto flex max-w-[430px] justify-end px-5">
+        <div className="mx-auto flex max-w-[393px] justify-end px-5">
           <button
             type="button"
             onClick={() => setSosOpen(true)}
@@ -160,7 +151,7 @@ export default function ResultsPage() {
               aria-label="關閉"
               className="absolute left-3 top-3 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
             >
-              <CloseIcon className="h-[26px] w-[26px]" />
+              <XmarkIcon className="h-[35px] w-[35px]" />
             </button>
 
             <p className="text-center text-2xl font-bold text-brown">都沒有我的東西！</p>
