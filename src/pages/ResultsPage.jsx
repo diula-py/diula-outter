@@ -109,13 +109,13 @@ export default function ResultsPage() {
               key={it.external_id || r.id}
               type="button"
               onClick={() => navigate(`/search/results/${it.external_id || r.id}`, { state: { item: it } })}
-              className="flex items-center gap-5 rounded-[10px] border border-black bg-input p-[25px] text-left
+              className="flex items-center gap-[15px] rounded-[10px] border border-black bg-input p-5 text-left
                          transition hover:bg-[#efefef] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
             >
               <ResultThumb src={it.image_ref} />
-              <div className="min-w-0 flex-1 text-sm leading-relaxed text-brown">
+              <div className="min-w-0 flex-1 text-brown">
                 {lines.map((l, i) => (
-                  <p key={i} className={i === 0 ? 'truncate font-medium' : 'truncate text-xs text-brown/80'}>
+                  <p key={i} className={i === 0 ? 'truncate text-base font-bold' : 'truncate text-xs text-brown/70'}>
                     {l}
                   </p>
                 ))}

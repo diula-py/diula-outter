@@ -111,8 +111,8 @@ export default function MyLostDetailPage() {
         {/* 資訊卡：日期 / 地點 / 備註（唯讀） */}
         <div className="flex flex-col gap-2.5 rounded-[10px] bg-card p-4">
           {[
-            { icon: <CalendarIcon className="h-[30px] w-[30px] text-navy" />, val: item.date },
-            { icon: <LocationIcon className="h-[30px] w-[26px] text-navy" />, val: item.place },
+            { icon: <CalendarIcon className="h-[35px] w-[35px] text-navy" />, val: item.date },
+            { icon: <LocationIcon className="h-[35px] w-[35px] text-navy" />, val: item.place },
             { icon: <span className="text-base text-brown">備註</span>, val: item.remark },
           ].map((row, i) => (
             <div key={i} className="flex items-center gap-3">
@@ -169,8 +169,8 @@ export default function MyLostDetailPage() {
           <button
             type="button"
             onClick={() => setDialog('confirm')}
-            className="mt-1 flex h-[60px] w-full items-center justify-center gap-4 rounded-[50px] border border-black bg-card
-                       text-base font-medium text-brown transition hover:bg-[#eee8d7]
+            className="mt-1 flex h-[60px] w-full items-center justify-center gap-4 rounded-[50px] border border-black bg-blue
+                       text-base font-medium text-brown transition hover:brightness-[.98]
                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
           >
             <CircleCheckIcon className="h-10 w-10 shrink-0 text-brown" />

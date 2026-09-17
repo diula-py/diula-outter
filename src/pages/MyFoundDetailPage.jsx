@@ -33,15 +33,15 @@ export default function MyFoundDetailPage() {
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col bg-base pb-10">
-      {/* Header（cream，90px） */}
-      <header className="relative flex h-[90px] items-end justify-center rounded-b-[20px] bg-card pb-4 pt-[env(safe-area-inset-top)]">
+      {/* Header（cream，109px） */}
+      <header className="relative flex h-[109px] items-end justify-center rounded-b-[20px] bg-card pb-4 pt-[env(safe-area-inset-top)]">
         <button
           type="button"
           onClick={() => navigate(-1)}
           aria-label="返回"
-          className="absolute bottom-4 left-[21px] p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+          className="absolute bottom-4 left-[26px] p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >
-          <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
+          <ChevronLeftIcon className="h-[35px] w-[35px] text-brown" />
         </button>
         <h1 className="max-w-[220px] truncate text-xl font-bold text-brown">{item.name}</h1>
       </header>
@@ -59,11 +59,11 @@ export default function MyFoundDetailPage() {
         {/* 資訊卡：日期 / 地點 / 備註（唯讀） */}
         <div className="flex flex-col gap-2.5 rounded-[10px] bg-card p-4">
           {[
-            { icon: <CalendarIcon className="h-[30px] w-[30px] text-navy" />, val: item.date },
-            { icon: <LocationIcon className="h-[30px] w-[26px] text-navy" />, val: item.place },
+            { icon: <CalendarIcon className="h-[35px] w-[35px] text-navy" />, val: item.date },
+            { icon: <LocationIcon className="h-[35px] w-[35px] text-navy" />, val: item.place },
             // 送往地點：有值才顯示（拾獲物才有；協尋物沒有這欄）
             ...(item.dropLocation
-              ? [{ icon: <LocationIcon className="h-[30px] w-[26px] text-navy" />, val: item.dropLocation }]
+              ? [{ icon: <LocationIcon className="h-[35px] w-[35px] text-navy" />, val: item.dropLocation }]
               : []),
             { icon: <span className="text-base text-brown">備註</span>, val: item.remark },
           ].map((row, i) => (
