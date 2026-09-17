@@ -1,16 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ChevronLeftIcon, DiulaPinIcon } from '../components/icons'
+import { ChevronLeftIcon, DiulaPinIcon, XmarkIcon } from '../components/icons'
 import { itemTitle } from '../lib/text'
-
-function CloseIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="#1E1E1E" strokeWidth="4" strokeLinecap="round" {...props}>
-      <line x1="6" y1="6" x2="18" y2="18" />
-      <line x1="18" y1="6" x2="6" y2="18" />
-    </svg>
-  )
-}
 
 const SOURCES = [
   { key: 'npa', label: '警政署' },
@@ -160,7 +151,7 @@ export default function ResultsPage() {
               aria-label="關閉"
               className="absolute left-3 top-3 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
             >
-              <CloseIcon className="h-[26px] w-[26px]" />
+              <XmarkIcon className="h-[35px] w-[35px]" />
             </button>
 
             <p className="text-center text-2xl font-bold text-brown">都沒有我的東西！</p>

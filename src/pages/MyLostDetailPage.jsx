@@ -1,19 +1,10 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ChevronLeftIcon, CalendarIcon, LocationIcon, CircleCheckIcon, DiulaPinIcon } from '../components/icons'
+import { ChevronLeftIcon, CalendarIcon, LocationIcon, CircleCheckIcon, DiulaPinIcon, XmarkIcon } from '../components/icons'
 import { updateMyItem } from '../lib/items'
 import { flask } from '../lib/api'
 import { asset } from '../lib/asset'
 import { LOST_STATUS } from '../data/itemStatus'
-
-function XIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="#1e1e1e" strokeWidth="3" strokeLinecap="round" {...props}>
-      <line x1="5" y1="5" x2="19" y2="19" />
-      <line x1="19" y1="5" x2="5" y2="19" />
-    </svg>
-  )
-}
 
 export default function MyLostDetailPage() {
   const navigate = useNavigate()
@@ -189,7 +180,7 @@ export default function MyLostDetailPage() {
               aria-label="關閉"
               className="absolute left-4 top-4 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
             >
-              <XIcon className="h-6 w-6" />
+              <XmarkIcon className="h-[35px] w-[35px]" />
             </button>
             <p className="mb-7 text-center text-xl font-medium text-brown">是否確認已找到？</p>
             <div className="flex justify-center gap-5">

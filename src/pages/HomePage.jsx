@@ -34,7 +34,9 @@ export default function HomePage() {
     <div>
       {/* 頂部 banner：淺藍、下圓角，避開 LIFF safe-area（比照 inner：109px 高） */}
       <header className="flex h-[109px] items-end justify-center rounded-b-[20px] bg-blue pb-[10px] pt-[env(safe-area-inset-top)]">
-        <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="h-[35px] w-auto object-contain" />
+        <div className="flex h-[35px] w-[106px] items-center justify-center overflow-hidden">
+          <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="w-full" />
+        </div>
       </header>
 
       <div className="flex flex-col gap-8 px-6 pt-[10px]">

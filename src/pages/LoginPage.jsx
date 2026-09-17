@@ -40,7 +40,9 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-dvh flex-col items-center bg-blue px-6 pt-[calc(env(safe-area-inset-top)+120px)]">
-      <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="h-32 w-auto object-contain" />
+      <div className="flex h-[128px] w-full items-center justify-center overflow-hidden">
+        <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="w-full" />
+      </div>
 
       <p className="mt-8 text-2xl font-medium text-brown">與失物重逢的捷徑</p>
 
