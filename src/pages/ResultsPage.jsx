@@ -142,7 +142,7 @@ export default function ResultsPage() {
             role="dialog"
             aria-modal="true"
             aria-label="都沒有我的東西"
-            className="relative w-full max-w-[305px] rounded-[10px] bg-card px-6 pb-10 pt-14"
+            className="relative w-full max-w-[305px] rounded-[10px] bg-card px-6 pb-10 pt-14 shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
             onClick={(e) => e.stopPropagation()}
           >
             <button

@@ -101,7 +101,7 @@ export default function RegionPicker({ open, value, onClose, onConfirm, title = 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-5" onClick={onClose}>
       <div
-        className="w-full max-w-[360px] overflow-hidden rounded-2xl bg-base"
+        className="w-full max-w-[360px] overflow-hidden rounded-2xl bg-base shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-black/10 px-4 py-3">

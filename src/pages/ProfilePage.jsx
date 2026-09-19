@@ -103,7 +103,7 @@ export default function ProfilePage() {
             role="dialog"
             aria-modal="true"
             aria-label="是否要登出"
-            className="relative w-full max-w-[300px] rounded-[10px] bg-card px-8 py-10"
+            className="relative w-full max-w-[300px] rounded-[10px] bg-card px-8 py-10 shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
             onClick={(e) => e.stopPropagation()}
           >
             <button

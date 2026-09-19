@@ -221,7 +221,7 @@ export default function SosPostPage() {
       {/* 發布成功彈窗 */}
       {status === 'success' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 p-6">
-          <div className="relative w-[300px] rounded-[10px] bg-card px-6 pb-8 pt-14">
+          <div className="relative w-[300px] rounded-[10px] bg-card px-6 pb-8 pt-14 shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
             <button
               type="button"
               onClick={() => navigate('/my/lost')}

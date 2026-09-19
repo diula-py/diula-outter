@@ -99,7 +99,7 @@ export default function MyFoundDetailPage() {
       {/* 確認彈窗 */}
       {dialog === 'confirm' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 p-6">
-          <div className="relative w-[300px] rounded-[10px] bg-card px-6 pb-7 pt-14">
+          <div className="relative w-[300px] rounded-[10px] bg-card px-6 pb-7 pt-14 shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
             <button
               type="button"
               onClick={() => setDialog(null)}
@@ -132,7 +132,7 @@ export default function MyFoundDetailPage() {
       {/* 成功彈窗 */}
       {dialog === 'success' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 p-6">
-          <div className="w-[300px] rounded-[10px] bg-card px-6 py-8">
+          <div className="w-[300px] rounded-[10px] bg-card px-6 py-8 shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
             <p className="mb-6 text-center text-lg font-medium text-brown">已更新狀態為「已找到」</p>
             <div className="flex justify-center">
               <button
