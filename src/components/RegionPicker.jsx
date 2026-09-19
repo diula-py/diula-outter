@@ -48,7 +48,7 @@ function Wheel({ items, index, onIndexChange, ariaLabel }) {
             aria-selected={i === index}
             onClick={() => onIndexChange(i)}
             className={`flex snap-center items-center justify-center text-center transition-colors ${
-              i === index ? 'text-base font-semibold text-brown' : 'text-sm text-brown/40'
+              i === index ? 'text-base font-bold text-brown' : 'text-sm text-brown/40'
             }`}
             style={{ height: ITEM_H }}
           >
@@ -101,13 +101,13 @@ export default function RegionPicker({ open, value, onClose, onConfirm, title = 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-5" onClick={onClose}>
       <div
-        className="w-full max-w-[360px] overflow-hidden rounded-2xl bg-base shadow-[0_8px_30px_rgba(0,0,0,0.3)]"
+        className="w-full max-w-[360px] overflow-hidden rounded-2xl bg-base"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-black/10 px-4 py-3">
           <button type="button" onClick={onClose} className="text-sm text-brown/70">取消</button>
           <span className="text-base font-bold text-brown">{title}</span>
-          <button type="button" onClick={confirm} className="text-sm font-semibold text-brown">完成</button>
+          <button type="button" onClick={confirm} className="text-sm font-bold text-brown">完成</button>
         </div>
         <div className="flex gap-2 px-4 py-3">
           <Wheel items={cities} index={cityIdx} onIndexChange={pickCity} ariaLabel="選擇縣市" />

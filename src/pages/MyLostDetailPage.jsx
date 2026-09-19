@@ -118,7 +118,7 @@ export default function MyLostDetailPage() {
         {/* AI 標籤 */}
         {item.tags.length > 0 && (
           <div className="flex flex-col gap-3 rounded-[10px] bg-card p-5">
-            <span className="text-base font-semibold text-brown">AI 標籤</span>
+            <span className="text-base font-bold text-brown">AI 標籤</span>
             <div className="flex flex-wrap gap-2.5">
               {item.tags.map((tag) => (
                 <span key={tag} className="rounded-[10px] bg-white px-4 py-1.5 text-center text-xs text-brown">
@@ -173,7 +173,7 @@ export default function MyLostDetailPage() {
       {/* 確認彈窗 */}
       {dialog === 'confirm' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 p-6">
-          <div className="relative w-[300px] rounded-[10px] bg-card px-6 pb-7 pt-14 shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+          <div className="relative w-[300px] rounded-[10px] bg-card px-6 pb-7 pt-14">
             <button
               type="button"
               onClick={() => setDialog(null)}
@@ -206,7 +206,7 @@ export default function MyLostDetailPage() {
       {/* 成功彈窗 */}
       {dialog === 'success' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 p-6">
-          <div className="w-[300px] rounded-[10px] bg-card px-6 py-8 shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+          <div className="w-[300px] rounded-[10px] bg-card px-6 py-8">
             <p className="mb-6 text-center text-lg font-medium text-brown">已更新狀態為「已找到」</p>
             <div className="flex justify-center">
               <button

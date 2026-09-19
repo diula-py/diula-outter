@@ -119,7 +119,7 @@ export default function ConfirmTagsPage() {
 
         {/* AI 標籤（可增刪） */}
         <div className="flex flex-col gap-3 rounded-[10px] bg-card p-5">
-          <span className="text-base font-semibold text-brown">AI 標籤</span>
+          <span className="text-base font-bold text-brown">AI 標籤</span>
           <div className="flex flex-wrap gap-2.5">
             {tags.map((tag) => (
               <span key={tag} className="flex items-center gap-2 rounded-[50px] border border-black bg-blue px-4 py-1.5 text-xs text-brown">

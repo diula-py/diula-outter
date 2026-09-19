@@ -48,7 +48,7 @@ export default function TagPickerModal({ open, value, onClose, onConfirm, taxono
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-5" onClick={onClose}>
       <div
-        className="flex max-h-[70vh] w-[300px] flex-col overflow-hidden rounded-[10px] bg-card shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
+        className="flex max-h-[70vh] w-[300px] flex-col overflow-hidden rounded-[10px] bg-card"
         onClick={(e) => e.stopPropagation()}
       >
         {/* header: 取消 / 確認 */}

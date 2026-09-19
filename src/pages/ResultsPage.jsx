@@ -123,8 +123,8 @@ export default function ResultsPage() {
           <button
             type="button"
             onClick={() => setSosOpen(true)}
-            className="pointer-events-auto flex h-20 w-20 flex-col items-center justify-center rounded-full bg-blue
-                       text-center text-base font-medium leading-tight text-brown shadow-[0_4px_8px_rgba(0,0,0,0.25)]
+            className="pointer-events-auto flex h-20 w-20 flex-col items-center justify-center rounded-full border border-black bg-blue
+                       text-center text-base font-medium leading-tight text-brown
                        transition hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
           >
             都沒有<br />我的物品
@@ -142,7 +142,7 @@ export default function ResultsPage() {
             role="dialog"
             aria-modal="true"
             aria-label="都沒有我的東西"
-            className="relative w-full max-w-[305px] rounded-[10px] bg-card px-6 pb-10 pt-14 shadow-[0px_4px_4px_rgba(0,0,0,0.25)]"
+            className="relative w-full max-w-[305px] rounded-[10px] bg-card px-6 pb-10 pt-14"
             onClick={(e) => e.stopPropagation()}
           >
             <button
