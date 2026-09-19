@@ -109,14 +109,14 @@ export default function ThreadsSearchPage() {
         </div>
 
         {/* 清單 */}
-        {state === 'loading' && <p className="py-10 text-center text-sm text-brown/60">載入中…</p>}
+        {state === 'loading' && <p className="py-10 text-center text-sm leading-normal text-brown/60">載入中…</p>}
         {state === 'error' && (
-          <p className="py-10 text-center text-sm text-error">
+          <p className="py-10 text-center text-sm leading-normal text-error">
             載入失敗，請確認後端（:8080）有啟動。
           </p>
         )}
         {state === 'ready' && filtered.length === 0 && (
-          <p className="py-10 text-center text-sm text-brown/60">沒有符合的貼文</p>
+          <p className="py-10 text-center text-sm leading-normal text-brown/60">沒有符合的貼文</p>
         )}
 
         {state === 'ready' &&
@@ -130,7 +130,7 @@ export default function ThreadsSearchPage() {
             >
               <Thumb url={p.image} />
               <div className="min-w-0 flex-1">
-                <p className="line-clamp-3 text-base font-medium leading-relaxed text-brown">
+                <p className="line-clamp-3 text-base font-medium leading-normal text-brown">
                   {p.text || '（無內文）'}
                 </p>
                 <p className="mt-1 text-xs text-brown/70">{fmtDate(p.post_date)}</p>

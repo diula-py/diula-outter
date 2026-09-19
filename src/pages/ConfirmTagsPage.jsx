@@ -141,7 +141,7 @@ export default function ConfirmTagsPage() {
           </div>
         </div>
 
-        {error && <p className="text-sm text-error">{error}</p>}
+        {error && <p className="text-sm leading-normal text-error">{error}</p>}
 
         {/* 確認 */}
         <button

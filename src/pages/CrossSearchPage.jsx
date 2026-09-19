@@ -134,7 +134,7 @@ export default function CrossSearchPage() {
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
             placeholder="描述遺失物特徵（例如：黑色折疊傘、有貼紙…）"
-            className="h-[200px] w-full resize-none rounded-[10px] border border-black bg-input p-4 text-sm text-brown outline-none placeholder:text-brown/60"
+            className="h-[200px] w-full resize-none leading-normal rounded-[10px] border border-black bg-input p-4 text-sm text-brown outline-none placeholder:text-brown/60"
           />
         )}
 
@@ -160,7 +160,7 @@ export default function CrossSearchPage() {
           </Field>
         </div>
 
-        {error && <p className="text-sm text-error">{error}</p>}
+        {error && <p className="text-sm leading-normal text-error">{error}</p>}
 
         {/* 送出 */}
         <button

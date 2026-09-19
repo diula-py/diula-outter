@@ -127,7 +127,7 @@ export default function SosPostPage() {
       {/* 步驟一：填表單 */}
       {step === 'form' && (
         <div className="flex flex-col gap-4 px-[26px] pt-5">
-          <div className="rounded-[10px] bg-card p-4 text-xs font-medium leading-relaxed text-brown">
+          <div className="rounded-[10px] bg-card p-4 text-xs font-medium leading-normal text-brown">
             照欄位填，系統會套用統一模版由 <b>DiuLa 官方帳號</b> 發佈到 Threads 協尋，你的個人帳號不會露出。
           </div>
 
@@ -155,7 +155,7 @@ export default function SosPostPage() {
             </label>
           </div>
 
-          {error && <p className="text-sm text-error">{error}</p>}
+          {error && <p className="text-sm leading-normal text-error">{error}</p>}
 
           <button type="button" onClick={goPreview}
             className="mt-2 flex h-[60px] w-full items-center justify-center gap-3 rounded-[50px] border border-black bg-card
@@ -170,14 +170,14 @@ export default function SosPostPage() {
       {/* 步驟二：貼文預覽 + 圖片預覽 + 實際發佈 */}
       {step === 'preview' && (
         <div className="flex flex-col gap-4 px-[26px] pt-5">
-          <div className="rounded-[10px] bg-card p-4 text-xs font-medium leading-[20px] text-brown">
+          <div className="rounded-[10px] bg-card p-4 text-xs font-medium leading-normal text-brown">
             由 <b>DiuLa！官方帳號</b> 幫你把協尋資訊發到 Threads，擴大協尋範圍。貼文圖片將沿用比對尋找時上傳的圖片！
             <b>會公開發到 Threads，發佈前可框住路人臉、車牌、地址等個資。</b>
           </div>
 
           <div>
             <p className="mb-1.5 text-xs font-medium text-brown">貼文預覽</p>
-            <pre className="whitespace-pre-wrap rounded-[10px] bg-input p-4 font-sans text-xs leading-[15px] text-brown">{text}</pre>
+            <pre className="whitespace-pre-wrap rounded-[10px] bg-input p-4 font-sans text-xs leading-normal text-brown">{text}</pre>
           </div>
 
           {displayImage && (
@@ -197,7 +197,7 @@ export default function SosPostPage() {
             </div>
           )}
 
-          {error && <p className="text-sm text-error">{error}</p>}
+          {error && <p className="text-sm leading-normal text-error">{error}</p>}
 
           <button type="button" onClick={submit} disabled={status === 'submitting'}
             className="mt-2 flex h-[60px] w-full items-center justify-center gap-3 rounded-[50px] border border-black bg-card

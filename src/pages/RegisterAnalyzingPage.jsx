@@ -75,7 +75,7 @@ export default function RegisterAnalyzingPage() {
           style={{ width: `${pct}%` }}
         />
       </div>
-      <p className="max-w-[300px] text-center text-[15px] leading-snug text-black/40">
+      <p className="max-w-[300px] text-center text-[15px] leading-normal text-black/40">
         提示：AI 會自動標記類別，<br />完成後會存進「我的拾獲物」。
       </p>
     </div>

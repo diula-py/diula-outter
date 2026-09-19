@@ -61,7 +61,7 @@ export default function AiAnalyzingPage() {
 
       {error ? (
         <div className="flex flex-col items-center gap-4 text-center">
-          <p className="max-w-[300px] text-[15px] leading-snug text-error">AI 辨識失敗：{error}</p>
+          <p className="max-w-[300px] text-[15px] leading-normal text-error">AI 辨識失敗：{error}</p>
           <button
             type="button"
             onClick={() => navigate('/search', { replace: true })}
@@ -78,7 +78,7 @@ export default function AiAnalyzingPage() {
               style={{ width: `${pct}%` }}
             />
           </div>
-          <p className="max-w-[300px] text-center text-[15px] leading-snug text-black/40">
+          <p className="max-w-[300px] text-center text-[15px] leading-normal text-black/40">
             提示：AI 會自動標記類別，<br />您可以在下一步進行修正。
           </p>
         </>

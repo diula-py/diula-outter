@@ -261,7 +261,7 @@ export default function RegisterIdPage() {
         </div>
 
         {/* 送出 */}
-        {error && <p className="text-sm text-error">{error}</p>}
+        {error && <p className="text-sm leading-normal text-error">{error}</p>}
         <button
           type="button"
           onClick={handleSubmit}

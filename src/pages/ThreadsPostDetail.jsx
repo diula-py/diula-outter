@@ -53,8 +53,8 @@ export default function ThreadsPostDetail() {
         <h1 className="text-xl font-bold text-brown">Threads尋找遺失物</h1>
       </header>
 
-      {state === 'loading' && <p className="py-10 text-center text-sm text-brown/60">載入中…</p>}
-      {state === 'error' && <p className="py-10 text-center text-sm text-error">找不到這則貼文</p>}
+      {state === 'loading' && <p className="py-10 text-center text-sm leading-normal text-brown/60">載入中…</p>}
+      {state === 'error' && <p className="py-10 text-center text-sm leading-normal text-error">找不到這則貼文</p>}
 
       {state === 'ready' && post && (
         <div className="flex flex-col gap-5 px-[22px] pt-5">
@@ -81,7 +81,7 @@ export default function ThreadsPostDetail() {
               <span className="text-base text-brown">{fmtDate(post.post_date)}</span>
             </div>
             <span className="text-base font-medium text-brown">內文</span>
-            <div className="min-h-[120px] whitespace-pre-wrap rounded-[10px] bg-white p-4 text-sm leading-relaxed text-brown">
+            <div className="min-h-[120px] whitespace-pre-wrap rounded-[10px] bg-white p-4 text-sm leading-normal text-brown">
               {post.text || '（無內文）'}
             </div>
           </div>
