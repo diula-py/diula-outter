@@ -66,7 +66,7 @@ export default function LoginPage() {
         </button>
       </div>
 
-      {error && <p className="mt-4 text-center text-sm text-error">{error}</p>}
+      {error && <p className="mt-4 text-center text-sm leading-normal text-error">{error}</p>}
 
       <a
         href="mailto:diula.112ics@gmail.com"
@@ -74,7 +74,7 @@ export default function LoginPage() {
       >
         遇到問題嗎？
       </a>
-      <p className="mt-4 max-w-[264px] text-center text-xs text-black opacity-50">
+      <p className="mt-4 max-w-[264px] text-center text-xs leading-normal text-black opacity-50">
         登入即代表您同意本平台的服務條款與隱私權政策
       </p>
     </div>

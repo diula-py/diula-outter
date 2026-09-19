@@ -218,7 +218,7 @@ export default function MaskingModal({ file, docType, onCancel, onConfirm }) {
         <div className="min-h-0 flex-1 overflow-auto p-4">
           {phase === 'crop' ? (
             <>
-              <p className="mb-3 text-xs text-brown/70">
+              <p className="mb-3 text-xs leading-normal text-brown/70">
                 {docType === 'national_id' || docType === 'health_card'
                   ? '把裁切框四邊拉到卡片邊緣（比例已鎖成證件比例），自動打碼才對得準。'
                   : '把裁切框拉到證件範圍，下一步再手動遮蔽個資。'}
@@ -229,7 +229,7 @@ export default function MaskingModal({ file, docType, onCancel, onConfirm }) {
             </>
           ) : (
             <>
-              <p className="mb-2 text-xs text-brown/70">{suggest}</p>
+              <p className="mb-2 text-xs leading-normal text-brown/70">{suggest}</p>
               <div className="relative overflow-hidden rounded-xl">
                 <canvas ref={previewRef} className="block w-full" />
                 <canvas
@@ -241,7 +241,7 @@ export default function MaskingModal({ file, docType, onCancel, onConfirm }) {
                   style={{ cursor: 'crosshair' }}
                 />
               </div>
-              <p className={`mt-2 text-xs ${maskCount ? 'text-brown/70' : 'text-error'}`}>
+              <p className={`mt-2 text-xs leading-normal ${maskCount ? 'text-brown/70' : 'text-error'}`}>
                 {maskCount ? `已遮蔽 ${maskCount} 個區域（可拖曳新增、↩ 上一步移除）` : '尚未遮蔽任何區域，打碼後才能上傳'}
               </p>
               <div className="mt-2 flex gap-2">
@@ -250,7 +250,7 @@ export default function MaskingModal({ file, docType, onCancel, onConfirm }) {
               </div>
             </>
           )}
-          {status && <p className="mt-2 text-sm text-error">{status}</p>}
+          {status && <p className="mt-2 text-sm leading-normal text-error">{status}</p>}
         </div>
 
         <div className="border-t border-black/10 p-4">

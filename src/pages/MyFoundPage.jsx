@@ -92,14 +92,14 @@ export default function MyFoundPage() {
         </div>
 
         {/* 清單 */}
-        {loading && <p className="py-10 text-center text-sm text-brown/60">載入中…</p>}
+        {loading && <p className="py-10 text-center text-sm leading-normal text-brown/60">載入中…</p>}
         {!loading && items.length === 0 && (
-          <p className="py-10 text-center text-sm text-brown/60">
+          <p className="py-10 text-center text-sm leading-normal text-brown/60">
             還沒有拾獲物紀錄。<br />去「登錄拾獲物」登錄你撿到的東西吧！
           </p>
         )}
         {!loading && items.length > 0 && filtered.length === 0 && (
-          <p className="py-10 text-center text-sm text-brown/60">沒有符合的項目</p>
+          <p className="py-10 text-center text-sm leading-normal text-brown/60">沒有符合的項目</p>
         )}
 
         {filtered.map((it) => (

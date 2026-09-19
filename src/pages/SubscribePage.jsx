@@ -78,7 +78,7 @@ export default function SubscribePage() {
         <div className="flex flex-col items-center gap-4 px-[26px] pt-10 text-center">
           <CircleCheckIcon className="h-14 w-14 text-brown" />
           <p className="text-base font-medium text-brown">訂閱成功！</p>
-          <p className="text-xs leading-relaxed text-brown/60">
+          <p className="text-xs leading-normal text-brown/60">
             每天有新的相符失物，就會用{channel === 'email' ? ' Email ' : ' LINE '}通知你。<br />找到後可在「我的遺失物」停止。
           </p>
           <button type="button" onClick={() => navigate('/')}
@@ -88,7 +88,7 @@ export default function SubscribePage() {
         </div>
       ) : (
         <div className="flex flex-col gap-5 px-[26px] pt-5">
-          <p className="text-xs leading-relaxed text-brown/70">
+          <p className="text-xs leading-normal text-brown/70">
             這次沒找到沒關係！訂閱後，<b className="text-brown">每天</b>有新符合條件的失物進來，我們就主動通知你。
           </p>
 
@@ -118,12 +118,12 @@ export default function SubscribePage() {
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="你的 Email"
               className="w-full rounded-[10px] border border-black bg-white px-4 py-2.5 text-sm text-brown outline-none placeholder:text-brown/50" />
           ) : (
-            <p className="rounded-[10px] bg-input p-3 text-xs leading-relaxed text-brown/70">
+            <p className="rounded-[10px] bg-input p-3 text-xs leading-normal text-brown/70">
               LINE 通知需在 <b>LINE App 內</b>開啟本頁（LIFF）才能取得你的 LINE ID。目前用瀏覽器開，請改用 Email。
             </p>
           )}
 
-          {error && <p className="text-sm text-error">{error}</p>}
+          {error && <p className="text-sm leading-normal text-error">{error}</p>}
 
           <button type="button" onClick={submit} disabled={status === 'submitting'}
             className="mt-1 flex h-[60px] w-full items-center justify-center gap-3 rounded-[50px] border border-black bg-blue

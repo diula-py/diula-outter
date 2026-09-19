@@ -16,11 +16,24 @@
   --color-navy:  #1e3050;   /* 表單 icon（日曆・地點・下拉箭頭） */
   --color-hint:  #b5a692;   /* placeholder / 未選取文字（同 wireframe） */
 
-  /* 源泉圓體 GenSenRounded2 TW（自架 woff2，見下方 @font-face）；
-     後面保留系統圓體 fallback，字型下載前先顯示相近字。 */
-  --font-round: "GenSenRounded2 TW", "Comfortaa", "Yuanti SC",
+  /* design.md §3：英數字 Comfortaa、中文 GenSenRounded2 TW（源泉圓體，自架 woff2，見 fonts.css）。
+     Comfortaa 必須排在最前面：它沒有中文字，中文才會落到源泉圓體；
+     若源泉圓體排前面，它自帶的英數字會蓋掉 Comfortaa。後面是系統圓體 fallback。 */
+  --font-round: "Comfortaa", "GenSenRounded2 TW", "Yuanti SC",
                 "Hiragino Maru Gothic ProN", "LiHei Pro", "Noto Sans TC",
                 system-ui, sans-serif;
+  /* font-sans 也指向同一組，避免任何 font-sans 用法跳回系統字型 */
+  --font-sans: var(--font-round);
+
+  /* design.md §3：行距一律 100%（H1 24/24、H2 20/20、Body1 16/16、Body2 12/12）。
+     Tailwind 的 text-* 預設會附帶 1.33~1.5 倍行距，這裡全部覆寫成 1。
+     多行段落例外：在元素上加 leading-normal（150%）。 */
+  --text-xs--line-height: 1;
+  --text-sm--line-height: 1;
+  --text-base--line-height: 1;
+  --text-lg--line-height: 1;
+  --text-xl--line-height: 1;
+  --text-2xl--line-height: 1;
 }
 
 /* @font-face 定義在 src/fonts.css（純 CSS，dev/prod url 皆正確），於 main.jsx 匯入。 */
@@ -37,6 +50,7 @@ body {
   background: var(--color-base);
   color: var(--color-brown);
   font-family: var(--font-round);
+  line-height: 1; /* design.md §3：行距 100%；多行段落用 leading-normal 例外 */
   /* 字體平滑：antialiased 讓桌機字較細；grayscale 補 Firefox/macOS。
      注意 iOS Safari / Android 會忽略 -webkit-font-smoothing，手機仍偏粗（平台限制）。 */
   -webkit-font-smoothing: antialiased;

@@ -92,14 +92,14 @@ export default function MyLostPage() {
         </div>
 
         {/* 清單 */}
-        {loading && <p className="py-10 text-center text-sm text-brown/60">載入中…</p>}
+        {loading && <p className="py-10 text-center text-sm leading-normal text-brown/60">載入中…</p>}
         {!loading && items.length === 0 && (
-          <p className="py-10 text-center text-sm text-brown/60">
+          <p className="py-10 text-center text-sm leading-normal text-brown/60">
             還沒有協尋紀錄。<br />去「跨平台尋找遺失物」發起協尋吧！
           </p>
         )}
         {!loading && items.length > 0 && filtered.length === 0 && (
-          <p className="py-10 text-center text-sm text-brown/60">沒有符合的項目</p>
+          <p className="py-10 text-center text-sm leading-normal text-brown/60">沒有符合的項目</p>
         )}
 
         {filtered.map((it) => (

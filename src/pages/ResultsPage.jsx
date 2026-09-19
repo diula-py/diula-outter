@@ -80,10 +80,10 @@ export default function ResultsPage() {
 
         {/* 結果清單 */}
         {results.length === 0 && (
-          <p className="py-10 text-center text-sm text-brown/60">沒有比對資料（請從跨平台頁送出協尋單）</p>
+          <p className="py-10 text-center text-sm leading-normal text-brown/60">沒有比對資料（請從跨平台頁送出協尋單）</p>
         )}
         {results.length > 0 && list.length === 0 && (
-          <p className="py-10 text-center text-sm text-brown/60">此來源沒有相符的結果</p>
+          <p className="py-10 text-center text-sm leading-normal text-brown/60">此來源沒有相符的結果</p>
         )}
 
         {list.map((r) => {
@@ -124,7 +124,7 @@ export default function ResultsPage() {
             type="button"
             onClick={() => setSosOpen(true)}
             className="pointer-events-auto flex h-20 w-20 flex-col items-center justify-center rounded-full bg-blue
-                       text-center text-base font-medium leading-tight text-brown shadow-[0_4px_8px_rgba(0,0,0,0.25)]
+                       text-center text-base font-medium text-brown shadow-[0_4px_8px_rgba(0,0,0,0.25)]
                        transition hover:brightness-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
           >
             都沒有<br />我的物品
@@ -142,7 +142,7 @@ export default function ResultsPage() {
             role="dialog"
             aria-modal="true"
             aria-label="都沒有我的東西"
-            className="relative w-full max-w-[305px] rounded-[10px] bg-card px-6 pb-10 pt-14 shadow-[0px_4px_4px_rgba(0,0,0,0.25)]"
+            className="relative w-full max-w-[305px] rounded-[10px] bg-card px-6 pb-10 pt-14 shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
             onClick={(e) => e.stopPropagation()}
           >
             <button

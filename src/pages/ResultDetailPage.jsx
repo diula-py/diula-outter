@@ -70,7 +70,7 @@ export default function ResultDetailPage() {
 
             {tags.length > 0 && (
               <div className="flex flex-col gap-3 rounded-[10px] bg-card p-5">
-                <span className="text-base font-semibold text-brown">AI 標籤</span>
+                <span className="text-base font-bold text-brown">AI 標籤</span>
                 <div className="flex flex-wrap gap-2.5">
                   {tags.map((t) => (
                     <span key={t} className="rounded-[50px] border border-black bg-blue px-4 py-1.5 text-xs text-brown">{t}</span>
@@ -88,7 +88,7 @@ export default function ResultDetailPage() {
                 <span className="text-base text-brown">{fmtDate(item.found_date)}</span>
               </div>
               <span className="text-base font-medium text-brown">內文</span>
-              <div className="min-h-[110px] whitespace-pre-wrap rounded-[10px] bg-white p-4 text-sm leading-relaxed text-brown">
+              <div className="min-h-[110px] whitespace-pre-wrap rounded-[10px] bg-white p-4 text-sm leading-normal text-brown">
                 {item.description || '（無內文）'}
                 {place && `\n\n地點：${place}`}
                 {(item.holding_place || item.station) && `\n保管地：${item.holding_place || item.station}`}

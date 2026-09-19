@@ -98,11 +98,11 @@ export default function PhotoMaskModal({ src, onCancel, onConfirm }) {
         <div className="flex items-center justify-between border-b border-black/10 px-4 py-3">
           <button type="button" onClick={onCancel} className="text-sm text-brown">取消</button>
           <span className="text-base font-bold text-brown">為圖片打碼</span>
-          <button type="button" onClick={done} className="text-sm font-semibold text-brown">完成</button>
+          <button type="button" onClick={done} className="text-sm font-bold text-brown">完成</button>
         </div>
 
         <div className="min-h-0 flex-1 overflow-auto p-4">
-          <p className="mb-2 text-xs text-brown/70">
+          <p className="mb-2 text-xs leading-normal text-brown/70">
             在照片上拖曳，框住要遮住的部分（路人臉、車牌、地址…）。可不打碼直接按「完成」。
           </p>
           <div className="relative overflow-hidden rounded-xl bg-black/5">
@@ -116,7 +116,7 @@ export default function PhotoMaskModal({ src, onCancel, onConfirm }) {
               style={{ cursor: 'crosshair' }}
             />
           </div>
-          <p className={`mt-2 text-xs ${count ? 'text-brown/70' : 'text-brown/50'}`}>
+          <p className={`mt-2 text-xs leading-normal ${count ? 'text-brown/70' : 'text-brown/50'}`}>
             {count ? `已遮蔽 ${count} 個區域（可拖曳新增、↩ 上一步移除）` : '尚未遮蔽任何區域'}
           </p>
           <div className="mt-2 flex gap-2">
