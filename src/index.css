@@ -51,10 +51,8 @@ body {
   color: var(--color-brown);
   font-family: var(--font-round);
   line-height: 1; /* design.md §3：行距 100%；多行段落用 leading-normal 例外 */
-  /* 字體平滑：antialiased 讓桌機字較細；grayscale 補 Firefox/macOS。
-     注意 iOS Safari / Android 會忽略 -webkit-font-smoothing，手機仍偏粗（平台限制）。 */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* 不設 -webkit-font-smoothing：inner 用瀏覽器預設（auto），macOS 上字會比 antialiased 粗一些。
+     之前這裡設 antialiased，導致同樣的 font-weight 看起來比 inner 細；為了跟 inner 一致而移除。 */
   text-rendering: optimizeLegibility;
   /* 防 iOS 直向→橫向自動放大字，避免看起來更粗更大 */
   -webkit-text-size-adjust: 100%;

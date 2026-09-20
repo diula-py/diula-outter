@@ -49,7 +49,7 @@ export default function ProfilePage() {
           <img src={user?.photoURL || asset('/icons/avatar.png')} alt="大頭貼" className="h-full w-full object-cover" />
         </div>
         <div className="text-base font-medium">{displayName}</div>
-        <div className="whitespace-nowrap text-xs font-medium">{displayCode}</div>
+        <div className="whitespace-nowrap text-xs font-medium">{displayCode && `User ID：${displayCode}`}</div>
       </div>
 
       {/* 我的遺失物 / 我的拾獲物：350×100、x=22、y=351／471 */}
