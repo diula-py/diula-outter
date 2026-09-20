@@ -1,40 +1,26 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import {
-  ChevronLeftIcon,
-  ChevronDownIcon,
-  CalendarIcon,
-  MagnifyingGlassIcon,
-  DiulaPinIcon,
-} from '../components/icons'
+import { MagnifyingGlassIcon } from '../components/icons'
+import { FormHeader } from '../components/FormKit'
 
 import { spring } from '../lib/api'
 
 const POSTS_API = spring('/api/posts')
 const IMAGE_PROXY = spring('/api/image?url=')
 
-// "2026-08-08T04:14:48.000Z" → "2026/08/08"
-function fmtDate(s) {
-  if (!s) return ''
-  const d = String(s).slice(0, 10).replaceAll('-', '/')
-  return d
-}
-
 /** 貼文縮圖：有圖走 proxy，失效／無圖顯示 placeholder（依後端設計，圖過期是正常的）。 */
 function Thumb({ url }) {
   const [broken, setBroken] = useState(false)
   const showImg = url && !broken
   return (
-    <div className="flex h-[100px] w-[100px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-[#e7e3d5]">
-      {showImg ? (
+    <div className="h-[100px] w-[100px] shrink-0 overflow-hidden rounded-[10px] bg-card">
+      {showImg && (
         <img
           src={IMAGE_PROXY + encodeURIComponent(url)}
           alt=""
           className="h-full w-full object-cover"
           onError={() => setBroken(true)}
         />
-      ) : (
-        <DiulaPinIcon className="h-[52px] w-[52px]" />
       )}
     </div>
   )
@@ -45,7 +31,6 @@ export default function ThreadsSearchPage() {
   const [posts, setPosts] = useState([])
   const [state, setState] = useState('loading') // loading | ready | error
   const [query, setQuery] = useState('')
-  const [dateFilter, setDateFilter] = useState('')
 
   useEffect(() => {
     let alive = true
@@ -60,64 +45,31 @@ export default function ThreadsSearchPage() {
     const q = query.trim()
     return posts.filter((p) => {
       const okText = !q || String(p.text || '').includes(q)
-      const okDate = !dateFilter || String(p.post_date || '').slice(0, 10) === dateFilter
-      return okText && okDate
+      return okText
     })
-  }, [posts, query, dateFilter])
+  }, [posts, query])
 
   return (
-    <div>
-      {/* Header */}
-      <header className="relative flex h-20 items-center justify-center rounded-b-[20px] bg-card pt-[env(safe-area-inset-top)]">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          aria-label="返回"
-          className="absolute left-[22px] top-1/2 -translate-y-1/2 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-        >
-          <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
-        </button>
-        <h1 className="text-xl font-bold text-brown">Threads尋找遺失物</h1>
-      </header>
+    <div className="flex flex-col items-center pb-[120px]">
+      <FormHeader title="Threads尋找遺失物" onBack={() => navigate(-1)} />
 
-      <div className="flex flex-col gap-5 px-[22px] pt-5">
-        {/* 篩選列：日期 + 搜尋 */}
-        <div className="flex gap-3">
-          <label className="relative flex h-[45px] w-[95px] shrink-0 items-center justify-center gap-2 rounded-[50px] border border-black bg-card">
-            <CalendarIcon className="h-5 w-5 text-brown" />
-            <ChevronDownIcon className="h-4 w-4 text-brown" />
-            {dateFilter && <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-error" />}
-            <input
-              type="date"
-              value={dateFilter}
-              onChange={(e) => setDateFilter(e.target.value)}
-              aria-label="依日期篩選"
-              className="absolute inset-0 cursor-pointer opacity-0"
-            />
-          </label>
+      {/* 搜尋列（inner）：寬 calc(100% - 44px)、最大 340、高 46、padding 10 20、間距 10、icon 20×20 */}
+      <div className="mt-5 box-border flex h-[46px] w-[calc(100%-44px)] max-w-[340px] shrink-0 items-center gap-[10px] rounded-[50px] border border-black bg-input px-5 py-[10px]">
+        <MagnifyingGlassIcon className="h-5 w-5 shrink-0" />
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="搜尋 Threads 協尋文"
+          className="h-[26px] min-w-0 flex-1 bg-transparent p-0 text-sm font-normal leading-[26px] text-brown outline-none placeholder:text-[#888]"
+        />
+      </div>
 
-          <div className="flex h-[45px] min-w-0 flex-1 items-center gap-2.5 rounded-[50px] border border-black bg-input px-4">
-            <MagnifyingGlassIcon className="h-4 w-4 shrink-0 text-brown" />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="搜尋"
-              className="min-w-0 flex-1 bg-transparent text-base text-brown outline-none placeholder:text-brown/70"
-            />
-          </div>
-        </div>
-
-        {/* 清單 */}
-        {state === 'loading' && <p className="py-10 text-center text-sm leading-normal text-brown/60">載入中…</p>}
-        {state === 'error' && (
-          <p className="py-10 text-center text-sm leading-normal text-error">
-            載入失敗，請確認後端（:8080）有啟動。
-          </p>
-        )}
-        {state === 'ready' && filtered.length === 0 && (
-          <p className="py-10 text-center text-sm leading-normal text-brown/60">沒有符合的貼文</p>
-        )}
+      {/* 貼文清單：340 寬、卡片間距 15；卡片 padding 20、間距 15、文字 16/500 最多 3 行 */}
+      <div className="mt-5 flex w-full max-w-[340px] flex-col gap-[15px]">
+        {state === 'loading' && <div className="py-5 text-center text-base opacity-60">載入中...</div>}
+        {state === 'error' && <div className="py-5 text-center text-sm leading-normal text-error">載入失敗，請確認後端（:8080）有啟動。</div>}
+        {state === 'ready' && filtered.length === 0 && <div className="py-5 text-center text-base opacity-60">目前尚無 Threads 協尋文</div>}
 
         {state === 'ready' &&
           filtered.map((p) => (
@@ -125,17 +77,11 @@ export default function ThreadsSearchPage() {
               key={p.id}
               to={`/search/threads/${p.id}`}
               state={{ post: p }}
-              className="flex items-center gap-[15px] rounded-[10px] border border-black bg-input p-5 no-underline
-                         transition hover:bg-[#efefef] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+              className="box-border flex w-full items-center gap-[15px] rounded-[10px] border border-black bg-input p-5 text-brown no-underline
+                         focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
             >
               <Thumb url={p.image} />
-              <div className="min-w-0 flex-1">
-                <p className="line-clamp-3 text-base font-medium leading-normal text-brown">
-                  {p.text || '（無內文）'}
-                </p>
-                <p className="mt-1 text-xs text-brown/70">{fmtDate(p.post_date)}</p>
-              </div>
-              <ChevronLeftIcon className="h-5 w-5 shrink-0 -scale-x-100 text-brown" />
+              <div className="line-clamp-3 min-w-0 flex-1 text-base font-medium leading-normal">{p.text || '（無內文）'}</div>
             </Link>
           ))}
       </div>

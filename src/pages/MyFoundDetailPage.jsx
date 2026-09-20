@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ChevronLeftIcon, CalendarIcon, LocationIcon, CircleCheckIcon, DiulaPinIcon, XmarkIcon } from '../components/icons'
+import { CalendarIcon, LocationIcon, PersonChalkboardIcon, DiulaPinIcon } from '../components/icons'
+import { ConfirmFoundModal } from '../components/DialogKit'
+import { DetailHeader, DetailImage, InfoBox, InfoRow, TagsBox, ActionButton } from '../components/DetailKit'
 import { updateMyItem } from '../lib/items'
 import { FOUND_STATUS } from '../data/itemStatus'
 
@@ -23,132 +25,35 @@ export default function MyFoundDetailPage() {
   const [done, setDone] = useState(passed?.status === FOUND_STATUS.FOUND)
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col bg-base pb-10">
-      {/* Header（cream，109px） */}
-      <header className="relative flex h-[109px] items-end justify-center rounded-b-[20px] bg-card pb-4 pt-[env(safe-area-inset-top)]">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          aria-label="返回"
-          className="absolute bottom-4 left-[26px] p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-        >
-          <ChevronLeftIcon className="h-[35px] w-[35px] text-brown" />
-        </button>
-        <h1 className="max-w-[220px] truncate text-xl font-bold text-brown">{item.name}</h1>
-      </header>
+    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col items-center bg-paper pb-[100px]">
+      {/* Header 109px：標題 top:70、返回鍵 35×35 在 (26,62)（page-19 比 page-16 高） */}
+      <DetailHeader title={item.name} onBack={() => navigate(-1)} height={109} titleTop={70} backLeft={25} backTop={62} backSize={35} />
 
-      <div className="flex flex-col gap-4 px-[22px] pt-4">
-        {/* 圖片 */}
-        <div className="flex h-[200px] w-full items-center justify-center overflow-hidden rounded-[10px] bg-[#e7e3d5]">
-          {item.img ? (
-            <img src={item.img} alt="" className="h-full w-full object-cover" />
-          ) : (
-            <DiulaPinIcon className="h-20 w-20" />
-          )}
-        </div>
+      <DetailImage src={item.img} mt={20} fallback={<DiulaPinIcon className="h-20 w-20" />} />
 
-        {/* 資訊卡：日期 / 地點 / 備註（唯讀） */}
-        <div className="flex flex-col gap-2.5 rounded-[10px] bg-card p-4">
-          {[
-            { icon: <CalendarIcon className="h-[35px] w-[35px] text-navy" />, val: item.date },
-            { icon: <LocationIcon className="h-[35px] w-[35px] text-navy" />, val: item.place },
-            // 送往地點：有值才顯示（拾獲物才有；協尋物沒有這欄）
-            ...(item.dropLocation
-              ? [{ icon: <LocationIcon className="h-[35px] w-[35px] text-navy" />, val: item.dropLocation }]
-              : []),
-            { icon: <span className="text-base text-brown">備註</span>, val: item.remark },
-          ].map((row, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <div className="flex w-[46px] shrink-0 items-center justify-center">{row.icon}</div>
-              <div className="flex h-10 min-w-0 flex-1 items-center rounded-[10px] bg-white px-4 text-xs text-brown">
-                {row.val}
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* 資訊卡 340×230：日期／拾獲地點／送往地點／備註（白色欄左緣 x=111，比 page-16 多 2px） */}
+      <InfoBox height={230} mt={17}>
+        <InfoRow icon={<CalendarIcon className="h-[35px] w-[35px]" />} iconTop={25} pillTop={22} pillLeft={84.5}>{item.date}</InfoRow>
+        <InfoRow icon={<LocationIcon className="h-[35px] w-[35px]" />} iconTop={75} pillTop={72} pillLeft={84.5}>{item.place}</InfoRow>
+        <InfoRow icon={<PersonChalkboardIcon className="h-[35px] w-[35px]" />} iconTop={125} pillTop={122} pillLeft={84.5}>{item.dropLocation || '—'}</InfoRow>
+        <InfoRow text="備註" textTop={184} pillTop={172} pillLeft={84.5}>{item.remark}</InfoRow>
+      </InfoBox>
 
-        {/* AI 標籤 */}
-        {item.tags.length > 0 && (
-          <div className="flex flex-col gap-3 rounded-[10px] bg-card p-5">
-            <span className="text-base font-bold text-brown">AI 標籤</span>
-            <div className="flex flex-wrap gap-2.5">
-              {item.tags.map((tag) => (
-                <span key={tag} className="rounded-[10px] bg-white px-4 py-1.5 text-center text-xs text-brown">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+      {item.tags.length > 0 && <TagsBox tags={item.tags} mt={10} />}
 
-        {/* 我找到了（找到後隱藏） */}
-        {!done && (
-          <button
-            type="button"
-            onClick={() => setDialog('confirm')}
-            className="mt-1 flex h-[60px] w-full items-center justify-center gap-4 rounded-[50px] border border-black bg-card
-                       text-base font-medium text-brown transition hover:bg-[#eee8d7]
-                       focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-          >
-            <CircleCheckIcon className="h-10 w-10 shrink-0 text-brown" />
-            我找到了！立即更新狀態
-          </button>
-        )}
-      </div>
+      {/* 我找到了（找到後隱藏） */}
+      {!done && <ActionButton tone="card" onClick={() => setDialog('confirm')}>我找到了！立即更新狀態</ActionButton>}
 
-      {/* 確認彈窗 */}
       {dialog === 'confirm' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 p-6">
-          <div className="relative w-[300px] rounded-[10px] bg-card px-6 pb-7 pt-14 shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
-            <button
-              type="button"
-              onClick={() => setDialog(null)}
-              aria-label="關閉"
-              className="absolute left-4 top-4 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-            >
-              <XmarkIcon className="h-[35px] w-[35px]" />
-            </button>
-            <p className="mb-7 text-center text-xl font-medium text-brown">是否確認已找到？</p>
-            <div className="flex justify-center gap-5">
-              <button
-                type="button"
-                onClick={() => setDialog('success')}
-                className="h-[60px] w-[90px] rounded-[50px] border border-black bg-input text-xl font-medium text-brown"
-              >
-                是
-              </button>
-              <button
-                type="button"
-                onClick={() => setDialog(null)}
-                className="h-[60px] w-[90px] rounded-[50px] border border-black bg-blue text-xl font-medium text-brown"
-              >
-                否
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 成功彈窗 */}
-      {dialog === 'success' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 p-6">
-          <div className="w-[300px] rounded-[10px] bg-card px-6 py-8 shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
-            <p className="mb-6 text-center text-lg font-medium text-brown">已更新狀態為「已找到」</p>
-            <div className="flex justify-center">
-              <button
-                type="button"
-                onClick={() => {
-                  if (passed?.id) updateMyItem('found', passed.id, { status: FOUND_STATUS.FOUND })
-                  setDone(true)
-                  setDialog(null)
-                }}
-                className="h-[52px] w-[200px] rounded-[50px] border border-black bg-blue text-base font-medium text-brown"
-              >
-                確認
-              </button>
-            </div>
-          </div>
-        </div>
+        <ConfirmFoundModal
+          onCancel={() => setDialog(null)}
+          onConfirm={() => {
+            if (passed?.id) updateMyItem('found', passed.id, { status: FOUND_STATUS.FOUND })
+            setDone(true)
+            setDialog(null)
+            navigate('/my/found', { replace: true })
+          }}
+        />
       )}
     </div>
   )

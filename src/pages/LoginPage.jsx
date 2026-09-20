@@ -39,42 +39,45 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-dvh flex-col items-center bg-blue px-6 pt-[calc(env(safe-area-inset-top)+120px)]">
-      <div className="flex h-[128px] w-full items-center justify-center overflow-hidden">
+    // 版面比照 inner page-01：393 寬的畫布，各元素用絕對位置（數值直接抄 inner）
+    <div className="relative mx-auto min-h-dvh w-full max-w-[393px] overflow-hidden bg-blue">
+      <div className="absolute left-0 top-[189px] flex h-[128px] w-full items-center justify-center overflow-hidden">
         <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="w-full" />
       </div>
 
-      <p className="mt-8 text-2xl font-medium text-brown">與失物重逢的捷徑</p>
+      <p className="absolute left-1/2 top-[372px] h-6 w-[264px] -translate-x-[calc(50%-0.5px)] text-center text-2xl font-medium text-brown">
+        與失物重逢的捷徑
+      </p>
 
-      <div className="mt-16 flex w-full max-w-[290px] flex-col gap-4">
-        <button
-          type="button"
-          onClick={loginWithLine}
-          className="flex h-[62px] w-full items-center justify-center gap-3 rounded-[50px] bg-[#06C755] text-lg font-bold text-white transition hover:brightness-95 active:scale-[.99]"
-        >
-          <img src={asset('/icons/line-login.png')} alt="" className="h-7 w-7" />
-          <span>使用 LINE 登入</span>
-        </button>
+      <button
+        type="button"
+        onClick={loginWithLine}
+        className="absolute left-1/2 top-[449px] flex h-[62px] w-[290px] -translate-x-1/2 items-center justify-center gap-3 rounded-[50px] bg-[#06C755] text-lg font-bold text-white transition hover:brightness-95 active:scale-[.99]"
+      >
+        <img src={asset('/icons/line-login.png')} alt="" className="h-7 w-7 shrink-0" />
+        <span>使用 LINE 登入</span>
+      </button>
 
-        <button
-          type="button"
-          onClick={handleGoogleLogin}
-          className="flex h-[62px] w-full items-center justify-center gap-3 rounded-[50px] border border-[#747775] bg-white text-lg font-bold text-[#3C4043] transition hover:bg-[#f8f8f8] active:scale-[.99]"
-        >
-          <GoogleGIcon className="h-6 w-6 shrink-0" />
-          <span>使用 Google 登入</span>
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={handleGoogleLogin}
+        className="absolute left-1/2 top-[551px] flex h-[62px] w-[290px] -translate-x-1/2 items-center justify-center gap-3 rounded-[50px] border border-[#747775] bg-white text-lg font-bold text-[#3C4043] transition hover:bg-[#f8f8f8] active:scale-[.99]"
+      >
+        <GoogleGIcon className="h-6 w-6 shrink-0" />
+        <span>使用 Google 登入</span>
+      </button>
 
-      {error && <p className="mt-4 text-center text-sm leading-normal text-error">{error}</p>}
+      {error && (
+        <p className="absolute left-1/2 top-[622px] w-[290px] -translate-x-1/2 text-center text-sm leading-normal text-error">{error}</p>
+      )}
 
       <a
         href="mailto:diula.112ics@gmail.com"
-        className="mt-10 text-base text-black opacity-50"
+        className="absolute left-1/2 top-[683px] h-[18px] w-24 -translate-x-[calc(50%-0.5px)] text-center text-base leading-[18px] text-black opacity-50"
       >
         遇到問題嗎？
       </a>
-      <p className="mt-4 max-w-[264px] text-center text-xs leading-normal text-black opacity-50">
+      <p className="absolute left-1/2 top-[723px] w-[264px] -translate-x-[calc(50%-0.5px)] text-center text-xs leading-[13px] text-black opacity-50">
         登入即代表您同意本平台的服務條款與隱私權政策
       </p>
     </div>

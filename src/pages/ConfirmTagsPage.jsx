@@ -1,40 +1,11 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import {
-  ChevronDownIcon,
-  CalendarIcon,
-  LocationIcon,
-  CircleCheckIcon,
-  PlusIcon,
-  DiulaPinIcon,
-} from '../components/icons'
-import RegionRow from '../components/RegionRow'
+import { CalendarIcon, LocationIcon, PlusIcon } from '../components/icons'
+import { FormHeader, FormPage, FormCard, FormRow, RegionField, SubmitButton, pillInput } from '../components/FormKit'
+import { asset } from '../lib/asset'
 import TagPickerModal from '../components/TagPickerModal'
 import { flask } from '../lib/api'
 import { todayStr } from '../lib/date'
-
-function TagXIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="#1e1e1e" strokeWidth="2.5" strokeLinecap="round" {...props}>
-      <line x1="6" y1="6" x2="18" y2="18" />
-      <line x1="18" y1="6" x2="6" y2="18" />
-    </svg>
-  )
-}
-
-function Field({ left, children }) {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="flex w-[46px] shrink-0 items-center justify-center">{left}</div>
-      <div className="flex h-10 min-w-0 flex-1 items-center gap-2.5 rounded-[10px] bg-white px-4">
-        {children}
-        <ChevronDownIcon className="h-[18px] w-[18px] shrink-0 text-navy" />
-      </div>
-    </div>
-  )
-}
-
-const inputClass = 'min-w-0 flex-1 bg-transparent text-xs text-brown outline-none placeholder:text-hint'
 
 export default function ConfirmTagsPage() {
   const navigate = useNavigate()
@@ -83,81 +54,66 @@ export default function ConfirmTagsPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col bg-base pb-10">
-      {/* Header（cream，80px，僅標題） */}
-      <header className="flex h-20 items-center justify-center rounded-b-[20px] bg-card pt-[env(safe-area-inset-top)]">
-        <h1 className="text-xl font-bold text-brown">{data.name || '確認標籤'}</h1>
-      </header>
+    <FormPage>
+      {/* Header（cream，80px，僅標題、沒有返回鍵） */}
+      <FormHeader title={data.name || '確認標籤'} />
 
-      <div className="flex flex-col gap-5 px-[26px] pt-5">
-        {/* 圖片 */}
-        <div className="flex h-[200px] w-full items-center justify-center overflow-hidden rounded-[10px] bg-[#e7e3d5]">
-          {data.photoUrl ? (
-            <img src={data.photoUrl} alt="" className="h-full w-full object-cover" />
-          ) : (
-            <DiulaPinIcon className="h-20 w-20" />
-          )}
+      {/* 圖片模式：340×200；文字模式：米色卡片＋筆圖示＋描述（inner page-05） */}
+      {data.mode === 'text' ? (
+        <div className="mt-5 box-border flex w-full max-w-[340px] shrink-0 items-center gap-[15px] rounded-[10px] bg-card p-[15px]">
+          <img src={asset('/icons/square-pen.png')} alt="" aria-hidden="true" className="h-10 w-10 shrink-0 object-contain" />
+          <div className="min-w-0 flex-1 break-words text-sm font-normal leading-normal text-brown">{data.desc}</div>
         </div>
-
-        {/* 日期 / 地點 / 備註 */}
-        <div className="flex flex-col gap-[15px] rounded-[10px] bg-card px-4 py-5">
-          <Field left={<CalendarIcon className="h-[35px] w-[35px] text-navy" />}>
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="遺失日期"
-              className={`${inputClass} [&::-webkit-calendar-picker-indicator]:hidden`} />
-          </Field>
-          <RegionRow
-            left={<LocationIcon className="h-[35px] w-[35px] text-navy" />}
-            prefix="遺失的"
-            variant="plain"
-            city={placeCity} setCity={setPlaceCity}
-            district={placeDistrict} setDistrict={setPlaceDistrict}
-          />
-          <Field left={<span className="text-base text-brown">備註</span>}>
-            <input type="text" value={remark} onChange={(e) => setRemark(e.target.value)} placeholder="--" className={inputClass} />
-          </Field>
+      ) : (
+        <div className="mt-5 h-[200px] w-full max-w-[340px] shrink-0 overflow-hidden rounded-[10px]">
+          {data.photoUrl && <img src={data.photoUrl} alt="" className="h-full w-full bg-input object-contain" />}
         </div>
+      )}
 
-        {/* AI 標籤（可增刪） */}
-        <div className="flex flex-col gap-3 rounded-[10px] bg-card p-5">
-          <span className="text-base font-bold text-brown">AI 標籤</span>
-          <div className="flex flex-wrap gap-2.5">
-            {tags.map((tag) => (
-              <span key={tag} className="flex items-center gap-2 rounded-[50px] border border-black bg-blue px-4 py-1.5 text-xs text-brown">
-                {tag}
-                <button type="button" onClick={() => removeTag(tag)} aria-label={`移除 ${tag}`} className="p-0.5">
-                  <TagXIcon className="h-[13px] w-[13px]" />
-                </button>
-              </span>
-            ))}
+      {/* 日期 / 地點 / 備註 */}
+      <FormCard mt={20}>
+        <FormRow icon={<CalendarIcon className="h-[35px] w-[35px]" />}>
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="遺失日期" className={pillInput} />
+        </FormRow>
+        <RegionField
+          icon={<LocationIcon className="h-[35px] w-[35px]" />}
+          prefix="遺失的"
+          city={placeCity} setCity={setPlaceCity}
+          district={placeDistrict} setDistrict={setPlaceDistrict}
+        />
+        <FormRow text="備註">
+          <input type="text" value={remark} onChange={(e) => setRemark(e.target.value)} placeholder="供Threads發文時提供詳細資訊" className={pillInput} />
+        </FormRow>
+      </FormCard>
 
-            <button
-              type="button"
-              onClick={() => setPickerOpen(true)}
-              className="flex items-center gap-2 rounded-[50px] border border-black bg-white px-4 py-1.5 text-xs text-brown"
-            >
-              <PlusIcon className="h-3 w-3 text-brown" />
-              新增
-            </button>
-          </div>
+      {/* AI 標籤（可增刪）：340 寬、padding 20、標題 16/700、chip 高 30 */}
+      <div className="mt-5 box-border min-h-[98px] w-full max-w-[340px] shrink-0 rounded-[10px] bg-card p-5">
+        <div className="mb-[10px] text-base font-bold text-brown">AI 標籤</div>
+        <div className="flex flex-wrap gap-[10px]">
+          {tags.map((tag) => (
+            <div key={tag} className="box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border border-black bg-blue px-5 py-[10px] text-xs font-normal text-brown">
+              {tag}
+              <button type="button" onClick={() => removeTag(tag)} aria-label={`移除 ${tag}`} className="ml-[6px] text-sm font-bold">×</button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            className="box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border border-black bg-white px-5 py-[10px] text-xs font-normal text-brown"
+          >
+            <PlusIcon className="h-3 w-3 shrink-0" />
+            新增
+          </button>
         </div>
-
-        {error && <p className="text-sm leading-normal text-error">{error}</p>}
-
-        {/* 確認 */}
-        <button
-          type="button"
-          onClick={handleConfirm}
-          disabled={busy}
-          className="mt-1 flex h-[60px] w-full items-center justify-center gap-4 rounded-[50px] border border-black bg-card
-                     text-base font-medium text-brown transition hover:bg-[#eee8d7] disabled:opacity-60
-                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-        >
-          <CircleCheckIcon className="h-10 w-10 shrink-0 text-brown" />
-          {busy ? '比對中…' : '確認！開始比對尋找'}
-        </button>
       </div>
 
+      {error && <p className="mt-[15px] w-full max-w-[340px] text-sm leading-normal text-error">{error}</p>}
+
+      <SubmitButton tone="card" onClick={handleConfirm} disabled={busy}>
+        {busy ? '比對中…' : '確認！開始比對尋找'}
+      </SubmitButton>
+
       <TagPickerModal open={pickerOpen} value={tags} onClose={() => setPickerOpen(false)} onConfirm={setTags} />
-    </div>
+    </FormPage>
   )
 }
