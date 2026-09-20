@@ -1,24 +1,18 @@
 import { useEffect, useState } from 'react'
 import { TAG_TAXONOMY } from '../data/tagTaxonomy'
 
+// inner tag-modal 的關閉（X）與確認（打勾）：20×20 inline SVG，實心路徑（Material 風格）
 function XIcon(props) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="#1e1e1e" strokeWidth="2.5" strokeLinecap="round" {...props}>
-      <line x1="5" y1="5" x2="19" y2="19" /><line x1="19" y1="5" x2="5" y2="19" />
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
     </svg>
   )
 }
 function CheckIcon(props) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" {...props}>
-      <path d="M4 12.5l5 5 11-12" />
-    </svg>
-  )
-}
-function TagXIcon(props) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="#1e1e1e" strokeWidth="2.5" strokeLinecap="round" {...props}>
-      <line x1="6" y1="6" x2="18" y2="18" /><line x1="18" y1="6" x2="6" y2="18" />
+    <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+      <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z" />
     </svg>
   )
 }
@@ -45,64 +39,58 @@ export default function TagPickerModal({ open, value, onClose, onConfirm, taxono
       return prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     })
 
+  // inner .modal-tag：高 30、padding 10 20、間距 8、12/400、白底黑框；已選＝藍底
+  const chip = (on) =>
+    `box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border border-black px-5 py-[10px] text-xs font-normal leading-3 text-brown ${on ? 'bg-blue' : 'bg-white'}`
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-5" onClick={onClose}>
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50" onClick={onClose}>
       <div
-        className="flex max-h-[70vh] w-[300px] flex-col overflow-hidden rounded-[10px] bg-card shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
+        className="relative flex max-h-[80vh] w-[300px] flex-col overflow-hidden rounded-[10px] bg-card shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* header: 取消 / 確認 */}
-        <div className="flex items-center justify-between px-4 pt-2.5">
-          <button type="button" onClick={onClose} aria-label="取消" className="p-1">
-            <XIcon className="h-[26px] w-[26px]" />
+        {/* header：X（左）／打勾（右，未選時淡灰 50%）／「已選標籤」置中／已選 chip */}
+        <div className="relative z-[1] w-full shrink-0 rounded-t-[10px] bg-card py-[15px]">
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="取消"
+            className="absolute left-[15px] top-[5px] flex h-7 w-7 items-center justify-center text-brown"
+          >
+            <XIcon className="h-5 w-5" />
           </button>
           <button
             type="button"
             onClick={() => { onConfirm(selected); onClose() }}
             disabled={selected.length === 0}
             aria-label="確認"
-            className="p-1 text-brown transition disabled:opacity-40"
+            className={`absolute right-[15px] top-[5px] flex h-7 w-7 items-center justify-center transition ${selected.length ? 'text-brown' : 'text-[#888] opacity-50'}`}
           >
-            <CheckIcon className="h-[26px] w-[26px]" />
+            <CheckIcon className="h-5 w-5" />
           </button>
-        </div>
-
-        {/* 已選標籤 */}
-        <div className="px-4 pb-3 pt-1">
-          <p className="mb-2 text-base font-medium text-brown">已選標籤</p>
-          <div className="flex flex-wrap gap-2">
-            {selected.length === 0 && <span className="text-xs text-brown/50">尚未選擇</span>}
+          <div className="w-full px-[15px] text-center text-base font-medium leading-4 text-brown">已選標籤</div>
+          <div className="mt-[15px] flex max-h-[90px] flex-wrap gap-[10px] overflow-y-auto px-5">
+            {selected.length === 0 && <div className="text-xs font-normal text-brown opacity-50">尚未選擇標籤</div>}
             {selected.map((tag) => (
-              <span key={tag} className="flex items-center gap-1.5 rounded-full border border-black bg-blue px-4 py-1.5 text-xs text-brown">
+              <button key={tag} type="button" onClick={() => toggle(tag)} aria-label={`移除 ${tag}`} className={chip(true)}>
                 {tag}
-                <button type="button" onClick={() => toggle(tag)} aria-label={`移除 ${tag}`} className="p-0.5">
-                  <TagXIcon className="h-3 w-3" />
-                </button>
-              </span>
+                <span className="text-sm font-bold leading-none">×</span>
+              </button>
             ))}
           </div>
         </div>
 
-        {/* 分類標籤（每一類換行顯示；未選=白底、已選=藍底） */}
-        <div className="min-h-0 flex-1 overflow-y-auto border-t border-black/10 px-4 py-3">
+        {/* 分類標籤（每類換行；分類標題 16/500，上距 20、下距 10） */}
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-[5px]">
           {taxonomy.map((cat) => (
-            <div key={cat.category} className="mb-4">
-              <p className="mb-2 text-base font-medium text-brown">{cat.category}</p>
-              <div className="flex flex-wrap gap-2">
-                {cat.tags.map((tag) => {
-                  const on = selected.includes(tag)
-                  return (
-                    <button
-                      key={tag}
-                      type="button"
-                      onClick={() => toggle(tag)}
-                      className={`whitespace-nowrap rounded-full border border-black px-4 py-1.5 text-xs text-brown transition
-                        ${on ? 'bg-blue' : 'bg-white'}`}
-                    >
-                      {tag}
-                    </button>
-                  )
-                })}
+            <div key={cat.category}>
+              <div className="mb-[10px] mt-5 text-base font-medium leading-4 text-brown">{cat.category}</div>
+              <div className="flex flex-wrap gap-2 pb-2">
+                {cat.tags.map((tag) => (
+                  <button key={tag} type="button" onClick={() => toggle(tag)} className={chip(selected.includes(tag))}>
+                    {tag}
+                  </button>
+                ))}
               </div>
             </div>
           ))}

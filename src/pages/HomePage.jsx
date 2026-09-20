@@ -31,25 +31,24 @@ export default function HomePage() {
   )
 
   return (
-    <div>
-      {/* 頂部 banner：淺藍、下圓角，避開 LIFF safe-area（比照 inner：109px 高） */}
-      <header className="flex h-[109px] items-end justify-center rounded-b-[20px] bg-blue pb-[10px] pt-[env(safe-area-inset-top)]">
+    <div className="flex flex-col items-center">
+      {/* 頂部 banner：淺藍、下圓角、109px 高，logo 106×35 在 top:64（比照 inner） */}
+      <header className="flex h-[109px] w-full items-end justify-center rounded-b-[20px] bg-blue pb-[10px] pt-[env(safe-area-inset-top)]">
         <div className="flex h-[35px] w-[106px] items-center justify-center overflow-hidden">
           <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="w-full" />
         </div>
       </header>
 
-      <div className="flex flex-col gap-8 px-6 pt-[10px]">
-        <section className="flex flex-col gap-5">
-          <SectionTitle>尋找遺失物</SectionTitle>
-          {FIND_ITEMS.map(renderItem)}
-        </section>
+      {/* 內容欄 350 寬（x=21.5）：標題文字 y=134、第一顆膠囊 y=169、兩顆間距 20、第二區標題 y=414 */}
+      <section className="mt-[25px] w-[350px]">
+        <SectionTitle>尋找遺失物</SectionTitle>
+        <div className="mt-[15px] flex flex-col gap-5">{FIND_ITEMS.map(renderItem)}</div>
+      </section>
 
-        <section className="flex flex-col gap-5">
-          <SectionTitle>登錄拾獲物</SectionTitle>
-          {REGISTER_ITEMS.map(renderItem)}
-        </section>
-      </div>
+      <section className="mt-[25px] w-[350px]">
+        <SectionTitle>登錄拾獲物</SectionTitle>
+        <div className="mt-[15px] flex flex-col gap-5">{REGISTER_ITEMS.map(renderItem)}</div>
+      </section>
     </div>
   )
 }

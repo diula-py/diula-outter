@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { WandIcon } from '../components/icons'
+import AnalyzingScreen from '../components/AnalyzingScreen'
 import { addMyItem } from '../lib/items'
 import { useAuth } from '../context/AuthContext'
 import { aiApi } from '../lib/api'
@@ -65,19 +65,8 @@ export default function RegisterAnalyzingPage() {
   }, [])
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col items-center justify-center gap-8 bg-[#cddcf0] px-10">
-      <div className="flex h-[170px] w-[170px] items-center justify-center rounded-full bg-card">
-        <WandIcon className="h-20 w-20 text-navy" />
-      </div>
-      <div className="h-[15px] w-[290px] overflow-hidden rounded-[10px] bg-white">
-        <div
-          className="h-full rounded-[10px] bg-brown/70 transition-[width] duration-500 ease-out"
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-      <p className="max-w-[300px] text-center text-[15px] leading-normal text-black/40">
-        提示：AI 會自動標記類別，<br />完成後會存進「我的拾獲物」。
-      </p>
-    </div>
+    <AnalyzingScreen pct={pct}>
+      提示：AI 會自動標記類別，<br />完成後會存進「我的拾獲物」。
+    </AnalyzingScreen>
   )
 }

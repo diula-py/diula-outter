@@ -1,33 +1,10 @@
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  ChevronLeftIcon,
-  ChevronDownIcon,
-  CalendarIcon,
-  LocationIcon,
-  PersonChalkboardIcon,
-  CircleCheckIcon,
-} from '../components/icons'
-import RegionRow from '../components/RegionRow'
+import { CalendarIcon, LocationIcon, PersonChalkboardIcon } from '../components/icons'
+import { FormHeader, FormPage, UploadBox, FormCard, FormRow, RegionField, SubmitButton, pillInput } from '../components/FormKit'
 import { todayStr } from '../lib/date'
 import { downscale } from '../lib/image'
-import { asset } from '../lib/asset'
 import { FOUND_STATUS } from '../data/itemStatus'
-
-function Field({ left, chevron, children }) {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="flex w-[46px] shrink-0 items-center justify-center">{left}</div>
-      <div className="flex h-10 min-w-0 flex-1 items-center gap-2.5 rounded-[50px] border border-black bg-white px-4">
-        {children}
-        {chevron && <ChevronDownIcon className="h-[18px] w-[18px] shrink-0 text-navy" />}
-      </div>
-    </div>
-  )
-}
-
-const inputClass =
-  'min-w-0 flex-1 bg-transparent text-xs text-brown outline-none placeholder:text-hint'
 
 function fileToDataUrl(file) {
   return new Promise((res, rej) => {
@@ -94,76 +71,40 @@ export default function RegisterOtherPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col bg-base pb-10">
-      {/* Header */}
-      <header className="relative flex h-20 items-center justify-center rounded-b-[20px] bg-card pt-[env(safe-area-inset-top)]">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          aria-label="返回"
-          className="absolute left-[22px] top-1/2 -translate-y-1/2 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-        >
-          <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
-        </button>
-        <h1 className="text-xl font-bold text-brown">非證件類遺失物登錄</h1>
-      </header>
+    <FormPage>
+      <FormHeader title="非證件類遺失物登錄" onBack={() => navigate(-1)} />
 
-      <div className="flex flex-col gap-5 px-[26px] pt-6">
-        {/* 拍照上傳 */}
-        <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
-        <button
-          type="button"
-          onClick={() => fileRef.current?.click()}
-          aria-label={photoUrl ? '更換照片' : '上傳照片'}
-          className="relative flex h-[200px] w-full items-center justify-center overflow-hidden rounded-[10px] border border-black bg-input
-                     transition hover:bg-[#eee] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-        >
-          {photoUrl ? (
-            <img src={photoUrl} alt="預覽" className="h-full w-full object-contain" />
-          ) : (
-            <img src={asset('/icons/camera.png')} alt="上傳照片" className="h-8 w-auto object-contain" />
-          )}
-        </button>
+      <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
+      <UploadBox
+        mt={40}
+        src={photoUrl}
+        alt="預覽"
+        ariaLabel={photoUrl ? '更換照片' : '上傳照片'}
+        onClick={() => fileRef.current?.click()}
+      />
 
-        {/* 表單卡片 */}
-        <div className="flex flex-col gap-[15px] rounded-[10px] bg-card px-4 py-5">
-          <Field left={<CalendarIcon className="h-[35px] w-[35px] text-navy" />} chevron>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              aria-label="拾獲日期"
-              className={`${inputClass} [&::-webkit-calendar-picker-indicator]:hidden`}
-            />
-          </Field>
-          <RegionRow
-            left={<LocationIcon className="h-[35px] w-[35px] text-navy" />}
-            prefix="拾獲的"
-            city={foundCity} setCity={setFoundCity}
-            district={foundDistrict} setDistrict={setFoundDistrict}
-          />
-          <Field left={<PersonChalkboardIcon className="h-[35px] w-[35px] text-navy" />}>
-            <input type="text" value={sendTo} onChange={(e) => setSendTo(e.target.value)} placeholder="送往的地點 *" className={inputClass} />
-          </Field>
-          <Field left={<span className="text-base text-brown">備註</span>}>
-            <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="供Threads發文時提供詳細資訊" className={inputClass} />
-          </Field>
-        </div>
+      <FormCard mt={40}>
+        <FormRow icon={<CalendarIcon className="h-[35px] w-[35px]" />}>
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="拾獲日期" className={pillInput} />
+        </FormRow>
+        <RegionField
+          icon={<LocationIcon className="h-[35px] w-[35px]" />}
+          prefix="拾獲的"
+          city={foundCity} setCity={setFoundCity}
+          district={foundDistrict} setDistrict={setFoundDistrict}
+        />
+        <FormRow icon={<PersonChalkboardIcon className="h-[35px] w-[35px]" />}>
+          <input type="text" value={sendTo} onChange={(e) => setSendTo(e.target.value)} placeholder="送往的地點" className={pillInput} />
+        </FormRow>
+        <FormRow text="備註">
+          <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="供Threads發文時提供詳細資訊" className={pillInput} />
+        </FormRow>
+      </FormCard>
 
-        {/* 送出 */}
-        {error && <p className="text-sm leading-normal text-error">{error}</p>}
-        <button
-          type="button"
-          onClick={handleSubmit}
-          disabled={status === 'submitting'}
-          className="mt-2 flex h-[60px] w-full items-center justify-center gap-4 rounded-[50px] border border-black bg-blue
-                     text-base font-medium text-brown transition hover:brightness-[.98] disabled:opacity-60
-                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-        >
-          <CircleCheckIcon className="h-10 w-10 shrink-0 text-brown" />
-          {status === 'submitting' ? '送出中…' : '填寫完成，AI 辨識產生標籤'}
-        </button>
-      </div>
-    </div>
+      {error && <p className="mt-[15px] w-full max-w-[340px] text-sm leading-normal text-error">{error}</p>}
+      <SubmitButton onClick={handleSubmit} disabled={status === 'submitting'}>
+        {status === 'submitting' ? '送出中…' : '填寫完成，AI 辨識產生標籤'}
+      </SubmitButton>
+    </FormPage>
   )
 }

@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ChevronLeftIcon, CircleCheckIcon, XmarkIcon } from '../components/icons'
+import { CircleCheckIcon } from '../components/icons'
+import { DetailHeader } from '../components/DetailKit'
+import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import PhotoMaskModal from '../components/PhotoMaskModal'
 import { addMyItem } from '../lib/items'
 import { useAuth } from '../context/AuthContext'
@@ -109,60 +111,66 @@ export default function SosPostPage() {
     }
   }
 
-  // 可編輯欄位（pill）／唯讀欄位（帶入比對條件，不可改）
-  const editBox = 'h-10 w-full rounded-[50px] border border-black bg-input px-4 text-xs text-brown outline-none placeholder:text-brown/50'
-  const lockedBox = 'flex h-10 w-full items-center rounded-[10px] bg-input px-4 text-xs text-brown/70'
-  const labelClass = 'mb-1.5 block text-xs font-medium text-brown'
+  // 步驟一（inner page-20）：全部絕對定位，座標直接抄 inner
+  const label = 'absolute text-xs font-medium leading-3 text-brown'
+  const pill = 'absolute box-border flex h-10 w-[340px] items-center px-[15px] py-[10px] text-xs font-normal'
+  const fieldInput = 'h-5 w-full bg-transparent p-0 text-xs font-normal leading-5 text-brown outline-none placeholder:text-[#888]'
 
   return (
     <div className="pb-6">
-      <header className="relative flex h-[109px] items-end justify-center rounded-b-[20px] bg-card pb-4 pt-[env(safe-area-inset-top)]">
-        <button type="button" onClick={() => (step === 'preview' ? setStep('form') : navigate(-1))} aria-label="返回"
-          className="absolute bottom-4 left-[26px] p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown">
-          <ChevronLeftIcon className="h-[35px] w-[35px] text-brown" />
-        </button>
-        <h1 className="text-xl font-bold text-brown">幫你發Threads的協尋文</h1>
-      </header>
+      <DetailHeader
+        title="幫你發Threads的協尋文"
+        onBack={() => (step === 'preview' ? setStep('form') : navigate(-1))}
+        height={109}
+        titleTop={70}
+        backLeft={25}
+        backTop={62}
+        backSize={35}
+      />
 
       {/* 步驟一：填表單 */}
       {step === 'form' && (
-        <div className="flex flex-col gap-4 px-[26px] pt-5">
-          <div className="rounded-[10px] bg-card p-4 text-xs font-medium leading-normal text-brown">
-            照欄位填，系統會套用統一模版由 <b>DiuLa 官方帳號</b> 發佈到 Threads 協尋，你的個人帳號不會露出。
+        <div className="relative h-[660px] w-full">
+          <div className="absolute left-[27px] top-5 box-border flex h-[60px] w-[340px] items-center rounded-[10px] bg-card px-[15px] py-[10px] text-xs font-medium leading-normal text-brown">
+            照欄位填，系統會套用統一模版由 DiuLa 官方帳號 發佈到 Threads 協尋，你的個人帳號不會露出。
           </div>
 
-          <div>
-            <label className={labelClass}>物品名稱
-              <input value={name} onChange={(e) => setName(e.target.value)} placeholder="皮夾 / 錢包" className={`mt-1.5 ${editBox}`} />
-            </label>
-          </div>
-          <div>
-            <p className={labelClass}>遺失日期</p>
-            <div className={lockedBox}>{(date || '').replaceAll('-', '/') || '—'}</div>
-          </div>
-          <div>
-            <p className={labelClass}>遺失地點</p>
-            <div className={lockedBox}>{place || '—'}</div>
-          </div>
-          <div>
-            <label className={labelClass}>詳細地點（選填）
-              <input value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="如：世新山洞口、景美站2號出口" className={`mt-1.5 ${editBox}`} />
-            </label>
-          </div>
-          <div>
-            <label className={labelClass}>備註
-              <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="如：對我很有紀念意義，謝謝大家幫忙留意" className={`mt-1.5 ${editBox}`} />
-            </label>
+          <div className={label} style={{ left: 27, top: 100 }}>物品名稱</div>
+          <div className={`${pill} rounded-[50px] border border-black bg-input`} style={{ left: 27, top: 122 }}>
+            <input value={name} onChange={(e) => setName(e.target.value)} className={fieldInput} />
           </div>
 
-          {error && <p className="text-sm leading-normal text-error">{error}</p>}
+          <div className={label} style={{ left: 26, top: 172 }}>遺失日期</div>
+          <div className={`${pill} rounded-[10px] bg-input`} style={{ left: 27, top: 198 }}>
+            <span className="opacity-70">{(date || '').replaceAll('-', '/') || '--'}</span>
+          </div>
 
-          <button type="button" onClick={goPreview}
-            className="mt-2 flex h-[60px] w-full items-center justify-center gap-3 rounded-[50px] border border-black bg-card
-                       text-base font-medium text-brown transition hover:bg-[#eee8d7]
-                       focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown">
-            <CircleCheckIcon className="h-9 w-9 shrink-0 text-brown" />
-            填寫完成！查看貼文預覽
+          <div className={label} style={{ left: 27, top: 248 }}>遺失地點</div>
+          <div className={`${pill} rounded-[10px] bg-input`} style={{ left: 28, top: 274 }}>
+            <span className="opacity-70">{place || '--'}</span>
+          </div>
+
+          <div className={label} style={{ left: 27, top: 324 }}>詳細地點（選填）</div>
+          <div className={`${pill} rounded-[50px] border border-black bg-input`} style={{ left: 27, top: 346 }}>
+            <input value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="如：世新山洞口、景美站2號出口" className={fieldInput} />
+          </div>
+
+          <div className={label} style={{ left: 28, top: 396 }}>備註</div>
+          <div className={`${pill} rounded-[50px] border border-black bg-input`} style={{ left: 28, top: 418 }}>
+            <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="如：對我很有紀念意義，謝謝大家幫忙留意" className={fieldInput} />
+          </div>
+
+          {error && <p className="absolute left-[27px] top-[466px] w-[340px] text-sm leading-normal text-error">{error}</p>}
+
+          <button
+            type="button"
+            onClick={goPreview}
+            className="absolute left-1/2 top-[488px] box-border flex h-[60px] w-[350px] -translate-x-1/2 items-center justify-center gap-[30px] rounded-[50px] border border-black bg-card px-10 py-[30px]
+                       text-base font-medium text-brown transition hover:brightness-[.98]
+                       focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+          >
+            <CircleCheckIcon className="h-10 w-10 shrink-0" />
+            <span>填寫完成！查看貼文預覽</span>
           </button>
         </div>
       )}
@@ -218,29 +226,12 @@ export default function SosPostPage() {
         />
       )}
 
-      {/* 發布成功彈窗 */}
+      {/* 發布成功彈窗（inner notfound-thread-success：300×251） */}
       {status === 'success' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/60 p-6">
-          <div className="relative w-[300px] rounded-[10px] bg-card px-6 pb-8 pt-14 shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
-            <button
-              type="button"
-              onClick={() => navigate('/my/lost')}
-              aria-label="關閉"
-              className="absolute left-4 top-4 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-            >
-              <XmarkIcon className="h-[35px] w-[35px]" />
-            </button>
-            <p className="mb-7 text-center text-xl font-medium text-brown">Threads串文已排定發佈！</p>
-            <button
-              type="button"
-              onClick={() => navigate('/my/lost')}
-              className="h-[60px] w-full rounded-[50px] border border-black bg-blue text-xl font-medium text-brown
-                         transition hover:brightness-[.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-            >
-              返回我的遺失物
-            </button>
-          </div>
-        </div>
+        <WireDialog height={251} onClose={() => navigate('/my/lost')} label="Threads串文已排定發佈">
+          <DialogTitle top={87} width={246} lineHeight={22}>Threads串文已排定發佈！</DialogTitle>
+          <DialogButton left={41} top={146} width={214} tone="blue" onClick={() => navigate('/my/lost')}>返回我的遺失物</DialogButton>
+        </WireDialog>
       )}
     </div>
   )
