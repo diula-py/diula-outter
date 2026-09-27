@@ -16,6 +16,7 @@ import { LOST_STATUS } from '../data/itemStatus'
 function statusColor(status) {
   if (status === LOST_STATUS.FOUND) return '#2E7D32'
   if (status === LOST_STATUS.BROADCASTING || status === LOST_STATUS.POSTED) return '#B8860B'
+  if (status === LOST_STATUS.BROADCAST_ENDED) return '#8C8C8C'
   return '#482B12'
 }
 

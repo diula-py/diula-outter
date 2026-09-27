@@ -20,6 +20,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore'
 import { db } from './firebase'
+import { LOST_STATUS } from '../data/itemStatus'
 
 function collectionFor(kind) {
   return kind === 'found' ? 'found_items' : 'lost_items'
@@ -97,6 +98,8 @@ export async function addMyItem(kind, userId, data) {
     timestamp: serverTimestamp(),
   }
   if (kind === 'found') payload.picker_id = userId
+  // 自動推播的開始時間，供 Cloud Function 判斷滿五天後結束推播
+  if (rest.status === LOST_STATUS.BROADCASTING) payload.autoPushStartedAt = serverTimestamp()
 
   await setDoc(doc(db, col, newId), payload)
   return { id: newId, ...fromFirestoreFields(payload) }
