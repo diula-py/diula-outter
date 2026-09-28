@@ -2,10 +2,9 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ChevronLeftIcon, CalendarIcon, DiulaPinIcon } from '../components/icons'
 
-import { spring } from '../lib/api'
+import { spring, fetchThreadsPosts } from '../lib/api'
 import { asset } from '../lib/asset'
 
-const POSTS_API = spring('/api/posts')
 const IMAGE_PROXY = spring('/api/image?url=')
 
 function fmtDate(s) {
@@ -25,8 +24,7 @@ export default function ThreadsPostDetail() {
   useEffect(() => {
     if (post) return
     let alive = true
-    fetch(POSTS_API)
-      .then((r) => { if (!r.ok) throw new Error(); return r.json() })
+    fetchThreadsPosts()
       .then((list) => {
         const found = Array.isArray(list) ? list.find((p) => p.id === id) : null
         if (!alive) return

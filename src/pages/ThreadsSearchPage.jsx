@@ -3,9 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { MagnifyingGlassIcon } from '../components/icons'
 import { FormHeader } from '../components/FormKit'
 
-import { spring } from '../lib/api'
+import { spring, fetchThreadsPosts } from '../lib/api'
 
-const POSTS_API = spring('/api/posts')
 const IMAGE_PROXY = spring('/api/image?url=')
 
 /** 貼文縮圖：有圖走 proxy，失效／無圖顯示 placeholder（依後端設計，圖過期是正常的）。 */
@@ -34,8 +33,7 @@ export default function ThreadsSearchPage() {
 
   useEffect(() => {
     let alive = true
-    fetch(POSTS_API)
-      .then((r) => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() })
+    fetchThreadsPosts()
       .then((data) => { if (alive) { setPosts(Array.isArray(data) ? data : []); setState('ready') } })
       .catch(() => { if (alive) setState('error') })
     return () => { alive = false }
