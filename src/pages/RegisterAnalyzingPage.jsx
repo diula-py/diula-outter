@@ -16,14 +16,14 @@ export default function RegisterAnalyzingPage() {
   const { userId } = useAuth()
   const data = location.state || {}
   const item = data.item
-  const [pct, setPct] = useState(6)
+  const [pct, setPct] = useState(0)
 
   useEffect(() => {
     // 直接開這個網址、沒有帶資料就退回登錄頁。
     if (!item) { navigate('/register/id', { replace: true }); return }
 
     let alive = true
-    const grow = setInterval(() => setPct((p) => (p < 90 ? p + (90 - p) * 0.05 : p)), 250)
+    const grow = setInterval(() => setPct((p) => Math.min(90, p + (90 - p) * 0.08 + 0.3)), 200)
 
     // 有 AI 結果就合併標籤，沒有就用原本的基本標籤；最後一律存檔 + 進清單。
     const finish = async (extraTags) => {
