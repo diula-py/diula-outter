@@ -98,7 +98,7 @@ export default function CrossSearchPage() {
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
             placeholder="請在此處描述您遺失的物品"
-            className="h-full w-full resize-none border-none bg-transparent text-base font-medium leading-normal text-black outline-none placeholder:text-[#888]"
+            className="h-full w-full resize-none border-none bg-transparent p-3 text-base font-medium leading-normal text-black outline-none placeholder:text-[#888]"
           />
         </div>
       )}

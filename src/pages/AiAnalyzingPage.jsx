@@ -12,12 +12,12 @@ export default function AiAnalyzingPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const data = location.state || {}
-  const [pct, setPct] = useState(6)
+  const [pct, setPct] = useState(0)
   const [error, setError] = useState('')
 
   useEffect(() => {
     let alive = true
-    const grow = setInterval(() => setPct((p) => (p < 90 ? p + (90 - p) * 0.05 : p)), 250)
+    const grow = setInterval(() => setPct((p) => Math.min(90, p + (90 - p) * 0.08 + 0.3)), 200)
 
     ;(async () => {
       try {

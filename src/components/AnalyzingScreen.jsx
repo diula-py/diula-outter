@@ -28,7 +28,7 @@ export default function AnalyzingScreen({ pct, error, onRetry, children }) {
         <>
           <div className="absolute left-[51px] top-[456px] h-[15px] w-[290px] overflow-hidden rounded-[10px] bg-white">
             <div
-              className="h-full rounded-[10px] bg-[#482B12] opacity-70 transition-[width] duration-300 ease-out"
+              className="h-full rounded-[10px] bg-brown opacity-70 transition-[width] duration-300 ease-out"
               style={{ width: `${pct}%` }}
             />
           </div>

@@ -56,7 +56,7 @@ export default function ConfirmTagsPage() {
   return (
     <FormPage>
       {/* Header（cream，80px，僅標題、沒有返回鍵） */}
-      <FormHeader title={data.name || '確認標籤'} />
+      <FormHeader title="確認標籤" />
 
       {/* 圖片模式：340×200；文字模式：米色卡片＋筆圖示＋描述（inner page-05） */}
       {data.mode === 'text' ? (

@@ -78,6 +78,11 @@ export default function TagPickerModal({ open, value, onClose, onConfirm, taxono
               </button>
             ))}
           </div>
+          {/* inner 的分隔陰影：header 下緣 6px 漸層 */}
+          <div
+            className="pointer-events-none absolute inset-x-0 -bottom-[6px] h-[6px] bg-gradient-to-b from-black/[0.18] to-black/0"
+            aria-hidden="true"
+          />
         </div>
 
         {/* 分類標籤（每類換行；分類標題 16/500，上距 20、下距 10） */}
