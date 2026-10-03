@@ -84,7 +84,7 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
               className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
             />
           </label>
-          <div className="box-border flex h-[45px] min-w-0 flex-1 items-center gap-2 rounded-[50px] border border-black bg-input px-[15px] py-[10px]">
+          <div className="box-border flex h-[45px] min-w-0 flex-1 items-center gap-2 rounded-[10px] border border-black bg-input px-[15px] py-[10px]">
             <MagnifyingGlassIcon className="h-4 w-4 shrink-0" />
             <input
               type="text"

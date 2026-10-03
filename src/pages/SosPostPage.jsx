@@ -136,7 +136,7 @@ export default function SosPostPage() {
           </div>
 
           <div className={label} style={{ left: 27, top: 100 }}>物品名稱</div>
-          <div className={`${pill} rounded-[50px] border border-black bg-input`} style={{ left: 27, top: 122 }}>
+          <div className={`${pill} rounded-[10px] border border-black bg-input`} style={{ left: 27, top: 122 }}>
             <input value={name} onChange={(e) => setName(e.target.value)} className={fieldInput} />
           </div>
 
@@ -151,12 +151,12 @@ export default function SosPostPage() {
           </div>
 
           <div className={label} style={{ left: 27, top: 324 }}>詳細地點（選填）</div>
-          <div className={`${pill} rounded-[50px] border border-black bg-input`} style={{ left: 27, top: 346 }}>
+          <div className={`${pill} rounded-[10px] border border-black bg-input`} style={{ left: 27, top: 346 }}>
             <input value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="如：世新山洞口、景美站2號出口" className={fieldInput} />
           </div>
 
           <div className={label} style={{ left: 28, top: 396 }}>備註</div>
-          <div className={`${pill} rounded-[50px] border border-black bg-input`} style={{ left: 28, top: 418 }}>
+          <div className={`${pill} rounded-[10px] border border-black bg-input`} style={{ left: 28, top: 418 }}>
             <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="如：對我很有紀念意義，謝謝大家幫忙留意" className={fieldInput} />
           </div>
 

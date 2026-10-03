@@ -93,11 +93,11 @@ export default function RegisterOtherPage() {
           city={foundCity} setCity={setFoundCity}
           district={foundDistrict} setDistrict={setFoundDistrict}
         />
-        <FormRow icon={<PersonChalkboardIcon className="h-[35px] w-[35px]" />}>
+        <FormRow icon={<PersonChalkboardIcon className="h-[35px] w-[35px]" />} typing>
           <input type="text" value={sendTo} onChange={(e) => setSendTo(e.target.value)} placeholder="送往的地點" className={pillInput} />
         </FormRow>
-        <FormRow text="備註">
-          <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="供Threads發文時提供詳細資訊" className={pillInput} />
+        <FormRow text="備註" typing>
+          <input type="text" value={note} onChange={(e) => setNote(e.target.value)} className={pillInput} />
         </FormRow>
       </FormCard>
 

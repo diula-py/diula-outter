@@ -52,8 +52,8 @@ export default function ThreadsSearchPage() {
     <div className="flex flex-col items-center pb-[120px]">
       <FormHeader title="Threads尋找遺失物" onBack={() => navigate(-1)} />
 
-      {/* 搜尋列（inner）：寬 calc(100% - 44px)、最大 340、高 46、padding 10 20、間距 10、icon 20×20 */}
-      <div className="mt-5 box-border flex h-[46px] w-[calc(100%-44px)] max-w-[340px] shrink-0 items-center gap-[10px] rounded-[50px] border border-black bg-input px-5 py-[10px]">
+      {/* 搜尋列（inner）：寬 calc(100% - 44px)、最大 340、高 46、圓角 10、padding 10 20、間距 10、icon 20×20 */}
+      <div className="mt-5 box-border flex h-[46px] w-[calc(100%-44px)] max-w-[340px] shrink-0 items-center gap-[10px] rounded-[10px] border border-black bg-input px-5 py-[10px]">
         <MagnifyingGlassIcon className="h-5 w-5 shrink-0" />
         <input
           type="text"

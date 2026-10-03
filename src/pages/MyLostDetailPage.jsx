@@ -18,7 +18,6 @@ export default function MyLostDetailPage() {
     code: passed?.id ? `＃${String(passed.id).toUpperCase()}` : '--', // inner：＃文件 ID（大寫）
     date: (passed?.date || '').replaceAll('-', '/') || '—',
     place: passed?.place || '—',
-    remark: passed?.remark || '--',
     tags: passed?.tags && passed.tags.length ? passed.tags : [],
     img: passed?.image || passed?.img || null,
     desc: passed?.desc || '',
@@ -102,11 +101,10 @@ export default function MyLostDetailPage() {
 
       <DetailImage src={item.img} mt={17} desc={item.desc} />
 
-      {/* 資訊卡 340×175：日期／地點／備註 */}
-      <InfoBox height={175}>
+      {/* 資訊卡 340×128：日期／地點（上下各留 19） */}
+      <InfoBox height={128}>
         <InfoRow icon={<CalendarIcon className="h-[35px] w-[35px]" />} iconTop={22} pillTop={19} pillLeft={82.5}>{item.date}</InfoRow>
         <InfoRow icon={<LocationIcon className="h-[35px] w-[35px]" />} iconTop={72} pillTop={69} pillLeft={82.5}>{item.place}</InfoRow>
-        <InfoRow text="備註" textTop={129} pillTop={117} pillLeft={82.5}>{item.remark}</InfoRow>
       </InfoBox>
 
       {item.tags.length > 0 && <TagsBox tags={item.tags} />}
