@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import AnalyzingScreen from '../components/AnalyzingScreen'
 
 import { aiApi } from '../lib/api'
+import { normalizeIdWording } from '../lib/text'
 
 const AI_API = aiApi('/analyze-item') // dev 走 /ext-ai proxy；prod 直連 Render AI
 
@@ -24,21 +25,21 @@ export default function AiAnalyzingPage() {
         const res = await fetch(AI_API, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: data.desc || '', base64Image: data.base64Image || null }),
+          body: JSON.stringify({ text: normalizeIdWording(data.desc || ''), base64Image: data.base64Image || null }),
         })
         const json = await res.json().catch(() => ({}))
         if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`)
 
         const tags = []
         for (const it of json.items || []) {
-          if (it.sub_tag) tags.push(it.sub_tag)
+          if (it.sub_tag) tags.push(normalizeIdWording(it.sub_tag))
           for (const c of it.colors || []) tags.push(c)
         }
         const uniq = [...new Set(tags)]
         if (!uniq.length) throw new Error('AI 沒認出東西，換張清楚一點的照片或改用文字描述')
 
         const first = (json.items || [])[0] || {}
-        const name = `${(first.colors && first.colors[0]) || ''}${first.sub_tag || ''}` || '確認標籤'
+        const name = `${(first.colors && first.colors[0]) || ''}${normalizeIdWording(first.sub_tag || '')}` || '確認標籤'
 
         if (!alive) return
         clearInterval(grow)

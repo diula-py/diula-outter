@@ -4,6 +4,7 @@ import { MagnifyingGlassIcon } from '../components/icons'
 import { FormHeader } from '../components/FormKit'
 
 import { spring, fetchThreadsPosts } from '../lib/api'
+import { normalizeIdWording } from '../lib/text'
 
 const IMAGE_PROXY = spring('/api/image?url=')
 
@@ -40,9 +41,9 @@ export default function ThreadsSearchPage() {
   }, [])
 
   const filtered = useMemo(() => {
-    const q = query.trim()
+    const q = normalizeIdWording(query.trim())
     return posts.filter((p) => {
-      const okText = !q || String(p.text || '').includes(q)
+      const okText = !q || normalizeIdWording(String(p.text || '')).includes(q)
       return okText
     })
   }, [posts, query])

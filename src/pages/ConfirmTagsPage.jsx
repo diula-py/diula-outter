@@ -86,9 +86,9 @@ export default function ConfirmTagsPage() {
         </FormRow>
       </FormCard>
 
-      {/* AI 標籤（可增刪）：340 寬、padding 20、標題 16/700、chip 高 30 */}
+      {/* AI 標籤（可增刪）：340 寬、padding 20、標題 16/600（同 inner）、chip 高 30 */}
       <div className="mt-5 box-border min-h-[98px] w-full max-w-[340px] shrink-0 rounded-[10px] bg-card p-5">
-        <div className="mb-[10px] text-base font-bold text-brown">AI 標籤</div>
+        <div className="mb-[10px] text-base font-semibold text-brown">AI 標籤</div>
         <div className="flex flex-wrap gap-[10px]">
           {tags.map((tag) => (
             <div key={tag} className="box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border border-black bg-blue px-5 py-[10px] text-xs font-normal text-brown">

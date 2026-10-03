@@ -4,6 +4,7 @@
  * 所以標頭與資訊列的位置都由呼叫端以 inner 的數值傳入。
  */
 import { ChevronLeftIcon, CircleCheckIcon } from './icons'
+import { asset } from '../lib/asset'
 
 export function DetailHeader({ title, onBack, height, titleTop, backLeft, backTop, backSize }) {
   return (
@@ -27,14 +28,24 @@ export function DetailHeader({ title, onBack, height, titleTop, backLeft, backTo
   )
 }
 
-/** 340×200 圖片區（灰底、contain、圓角 10）。 */
-export function DetailImage({ src, mt, fallback }) {
+/**
+ * 340×200 圖片區（灰底、contain、圓角 10）。
+ * 沒有照片時照 inner：有文字描述就顯示描述（14/500、行距 150%、padding 20、垂直置中），
+ * 否則顯示撐滿整框的 DiuLa Logo（contain）。
+ */
+export function DetailImage({ src, mt, desc }) {
   return (
     <div
       className="flex h-[200px] w-full max-w-[340px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-input"
       style={{ marginTop: mt }}
     >
-      {src ? <img src={src} alt="" className="h-full w-full object-contain" /> : fallback}
+      {src ? (
+        <img src={src} alt="" className="h-full w-full object-contain" />
+      ) : desc ? (
+        <div className="box-border flex h-full w-full items-center overflow-y-auto p-5 text-sm font-medium leading-[150%] text-brown">{desc}</div>
+      ) : (
+        <img src={asset('/icons/logo2.png')} alt="" className="h-full w-full object-contain" />
+      )}
     </div>
   )
 }
@@ -64,11 +75,11 @@ export function InfoRow({ icon, text, iconTop, textTop, pillTop, pillLeft = 82.5
   )
 }
 
-/** AI 標籤區：340 寬、padding 20、標題 16/700、chip 12/400 白底圓角 10、padding 6 14、間距 10。 */
+/** AI 標籤區：340 寬、padding 20、標題 16/600（同 inner）、chip 12/400 白底圓角 10、padding 6 14、間距 10。 */
 export function TagsBox({ tags, mt = 20 }) {
   return (
     <div className="box-border min-h-[98px] w-full max-w-[340px] shrink-0 rounded-[10px] bg-card p-5" style={{ marginTop: mt }}>
-      <div className="mb-[10px] text-base font-bold leading-[18px]">AI 標籤</div>
+      <div className="mb-[10px] text-base font-semibold leading-[18px]">AI 標籤</div>
       <div className="flex flex-wrap gap-[10px]">
         {tags.map((t) => (
           <div key={t} className="rounded-[10px] bg-white px-[14px] py-[6px] text-xs font-normal">{t}</div>
@@ -91,6 +102,20 @@ export function ActionButton({ tone, onClick, children }) {
     >
       <CircleCheckIcon className="h-10 w-10 shrink-0" />
       <span>{children}</span>
+    </button>
+  )
+}
+
+/** inner「刪除此筆資料」：100×40、白底 #C4C4C4 框、文字 12/700 #C4C4C4，在主要動作鈕下方 20px。 */
+export function DeleteButton({ onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="mt-5 box-border flex h-10 w-[100px] shrink-0 items-center justify-center rounded-[50px] border border-[#C4C4C4] bg-white text-xs font-bold leading-3 text-[#C4C4C4]
+                 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+    >
+      刪除此筆資料
     </button>
   )
 }
