@@ -68,8 +68,8 @@ export default function RegisterConfirmPage() {
           city={city} setCity={setCity}
           district={district} setDistrict={setDistrict}
         />
-        <FormRow text="備註">
-          <input type="text" value={remark} onChange={(e) => setRemark(e.target.value)} placeholder="供Threads發文時提供詳細資訊" className={pillInput} />
+        <FormRow text="備註" typing>
+          <input type="text" value={remark} onChange={(e) => setRemark(e.target.value)} className={pillInput} />
         </FormRow>
       </FormCard>
 
