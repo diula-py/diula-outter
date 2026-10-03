@@ -2,7 +2,8 @@
    刻意放在「純 CSS」而非 Tailwind 進入點 index.css：
    Tailwind v4 的 Vite plugin 在 dev 不會改寫 url()，會讓字型路徑 404；
    純 CSS 走 Vite 標準管線，dev / prod（含 GitHub Pages base）都會正確改寫並加 hash。
-   font-display: swap → 下載完成前先用 fallback，不卡白畫面。 */
+   font-display: swap → 下載完成前先用 fallback，不卡白畫面。
+   檔案是子集化後的常用字版本（約 1 MB／字重），完整原檔在 fonts-src/，重產用 scripts/subset-fonts.py。 */
 @font-face {
   font-family: "GenSenRounded2 TW";
   font-weight: 400;

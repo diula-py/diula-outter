@@ -18,8 +18,10 @@
 
   /* design.md §3：英數字 Comfortaa、中文 GenSenRounded2 TW（源泉圓體，自架 woff2，見 fonts.css）。
      Comfortaa 必須排在最前面：它沒有中文字，中文才會落到源泉圓體；
-     若源泉圓體排前面，它自帶的英數字會蓋掉 Comfortaa。後面是系統圓體 fallback。 */
-  --font-round: "Comfortaa", "GenSenRounded2 TW", "Yuanti SC",
+     若源泉圓體排前面，它自帶的英數字會蓋掉 Comfortaa。
+     源泉圓體已子集化成常用字（scripts/subset-fonts.py），下載完成前與罕見字由
+     Chiron GoRound TC（Google Fonts 圓體）頂上，避免先閃黑體；再後面是系統圓體 fallback。 */
+  --font-round: "Comfortaa", "GenSenRounded2 TW", "Chiron GoRound TC", "Yuanti SC",
                 "Hiragino Maru Gothic ProN", "LiHei Pro", "Noto Sans TC",
                 system-ui, sans-serif;
   /* font-sans 也指向同一組，避免任何 font-sans 用法跳回系統字型 */
