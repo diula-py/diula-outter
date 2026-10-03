@@ -101,3 +101,24 @@ export function ConfirmFoundModal({ onCancel, onConfirm, busy }) {
     </Overlay>
   )
 }
+
+/** inner delete-modal（300×251）：「是否永久刪除此筆資料？」是（白）／否（藍）。我的遺失物／拾獲物共用。 */
+export function DeleteConfirmModal({ onCancel, onConfirm, busy }) {
+  return (
+    <WireDialog height={251} onClose={onCancel} label="是否永久刪除此筆資料">
+      <DialogTitle top={95} width={220}>是否永久刪除此筆資料？</DialogTitle>
+      <DialogButton left={41} top={146} width={90} onClick={onConfirm} disabled={busy}>是</DialogButton>
+      <DialogButton left={170} top={146} width={90} tone="blue" onClick={onCancel}>否</DialogButton>
+    </WireDialog>
+  )
+}
+
+/** inner delete-success-modal（300×230，無 X）：「該筆資料已被刪除！」＋ 置中藍色「確認」180×60。 */
+export function DeleteSuccessModal({ onConfirm }) {
+  return (
+    <WireDialog height={230} label="該筆資料已被刪除">
+      <DialogTitle top={80} width={262}>該筆資料已被刪除！</DialogTitle>
+      <DialogButton left={60} top={140} width={180} tone="blue" onClick={onConfirm}>確認</DialogButton>
+    </WireDialog>
+  )
+}

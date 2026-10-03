@@ -5,6 +5,7 @@ import { listMyItems } from '../lib/items'
 import { useAuth } from '../context/AuthContext'
 import { asset } from '../lib/asset'
 import { LOST_STATUS } from '../data/itemStatus'
+import { normalizeIdWording } from '../lib/text'
 
 /**
  * 「我的遺失物／我的拾獲物」清單頁（inner page-15／page-18）。
@@ -29,6 +30,7 @@ function Thumb({ img }) {
 }
 
 export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
+  // emptyText：inner「尚無符合條件的遺失物資料／拾獲物資料」，沒資料與篩選後沒結果都用同一句
   const navigate = useNavigate()
   const { userId } = useAuth()
   const [query, setQuery] = useState('')
@@ -45,15 +47,17 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
   }, [kind, userId])
 
   const filtered = useMemo(() => {
-    const q = query.trim()
+    const q = normalizeIdWording(query.trim())
     return items.filter((it) => {
-      const okText = !q || (it.name || '').includes(q) || (it.code || '').includes(q) || (it.tags || []).some((t) => t.includes(q))
+      const has = (s) => normalizeIdWording(String(s || '')).includes(q)
+      const okText = !q || has(it.name) || has(it.id) || (it.tags || []).some(has)
       const okDate = !dateFilter || it.date === dateFilter
       return okText && okDate
     })
   }, [items, query, dateFilter])
 
-  const note = 'py-5 text-center text-sm leading-normal text-[#888]'
+  // inner：載入中＝16px 棕色；空白提示＝16px 灰色（#888），padding 20、置中
+  const note = 'p-5 text-center text-base leading-normal'
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col items-center bg-paper pb-[120px]">
@@ -94,9 +98,8 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
       </header>
 
       <div className="mt-5 flex w-full max-w-[340px] flex-col gap-[15px]">
-        {loading && <p className={note}>載入中…</p>}
-        {!loading && items.length === 0 && <p className={note}>{emptyText}</p>}
-        {!loading && items.length > 0 && filtered.length === 0 && <p className={note}>沒有符合的項目</p>}
+        {loading && <p className={`${note} text-brown`}>載入中...</p>}
+        {!loading && filtered.length === 0 && <p className={`${note} text-[#888]`}>{emptyText}</p>}
 
         {filtered.map((it) => (
           <button
@@ -108,7 +111,7 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
           >
             <Thumb img={it.image} />
             <div className="flex min-w-0 flex-1 flex-col gap-1 overflow-hidden">
-              <div className="truncate text-xs font-bold">{it.code}</div>
+              <div className="truncate text-xs font-bold">＃{String(it.id).toUpperCase()}</div>
               <div className="truncate text-sm font-bold">{it.name || (it.tags || []).map((t) => `#${t}`).join(' ')}</div>
               <div className="text-xs font-normal">{(it.date || '').replaceAll('-', '/')}</div>
               {it.status && (

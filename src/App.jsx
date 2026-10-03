@@ -7,6 +7,8 @@ import ProfilePage from './pages/ProfilePage'
 import RegisterIdPage from './pages/RegisterIdPage'
 import RegisterOtherPage from './pages/RegisterOtherPage'
 import RegisterAnalyzingPage from './pages/RegisterAnalyzingPage'
+import RegisterConfirmPage from './pages/RegisterConfirmPage'
+import RegisterSuccessPage from './pages/RegisterSuccessPage'
 import ThreadsSearchPage from './pages/ThreadsSearchPage'
 import ThreadsPostDetail from './pages/ThreadsPostDetail'
 import CrossSearchPage from './pages/CrossSearchPage'
@@ -56,6 +58,8 @@ export default function App() {
         <Route path="/about" element={<PlaceholderPage title="關於 DiuLa!" />} />
         <Route path="/register/id" element={<RegisterIdPage />} />
         <Route path="/register/analyzing" element={<RegisterAnalyzingPage />} />
+        <Route path="/register/confirm" element={<RegisterConfirmPage />} />
+        <Route path="/register/success" element={<RegisterSuccessPage />} />
         <Route path="/register/other" element={<RegisterOtherPage />} />
       </Route>
     </Routes>

@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { CalendarIcon, LocationIcon, DiulaPinIcon } from '../components/icons'
-import { ConfirmFoundModal } from '../components/DialogKit'
-import { DetailHeader, DetailImage, InfoBox, InfoRow, TagsBox, ActionButton } from '../components/DetailKit'
-import { updateMyItem } from '../lib/items'
+import { CalendarIcon, LocationIcon } from '../components/icons'
+import { ConfirmFoundModal, DeleteConfirmModal, DeleteSuccessModal } from '../components/DialogKit'
+import { DetailHeader, DetailImage, InfoBox, InfoRow, TagsBox, ActionButton, DeleteButton } from '../components/DetailKit'
+import { updateMyItem, removeMyItem } from '../lib/items'
 import { flask } from '../lib/api'
 import { asset } from '../lib/asset'
 import { LOST_STATUS } from '../data/itemStatus'
@@ -15,16 +15,17 @@ export default function MyLostDetailPage() {
 
   const item = {
     name: passed?.name || '協尋物品',
-    code: passed?.code || '#------',
+    code: passed?.id ? `＃${String(passed.id).toUpperCase()}` : '--', // inner：＃文件 ID（大寫）
     date: (passed?.date || '').replaceAll('-', '/') || '—',
     place: passed?.place || '—',
     remark: passed?.remark || '--',
     tags: passed?.tags && passed.tags.length ? passed.tags : [],
     img: passed?.image || passed?.img || null,
+    desc: passed?.desc || '',
   }
 
   const [status, setStatus] = useState(passed?.status || LOST_STATUS.BROADCASTING)
-  const [dialog, setDialog] = useState(null) // null | 'confirm' | 'success'
+  const [dialog, setDialog] = useState(null) // null | 'confirm' | 'delete' | 'deleted'
   const [busy, setBusy] = useState(false)
   // Threads 自動發文的貼文連結；非 Threads 的協尋物沒有這欄 → 不顯示連結列。
   const [threadUrl, setThreadUrl] = useState(passed?.thread_post_url || '')
@@ -71,6 +72,21 @@ export default function MyLostDetailPage() {
     navigate('/my/lost', { replace: true })
   }
 
+  // 刪除此筆資料：刪 Firestore 文件 → 「該筆資料已被刪除！」→ 確認後回列表。
+  async function deleteItem() {
+    setBusy(true)
+    try {
+      if (passed?.id) await removeMyItem(passed.kind || 'lost', passed.id)
+      setDialog('deleted')
+    } catch (e) {
+      console.error('刪除失敗:', e)
+      alert('刪除失敗，請稍後再試')
+      setDialog(null)
+    } finally {
+      setBusy(false)
+    }
+  }
+
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col items-center bg-paper pb-[100px]">
       {/* Header 90px：標題 top:55、返回鍵 30×30 在 (21,50) */}
@@ -84,7 +100,7 @@ export default function MyLostDetailPage() {
         </span>
       </div>
 
-      <DetailImage src={item.img} mt={17} fallback={<DiulaPinIcon className="h-20 w-20" />} />
+      <DetailImage src={item.img} mt={17} desc={item.desc} />
 
       {/* 資訊卡 340×175：日期／地點／備註 */}
       <InfoBox height={175}>
@@ -122,7 +138,12 @@ export default function MyLostDetailPage() {
       {/* 我找到了（找到後隱藏） */}
       {!found && <ActionButton tone="blue" onClick={() => setDialog('confirm')}>我找到了！立即更新狀態</ActionButton>}
 
+      {/* 刪除此筆資料（inner：我找到了鈕下方 20px；我找到了隱藏時仍顯示） */}
+      <DeleteButton onClick={() => setDialog('delete')} />
+
       {dialog === 'confirm' && <ConfirmFoundModal busy={busy} onCancel={() => setDialog(null)} onConfirm={confirmFound} />}
+      {dialog === 'delete' && <DeleteConfirmModal busy={busy} onCancel={() => setDialog(null)} onConfirm={deleteItem} />}
+      {dialog === 'deleted' && <DeleteSuccessModal onConfirm={() => navigate('/my/lost', { replace: true })} />}
     </div>
   )
 }

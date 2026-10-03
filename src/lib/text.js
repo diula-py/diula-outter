@@ -7,3 +7,9 @@ export function itemTitle(it) {
   s = s.split(/[，,]?\s*請失主/)[0]           // 砍「，請失主…」公告樣板
   return s.trim()
 }
+
+// 使用者常把「身分證」打成「身份證」。標籤表統一用「身分」，
+// 所以送 AI 的描述、AI 回傳的標籤、搜尋關鍵字都先轉成「身分」，兩種寫法都能辨識、分類。
+export function normalizeIdWording(text) {
+  return typeof text === 'string' ? text.replaceAll('身份', '身分') : text
+}

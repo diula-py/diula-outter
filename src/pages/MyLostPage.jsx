@@ -6,7 +6,7 @@ export default function MyLostPage() {
       title="我的遺失物"
       kind="lost"
       detailBase="/my/lost"
-      emptyText="還沒有協尋紀錄。去「跨平台尋找遺失物」發起協尋吧！"
+      emptyText="尚無符合條件的遺失物資料"
     />
   )
 }
