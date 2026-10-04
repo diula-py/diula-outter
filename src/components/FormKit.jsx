@@ -67,8 +67,11 @@ export function FormCard({ mt = 20, children }) {
   )
 }
 
-/** 一列：左邊 35×35 圖示（左縮 10）＋右邊 40 高的白色膠囊。icon 傳元素；text 傳字（如「備註」）。 */
-export function FormRow({ icon, text, children, pillClass = 'px-[15px]' }) {
+/**
+ * 一列：左邊 35×35 圖示（左縮 10）＋右邊 40 高的白色膠囊。icon 傳元素；text 傳字（如「備註」）。
+ * typing：使用者自行打字的欄位（送往地點、備註）圓角改 10；日期／下拉選單維持膠囊 50。
+ */
+export function FormRow({ icon, text, children, pillClass = 'px-[15px]', typing = false }) {
   return (
     <div className="flex items-center gap-[10px]">
       {text ? (
@@ -76,7 +79,7 @@ export function FormRow({ icon, text, children, pillClass = 'px-[15px]' }) {
       ) : (
         <div className="ml-[10px] flex h-[35px] w-[35px] shrink-0 items-center justify-center">{icon}</div>
       )}
-      <div className={`flex h-10 min-w-0 flex-1 items-center rounded-[50px] border border-black bg-white py-[10px] ${pillClass}`}>
+      <div className={`flex h-10 min-w-0 flex-1 items-center border border-black bg-white py-[10px] ${typing ? 'rounded-[10px]' : 'rounded-[50px]'} ${pillClass}`}>
         {children}
       </div>
     </div>

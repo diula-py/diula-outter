@@ -5,6 +5,7 @@ import { ConfirmFoundModal, DeleteConfirmModal, DeleteSuccessModal } from '../co
 import { DetailHeader, DetailImage, InfoBox, InfoRow, TagsBox, ActionButton, DeleteButton } from '../components/DetailKit'
 import { updateMyItem, removeMyItem } from '../lib/items'
 import { flask } from '../lib/api'
+import { getAuthHeaders } from '../lib/authToken'
 import { asset } from '../lib/asset'
 import { LOST_STATUS } from '../data/itemStatus'
 
@@ -18,7 +19,6 @@ export default function MyLostDetailPage() {
     code: passed?.id ? `＃${String(passed.id).toUpperCase()}` : '--', // inner：＃文件 ID（大寫）
     date: (passed?.date || '').replaceAll('-', '/') || '—',
     place: passed?.place || '—',
-    remark: passed?.remark || '--',
     tags: passed?.tags && passed.tags.length ? passed.tags : [],
     img: passed?.image || passed?.img || null,
     desc: passed?.desc || '',
@@ -37,8 +37,10 @@ export default function MyLostDetailPage() {
     setDeletingThread(true)
     try {
       if (passed?.thread_post_id) {
+        // 後端只讓發文者自己刪，要帶登入憑證（見 diula-outter 的 auth_token.py）。
+        const authHeaders = await getAuthHeaders()
         await fetch(flask('/threads/delete'), {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeaders },
           body: JSON.stringify({ post_id: passed.thread_post_id }),
         })
       }
@@ -52,15 +54,17 @@ export default function MyLostDetailPage() {
   async function confirmFound() {
     setBusy(true)
     try {
+      const authHeaders = await getAuthHeaders()
+      const headers = { 'Content-Type': 'application/json', ...authHeaders }
       if (passed?.thread_post_id) {
         await fetch(flask('/threads/delete'), {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers,
           body: JSON.stringify({ post_id: passed.thread_post_id }),
         })
       }
       if (passed?.sub_id) {
         await fetch(flask('/subscriptions/found'), {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          method: 'POST', headers,
           body: JSON.stringify({ id: passed.sub_id }),
         })
       }
@@ -102,11 +106,10 @@ export default function MyLostDetailPage() {
 
       <DetailImage src={item.img} mt={17} desc={item.desc} />
 
-      {/* 資訊卡 340×175：日期／地點／備註 */}
-      <InfoBox height={175}>
+      {/* 資訊卡 340×128：日期／地點（上下各留 19） */}
+      <InfoBox height={128}>
         <InfoRow icon={<CalendarIcon className="h-[35px] w-[35px]" />} iconTop={22} pillTop={19} pillLeft={82.5}>{item.date}</InfoRow>
         <InfoRow icon={<LocationIcon className="h-[35px] w-[35px]" />} iconTop={72} pillTop={69} pillLeft={82.5}>{item.place}</InfoRow>
-        <InfoRow text="備註" textTop={129} pillTop={117} pillLeft={82.5}>{item.remark}</InfoRow>
       </InfoBox>
 
       {item.tags.length > 0 && <TagsBox tags={item.tags} />}

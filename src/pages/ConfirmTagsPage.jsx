@@ -15,7 +15,6 @@ export default function ConfirmTagsPage() {
   const [date, setDate] = useState(data.date || todayStr())
   const [placeCity, setPlaceCity] = useState((data.place || '').split(' ')[0] || '')
   const [placeDistrict, setPlaceDistrict] = useState((data.place || '').split(' ')[1] || '')
-  const [remark, setRemark] = useState(data.remark || '')
   const [tags, setTags] = useState(data.tags || ['杯套', '水杯'])
   const [pickerOpen, setPickerOpen] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -44,10 +43,13 @@ export default function ConfirmTagsPage() {
         }),
       })
       const json = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(json.error || `伺服器回應 ${res.status}`)
+      // 429 = 被限流（後端 MATCH_PER_IP_HOURLY），錯誤訊息本身就講得清楚，
+      // 這種情況不要再補「請確認 Flask 有啟動」，那會把人導向錯的方向。
+      if (!res.ok) throw new Error(json.error || `伺服器回應 ${res.status}`, { cause: res.status })
       navigate('/search/results', { state: { query: { date, place, tags }, base64Image: data.base64Image, ...json } })
     } catch (e) {
-      setError(`比對失敗：${e.message}（請確認 Flask :5001 有啟動）`)
+      const serverAnswered = typeof e.cause === 'number'
+      setError(serverAnswered ? `比對失敗：${e.message}` : `比對失敗：${e.message}（請確認 Flask :5001 有啟動）`)
     } finally {
       setBusy(false)
     }
@@ -70,7 +72,7 @@ export default function ConfirmTagsPage() {
         </div>
       )}
 
-      {/* 日期 / 地點 / 備註 */}
+      {/* 日期 / 地點 */}
       <FormCard mt={20}>
         <FormRow icon={<CalendarIcon className="h-[35px] w-[35px]" />}>
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="遺失日期" className={pillInput} />
@@ -81,9 +83,6 @@ export default function ConfirmTagsPage() {
           city={placeCity} setCity={setPlaceCity}
           district={placeDistrict} setDistrict={setPlaceDistrict}
         />
-        <FormRow text="備註">
-          <input type="text" value={remark} onChange={(e) => setRemark(e.target.value)} placeholder="供Threads發文時提供詳細資訊" className={pillInput} />
-        </FormRow>
       </FormCard>
 
       {/* AI 標籤（可增刪）：340 寬、padding 20、標題 16/600（同 inner）、chip 高 30 */}

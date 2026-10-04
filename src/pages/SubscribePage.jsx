@@ -4,20 +4,23 @@ import { ChevronLeftIcon, CircleCheckIcon } from '../components/icons'
 import { addMyItem } from '../lib/items'
 import { useAuth } from '../context/AuthContext'
 import { flask } from '../lib/api'
+import { getAuthHeaders } from '../lib/authToken'
 import { LOST_STATUS } from '../data/itemStatus'
 import { downscale } from '../lib/image'
 import { titleFromTags } from '../data/tagTaxonomy'
 
 export default function SubscribePage() {
   const navigate = useNavigate()
-  const { userId } = useAuth()
+  const { userId, user } = useAuth()
   const state = useLocation().state || {}
   const q = state.query || {}
   const resolved = state.resolved || {}
   const results = state.results || []
 
   const [channel, setChannel] = useState('email') // email | line
-  const [email, setEmail] = useState('')
+  // 後端只接受「自己登入帳號已驗證的信箱」，所以這裡直接帶入、不讓改
+  // （見 diula-outter/auth_token.py 的 verified_email）。
+  const [email, setEmail] = useState(user?.email || '')
   const [status, setStatus] = useState('idle') // idle | submitting | success
   const [error, setError] = useState('')
 
@@ -26,14 +29,20 @@ export default function SubscribePage() {
   async function submit() {
     setError('')
     if (!canSubmit) { setError('缺少比對條件，請從比對結果頁進來'); return }
+    if (channel === 'email' && !user?.email) {
+      setError('這個登入方式沒有已驗證的 Email，請改用 LINE 通道，或改用 Google 登入')
+      return
+    }
     if (channel === 'email' && !/^\S+@\S+\.\S+$/.test(email)) { setError('請輸入正確的 Email'); return }
     if (channel === 'line') { setError('LINE 通道需在 LINE App（LIFF）內開啟才能取得你的 LINE ID'); return }
 
     setStatus('submitting')
     try {
+      const authHeaders = await getAuthHeaders()
+      if (!authHeaders) throw new Error('登入狀態已失效，請重新登入')
       const res = await fetch(flask('/subscriptions'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify({
           channel,
           email,
@@ -119,8 +128,15 @@ export default function SubscribePage() {
           </div>
 
           {channel === 'email' ? (
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="你的 Email"
-              className="w-full rounded-[10px] border border-black bg-white px-4 py-2.5 text-sm text-brown outline-none placeholder:text-brown/50" />
+            <>
+              <input type="email" value={email} readOnly placeholder="（這個登入方式沒有 Email）"
+                className="w-full rounded-[10px] border border-black bg-input px-4 py-2.5 text-sm text-brown outline-none placeholder:text-brown/50" />
+              <p className="mt-2 text-xs leading-normal text-brown/70">
+                {user?.email
+                  ? '通知會寄到你登入帳號的信箱，不能改寄到其他信箱。'
+                  : '這個登入方式沒有已驗證的 Email，請改用 LINE 通道，或改用 Google 登入。'}
+              </p>
+            </>
           ) : (
             <p className="rounded-[10px] bg-input p-3 text-xs leading-normal text-brown/70">
               LINE 通知需在 <b>LINE App 內</b>開啟本頁（LIFF）才能取得你的 LINE ID。目前用瀏覽器開，請改用 Email。

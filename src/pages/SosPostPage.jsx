@@ -7,6 +7,7 @@ import PhotoMaskModal from '../components/PhotoMaskModal'
 import { addMyItem } from '../lib/items'
 import { useAuth } from '../context/AuthContext'
 import { flask } from '../lib/api'
+import { getAuthHeaders } from '../lib/authToken'
 import { LOST_STATUS } from '../data/itemStatus'
 import { titleFromTags } from '../data/tagTaxonomy'
 
@@ -83,9 +84,12 @@ export default function SosPostPage() {
       // 送出當下才縮圖，保證不會送到還沒縮的原圖（Threads 抓大圖會逾時 2207003）。
       // 有打碼就送打碼後的圖，原圖不外流。
       const image = displayImage ? await downscale(displayImage) : null
+      // 用官方帳號發文，後端要求登入憑證（見 diula-outter 的 auth_token.py）。
+      const authHeaders = await getAuthHeaders()
+      if (!authHeaders) throw new Error('登入狀態已失效，請重新登入')
       const res = await fetch(flask('/threads/submit'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify({ text, image, name, lost_date: date, location: fullPlace }),
       })
       const json = await res.json().catch(() => ({}))
@@ -133,11 +137,11 @@ export default function SosPostPage() {
       {step === 'form' && (
         <div className="relative h-[660px] w-full">
           <div className="absolute left-[27px] top-5 box-border flex h-[60px] w-[340px] items-center rounded-[10px] bg-card px-[15px] py-[10px] text-xs font-medium leading-normal text-brown">
-            照欄位填，系統會套用統一模版由 DiuLa 官方帳號 發佈到 Threads 協尋，你的個人帳號不會露出。
+            照欄位填，系統會套用統一模版由 DiuLa! 官方帳號 發佈到 Threads 協尋，你的個人帳號不會露出。
           </div>
 
           <div className={label} style={{ left: 27, top: 100 }}>物品名稱</div>
-          <div className={`${pill} rounded-[50px] border border-black bg-input`} style={{ left: 27, top: 122 }}>
+          <div className={`${pill} rounded-[10px] border border-black bg-input`} style={{ left: 27, top: 122 }}>
             <input value={name} onChange={(e) => setName(e.target.value)} className={fieldInput} />
           </div>
 
@@ -152,12 +156,12 @@ export default function SosPostPage() {
           </div>
 
           <div className={label} style={{ left: 27, top: 324 }}>詳細地點（選填）</div>
-          <div className={`${pill} rounded-[50px] border border-black bg-input`} style={{ left: 27, top: 346 }}>
+          <div className={`${pill} rounded-[10px] border border-black bg-input`} style={{ left: 27, top: 346 }}>
             <input value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="如：世新山洞口、景美站2號出口" className={fieldInput} />
           </div>
 
           <div className={label} style={{ left: 28, top: 396 }}>備註</div>
-          <div className={`${pill} rounded-[50px] border border-black bg-input`} style={{ left: 28, top: 418 }}>
+          <div className={`${pill} rounded-[10px] border border-black bg-input`} style={{ left: 28, top: 418 }}>
             <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="如：對我很有紀念意義，謝謝大家幫忙留意" className={fieldInput} />
           </div>
 

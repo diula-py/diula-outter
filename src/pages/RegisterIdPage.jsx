@@ -5,6 +5,7 @@ import MaskingModal from '../components/MaskingModal'
 import { FormHeader, FormPage, UploadBox, FormCard, FormRow, RegionField, SubmitButton, pillInput } from '../components/FormKit'
 import TagPickerModal from '../components/TagPickerModal'
 import { spring } from '../lib/api'
+import { getAuthHeaders } from '../lib/authToken'
 import { todayStr } from '../lib/date'
 import { downscale } from '../lib/image'
 import { FOUND_STATUS } from '../data/itemStatus'
@@ -51,6 +52,7 @@ export default function RegisterIdPage() {
   // 進頁就先喚醒 Spring 後端。Render 免費方案閒置會休眠，冷啟動 ~60 秒；
   // 若等到按送出才醒，Safari 的 fetch 會先逾時（顯示 "Load failed"）。
   // 使用者填表的空檔先喚醒，送出時多半已就緒。fire-and-forget、失敗無所謂。
+  // 這支 GET 現在會回 401（沒帶憑證），但喚醒的效果一樣，不必為它附 token。
   useEffect(() => {
     fetch(SUBMIT_ENDPOINT, { method: 'GET' }).catch(() => {})
   }, [])
@@ -90,13 +92,22 @@ export default function RegisterIdPage() {
     }
 
     try {
+      // 證件照是個資，後端要求登入憑證（見 diula-api 的 TokenAuth）。
+      const authHeaders = await getAuthHeaders()
+      if (!authHeaders) {
+        setStatus('error')
+        setError('登入狀態已失效，請重新登入後再送出')
+        return
+      }
+      const headers = { 'Content-Type': 'application/json', ...authHeaders }
+
       // 冷啟動時第一次 fetch 可能逾時（Load failed）；網路層失敗就等一下重試一次，
       // 這時後端多半已醒。非網路錯誤（如 413）不重試，直接往下拋。
       let res
       try {
         res = await fetch(SUBMIT_ENDPOINT, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify(payload),
         })
       } catch {
@@ -104,7 +115,7 @@ export default function RegisterIdPage() {
         await new Promise((r) => setTimeout(r, 3000))
         res = await fetch(SUBMIT_ENDPOINT, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify(payload),
         })
       }
@@ -200,11 +211,11 @@ export default function RegisterIdPage() {
           city={foundCity} setCity={setFoundCity}
           district={foundDistrict} setDistrict={setFoundDistrict}
         />
-        <FormRow icon={<PersonChalkboardIcon className="h-[35px] w-[35px]" />}>
+        <FormRow icon={<PersonChalkboardIcon className="h-[35px] w-[35px]" />} typing>
           <input type="text" value={sendTo} onChange={(e) => setSendTo(e.target.value)} placeholder="送往的地點" className={pillInput} />
         </FormRow>
-        <FormRow text="備註">
-          <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="供Threads發文時提供詳細資訊" className={pillInput} />
+        <FormRow text="備註" typing>
+          <input type="text" value={note} onChange={(e) => setNote(e.target.value)} className={pillInput} />
         </FormRow>
       </FormCard>
 

@@ -16,7 +16,6 @@ export default function CrossSearchPage() {
   const [date, setDate] = useState(todayStr())
   const [placeCity, setPlaceCity] = useState('')
   const [placeDistrict, setPlaceDistrict] = useState('')
-  const [remark, setRemark] = useState('')
   const [error, setError] = useState('')
 
   const place = [placeCity, placeDistrict].filter(Boolean).join(' ') // 遺失地點合併字串
@@ -47,7 +46,7 @@ export default function CrossSearchPage() {
     // 手機實拍照片常達數 MB，先縮圖再送，避免上傳過大失敗（Load failed）並加快上傳。
     const base64Image = photo ? await downscale(await fileToDataUrl(photo)) : null
     navigate('/search/analyzing', {
-      state: { mode, date, place, remark, photoUrl, base64Image, desc: desc.trim() },
+      state: { mode, date, place, photoUrl, base64Image, desc: desc.trim() },
     })
   }
 
@@ -113,9 +112,6 @@ export default function CrossSearchPage() {
           city={placeCity} setCity={setPlaceCity}
           district={placeDistrict} setDistrict={setPlaceDistrict}
         />
-        <FormRow text="備註">
-          <input type="text" value={remark} onChange={(e) => setRemark(e.target.value)} placeholder="供Threads發文時提供詳細資訊" className={pillInput} />
-        </FormRow>
       </FormCard>
 
       {error && <p className="mt-[15px] w-full max-w-[340px] text-sm leading-normal text-error">{error}</p>}
