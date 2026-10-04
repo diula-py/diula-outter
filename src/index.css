@@ -47,6 +47,13 @@ body,
   height: 100%;
 }
 
+/* 離線提示條（components/OfflineBanner.jsx）顯示時整頁往下推 24px（= 提示條文字那一行），
+   各頁標題列才會完整出現在提示條下方，不會被壓住。提示條本身另外涵蓋 safe-area。 */
+html.is-offline #root {
+  box-sizing: border-box;
+  padding-top: 24px;
+}
+
 body {
   margin: 0;
   background: var(--color-paper);

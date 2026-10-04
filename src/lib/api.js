@@ -19,17 +19,60 @@ export const aiApi = (path) => `${AI}${path}`
 // 資料一天才更新一次（scraper 每天跑），快照由每日同步的 export_threads_snapshot.py 產生並推上 Pages。
 export const THREADS_SNAPSHOT = 'https://saamiin.github.io/diula-web/threads_posts.json'
 
+// 離線備援：最後一次成功抓到的快照另存一份在 localStorage（約 40KB）。
+// SW 的 threads-snapshot 快取是第一層；iOS 清掉 SW 快取、或 SW 還沒接手時，靠這份。
+const THREADS_LOCAL_KEY = 'diula_threads_snapshot'
+
+function saveLocalThreads(data) {
+  try {
+    localStorage.setItem(THREADS_LOCAL_KEY, JSON.stringify(data))
+  } catch {
+    /* storage 滿了或不能用就算了 */
+  }
+}
+
+function loadLocalThreads() {
+  try {
+    const data = JSON.parse(localStorage.getItem(THREADS_LOCAL_KEY) || 'null')
+    return Array.isArray(data) ? data : null
+  } catch {
+    return null
+  }
+}
+
+async function fetchSnapshot() {
+  const r = await fetch(THREADS_SNAPSHOT, { cache: 'no-cache' })
+  if (!r.ok) throw new Error(`HTTP ${r.status}`)
+  const data = await r.json()
+  if (!Array.isArray(data)) throw new Error('快照格式錯誤')
+  saveLocalThreads(data)
+  return data
+}
+
+// 開網站時在背景先抓一次快照（main.jsx 呼叫），沒點進 Threads 頁離線也看得到。
+export function prefetchThreadsSnapshot() {
+  if (!navigator.onLine) return
+  fetchSnapshot().catch(() => {})
+}
+
 export async function fetchThreadsPosts() {
   try {
-    const r = await fetch(THREADS_SNAPSHOT, { cache: 'no-cache' })
-    if (r.ok) {
-      const data = await r.json()
-      if (Array.isArray(data)) return data
-    }
+    // 離線時這個 fetch 會由 SW 回傳快取的快照
+    return await fetchSnapshot()
   } catch {
-    /* 快照暫時讀不到 → 退回後端 API */
+    /* 快照暫時讀不到 → 退回後端 API（離線就不打了） */
   }
-  const r = await fetch(spring('/api/posts'))
-  if (!r.ok) throw new Error(`HTTP ${r.status}`)
-  return r.json()
+  if (navigator.onLine) {
+    try {
+      const r = await fetch(spring('/api/posts'))
+      if (r.ok) return await r.json()
+    } catch {
+      /* 後端也讀不到 → 用本機備份 */
+    }
+  }
+  const local = loadLocalThreads()
+  if (local) return local
+  const err = new Error('讀不到 Threads 貼文')
+  err.offline = !navigator.onLine
+  throw err
 }
