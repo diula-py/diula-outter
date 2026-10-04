@@ -28,16 +28,18 @@ export default function ResultDetailPage() {
   return (
     <div>
       {/* Header */}
-      <header className="relative flex h-20 items-center justify-center rounded-b-[20px] bg-card">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          aria-label="返回"
-          className="absolute left-[22px] top-1/2 -translate-y-1/2 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-        >
-          <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
-        </button>
-        <h1 className="max-w-[240px] truncate text-xl font-bold text-brown">{title}</h1>
+      <header className="safe-header relative rounded-b-[20px] bg-card [--header-h:80px]">
+        <div className="relative flex h-full items-center justify-center">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            aria-label="返回"
+            className="absolute left-[22px] top-1/2 -translate-y-1/2 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+          >
+            <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
+          </button>
+          <h1 className="max-w-[240px] truncate text-xl font-bold text-brown">{title}</h1>
+        </div>
       </header>
 
       <div className="flex flex-col gap-5 px-[22px] pt-5">

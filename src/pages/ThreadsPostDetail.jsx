@@ -39,16 +39,18 @@ export default function ThreadsPostDetail() {
   return (
     <div>
       {/* Header */}
-      <header className="relative flex h-20 items-center justify-center rounded-b-[20px] bg-card">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          aria-label="返回"
-          className="absolute left-[22px] top-1/2 -translate-y-1/2 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-        >
-          <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
-        </button>
-        <h1 className="text-xl font-bold text-brown">Threads尋找遺失物</h1>
+      <header className="safe-header relative rounded-b-[20px] bg-card [--header-h:80px]">
+        <div className="relative flex h-full items-center justify-center">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            aria-label="返回"
+            className="absolute left-[22px] top-1/2 -translate-y-1/2 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+          >
+            <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
+          </button>
+          <h1 className="text-xl font-bold text-brown">Threads尋找遺失物</h1>
+        </div>
       </header>
 
       {state === 'loading' && <p className="py-10 text-center text-sm leading-normal text-brown/60">載入中…</p>}
