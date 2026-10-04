@@ -18,3 +18,12 @@ export const TAG_TAXONOMY = [
 
 // 所有標籤攤平（查重用）
 export const ALL_TAGS = TAG_TAXONOMY.flatMap((c) => c.tags)
+
+const COLOR_TAGS = TAG_TAXONOMY.find((c) => c.category === '顏色').tags
+
+// 「我的遺失物」標題：用使用者確認過的標籤組成，顏色在前、物品在後，中間不加分隔（例如「灰色滑鼠」）
+export function titleFromTags(tags = []) {
+  const colors = tags.filter((t) => COLOR_TAGS.includes(t))
+  const others = tags.filter((t) => !COLOR_TAGS.includes(t))
+  return [...colors, ...others].join('')
+}
