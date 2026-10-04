@@ -153,7 +153,7 @@ export default function RegisterIdPage() {
     <FormPage>
       <FormHeader title="證件類遺失物登錄" onBack={() => navigate(-1)} />
 
-      {/* 證件類型分頁：4 顆 80×45 膠囊、間距 10、置中（inner page-12） */}
+      {/* 證件類型分頁：4 顆 80×45 膠囊、間距 10、置中（inner page-12）；窄螢幕 4 顆平均縮小 */}
       <div className="mt-5 flex w-full justify-center gap-[10px] px-5">
         {ID_TYPES.map((t) => {
           const active = type === t
@@ -167,7 +167,7 @@ export default function RegisterIdPage() {
                 else setOtherType('')
               }}
               aria-pressed={active}
-              className={`flex h-[45px] min-w-[80px] shrink-0 items-center justify-center rounded-[50px] px-[14px] py-2 text-base text-brown
+              className={`flex h-[45px] w-20 min-w-0 items-center justify-center rounded-[50px] py-2 text-base text-brown
                 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
                 ${active ? 'border-[1.5px] border-black bg-card font-medium' : 'border border-black bg-input font-normal'}`}
             >
@@ -219,7 +219,7 @@ export default function RegisterIdPage() {
         </FormRow>
       </FormCard>
 
-      {error && <p className="mt-[15px] w-full max-w-[340px] text-sm leading-normal text-error">{error}</p>}
+      {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error">{error}</p>}
       <SubmitButton onClick={handleSubmit} disabled={status === 'submitting'}>
         {status === 'submitting' ? '送出中…' : '填寫完成，為該筆資料新增標籤'}
       </SubmitButton>

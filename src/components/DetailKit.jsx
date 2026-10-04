@@ -19,9 +19,10 @@ export function DetailHeader({ title, onBack, height, titleTop, backLeft, backTo
         <ChevronLeftIcon style={{ width: backSize, height: backSize }} />
       </button>
       {/* truncate 會 overflow:hidden，20px 字的字形比 20px 行高略高、頂端會被切；
-          上下各多 4px padding 並把 top 往上移 4px，文字位置不變但不再被切 */}
+          上下各多 4px padding 並把 top 往上移 4px，文字位置不變但不再被切。
+          字級 20px；螢幕窄於 378px 時隨寬度縮小（320 寬約 17px），長標題（如「幫你發Threads的協尋文」）才放得下 */}
       <h1
-        className="absolute left-0 w-full truncate px-[60px] py-1 text-center text-xl font-bold leading-5 text-brown"
+        className="absolute left-0 w-full truncate px-[60px] py-1 text-center text-[clamp(17px,5.3vw,20px)] font-bold leading-5 text-brown"
         style={{ top: titleTop - 4 }}
       >
         {title}
@@ -38,7 +39,7 @@ export function DetailHeader({ title, onBack, height, titleTop, backLeft, backTo
 export function DetailImage({ src, mt, desc }) {
   return (
     <div
-      className="flex h-[200px] w-full max-w-[340px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-input"
+      className="flex h-[200px] w-[calc(100%-40px)] max-w-[340px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-input"
       style={{ marginTop: mt }}
     >
       {src ? (
@@ -55,20 +56,23 @@ export function DetailImage({ src, mt, desc }) {
 /** 米色資訊卡（340 寬、固定高度），內部列用絕對位置。 */
 export function InfoBox({ height, mt = 20, children }) {
   return (
-    <div className="relative w-full max-w-[340px] shrink-0 rounded-[10px] bg-card" style={{ height, marginTop: mt }}>
+    <div className="relative w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card" style={{ height, marginTop: mt }}>
       {children}
     </div>
   )
 }
 
-/** 一列：icon 在 (iconLeft, iconTop) 35×35；白色 234×40 圓角 10 的欄位在 (pillLeft, pillTop)。座標為相對資訊卡左上角。 */
+/**
+ * 一列：icon 在 (iconLeft, iconTop) 35×35；白色 234×40 圓角 10 的欄位在 (pillLeft, pillTop)。座標為相對資訊卡左上角。
+ * 欄位寬 = 卡片寬 − 106（340 寬時剛好 234），窄螢幕跟著縮短。
+ */
 export function InfoRow({ icon, text, iconTop, textTop, pillTop, pillLeft = 82.5, children }) {
   return (
     <>
       {icon && <div className="absolute left-[24.5px] h-[35px] w-[35px]" style={{ top: iconTop }}>{icon}</div>}
       {text && <div className="absolute left-[26.5px] h-4 w-8 text-center text-base font-normal leading-4" style={{ top: textTop }}>{text}</div>}
       <div
-        className="absolute box-border flex h-10 w-[234px] items-center overflow-hidden rounded-[10px] bg-white px-[15px] py-[10px] text-xs font-normal"
+        className="absolute box-border flex h-10 w-[calc(100%-106px)] items-center overflow-hidden rounded-[10px] bg-white px-[15px] py-[10px] text-xs font-normal"
         style={{ top: pillTop, left: pillLeft }}
       >
         <span className="w-full truncate">{children}</span>
@@ -80,7 +84,7 @@ export function InfoRow({ icon, text, iconTop, textTop, pillTop, pillLeft = 82.5
 /** AI 標籤區：340 寬、padding 20、標題 16/600（同 inner）、chip 12/400 白底圓角 10、padding 6 14、間距 10。 */
 export function TagsBox({ tags, mt = 20 }) {
   return (
-    <div className="box-border min-h-[98px] w-full max-w-[340px] shrink-0 rounded-[10px] bg-card p-5" style={{ marginTop: mt }}>
+    <div className="box-border min-h-[98px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card p-5" style={{ marginTop: mt }}>
       <div className="mb-[10px] text-base font-semibold leading-[18px]">AI 標籤</div>
       <div className="flex flex-wrap gap-[10px]">
         {tags.map((t) => (
@@ -91,13 +95,13 @@ export function TagsBox({ tags, mt = 20 }) {
   )
 }
 
-/** 350×60 主要動作鈕（padding 30 40、間距 30）；tone：blue（遺失物，#DFEAF5）／card（拾獲物，#F3F0E1）。 */
+/** 350×60 主要動作鈕（padding 30 40、間距 30；寬度不到 380 的螢幕縮成 padding 20、間距 15，文字才排得進一行）；tone：blue（遺失物，#DFEAF5）／card（拾獲物，#F3F0E1）。 */
 export function ActionButton({ tone, onClick, children }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`mt-5 box-border flex h-[60px] w-full max-w-[350px] shrink-0 items-center justify-center gap-[30px] rounded-[50px] border border-black px-10 py-[30px]
+      className={`mt-5 box-border flex h-[60px] w-[calc(100%-40px)] max-w-[350px] shrink-0 items-center justify-center gap-[15px] rounded-[50px] border border-black px-5 py-[30px] min-[380px]:gap-[30px] min-[380px]:px-10
                   text-base font-medium transition hover:brightness-[.98]
                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
                   ${tone === 'card' ? 'bg-card' : 'bg-blue'}`}

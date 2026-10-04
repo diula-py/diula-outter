@@ -39,45 +39,52 @@ export default function LoginPage() {
   }
 
   return (
-    // 版面比照 inner page-01：393 寬的畫布，各元素用絕對位置（數值直接抄 inner）
-    <div className="relative mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] overflow-hidden bg-blue">
-      <div className="absolute left-0 top-[189px] flex h-[128px] w-full items-center justify-center overflow-hidden">
-        <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="w-full" />
+    // 版面比照 inner page-01：393×852 時各元素位置與 inner 相同（logo 189、標語 372、LINE 449、Google 551、
+    // 遇到問題 683、條款 723）。改成由上往下排，只有最上方留白會隨螢幕高度縮放：
+    // 內容本身高 547（logo 頂端到條款底端），852 高時留白 = (852 - 547) × 0.6197 ≈ 189；
+    // 矮螢幕自動縮小、最少 40，再矮就整頁往下捲，不會再有按鈕被切掉按不到。
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center overflow-x-hidden bg-blue pb-10">
+      <div className="h-[clamp(40px,calc((100dvh-var(--top-inset)-547px)*0.6197),189px)] shrink-0" />
+
+      <div className="flex h-[128px] w-full shrink-0 items-center justify-center overflow-hidden">
+        <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="w-full max-w-[393px]" />
       </div>
 
-      <p className="absolute left-1/2 top-[372px] h-6 w-[264px] -translate-x-[calc(50%-0.5px)] text-center text-2xl font-medium text-brown">
+      <p className="mt-[55px] h-6 w-[264px] translate-x-[0.5px] text-center text-2xl font-medium text-brown">
         與失物重逢的捷徑
       </p>
 
       <button
         type="button"
         onClick={loginWithLine}
-        className="absolute left-1/2 top-[449px] flex h-[62px] w-[290px] -translate-x-1/2 items-center justify-center gap-3 rounded-[50px] bg-[#06C755] text-lg font-bold text-white transition hover:brightness-95 active:scale-[.99]"
+        className="mt-[53px] flex h-[62px] w-[290px] max-w-[calc(100%-40px)] shrink-0 items-center justify-center gap-3 rounded-[50px] bg-[#06C755] text-lg font-bold text-white transition hover:brightness-95 active:scale-[.99]"
       >
         <img src={asset('/icons/line-login.png')} alt="" className="h-7 w-7 shrink-0" />
         <span>使用 LINE 登入</span>
       </button>
 
-      <button
-        type="button"
-        onClick={handleGoogleLogin}
-        className="absolute left-1/2 top-[551px] flex h-[62px] w-[290px] -translate-x-1/2 items-center justify-center gap-3 rounded-[50px] border border-[#747775] bg-white text-lg font-bold text-[#3C4043] transition hover:bg-[#f8f8f8] active:scale-[.99]"
-      >
-        <GoogleGIcon className="h-6 w-6 shrink-0" />
-        <span>使用 Google 登入</span>
-      </button>
-
-      {error && (
-        <p className="absolute left-1/2 top-[622px] w-[290px] -translate-x-1/2 text-center text-sm leading-normal text-error">{error}</p>
-      )}
+      {/* 錯誤訊息疊在 Google 鈕下方（inner 位置 top 622），不推動下面的元素 */}
+      <div className="relative mt-10 flex w-full justify-center">
+        <button
+          type="button"
+          onClick={handleGoogleLogin}
+          className="flex h-[62px] w-[290px] max-w-[calc(100%-40px)] shrink-0 items-center justify-center gap-3 rounded-[50px] border border-[#747775] bg-white text-lg font-bold text-[#3C4043] transition hover:bg-[#f8f8f8] active:scale-[.99]"
+        >
+          <GoogleGIcon className="h-6 w-6 shrink-0" />
+          <span>使用 Google 登入</span>
+        </button>
+        {error && (
+          <p className="absolute left-1/2 top-[71px] w-[290px] max-w-[calc(100%-40px)] -translate-x-1/2 text-center text-sm leading-normal text-error">{error}</p>
+        )}
+      </div>
 
       <a
         href="mailto:diula.112ics@gmail.com"
-        className="absolute left-1/2 top-[683px] h-[18px] w-24 -translate-x-[calc(50%-0.5px)] text-center text-base leading-[18px] text-black opacity-50"
+        className="mt-[70px] h-[18px] w-24 translate-x-[0.5px] text-center text-base leading-[18px] text-black opacity-50"
       >
         遇到問題嗎？
       </a>
-      <p className="absolute left-1/2 top-[723px] w-[264px] -translate-x-[calc(50%-0.5px)] text-center text-xs leading-[13px] text-black opacity-50">
+      <p className="mt-[22px] w-[264px] max-w-[calc(100%-40px)] translate-x-[0.5px] text-center text-xs leading-[13px] text-black opacity-50">
         登入即代表您同意本平台的服務條款與隱私權政策
       </p>
     </div>
