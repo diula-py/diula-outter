@@ -9,6 +9,16 @@ import { useAuth } from '../context/AuthContext'
 import { flask } from '../lib/api'
 import { getAuthHeaders } from '../lib/authToken'
 import { LOST_STATUS } from '../data/itemStatus'
+import { TAG_TAXONOMY } from '../data/tagTaxonomy'
+
+const COLOR_TAGS = new Set(TAG_TAXONOMY.find((c) => c.category === '顏色').tags)
+
+// 物品名稱預設值：顏色在前、物品在後，中間不加分隔（例：黑色紅色錢包水杯）
+function defaultName(tags = []) {
+  const colors = tags.filter((t) => COLOR_TAGS.has(t))
+  const others = tags.filter((t) => !COLOR_TAGS.has(t))
+  return [...colors, ...others].join('')
+}
 
 // Threads 抓外部圖有下載逾時上限，原始手機照太大會 2207003（下載逾時）→ 先縮圖再送。
 function downscale(dataUrl, maxSide = 1280, quality = 0.82) {
@@ -58,7 +68,7 @@ export default function SosPostPage() {
   const date = q.date || ''    // 鎖死：來自比對條件
   const place = q.place || ''   // 鎖死：來自比對條件
 
-  const [name, setName] = useState((q.tags && q.tags.join('、')) || '')
+  const [name, setName] = useState(defaultName(q.tags))
   const [detail, setDetail] = useState('') // 詳細遺失地點（選填）
   const [note, setNote] = useState('')     // 備註（選填）
   const [step, setStep] = useState('form') // form | preview
@@ -136,7 +146,7 @@ export default function SosPostPage() {
       {step === 'form' && (
         <div className="relative h-[660px] w-full">
           <div className="absolute left-[27px] top-5 box-border flex h-[60px] w-[340px] items-center rounded-[10px] bg-card px-[15px] py-[10px] text-xs font-medium leading-normal text-brown">
-            照欄位填，系統會套用統一模版由 DiuLa 官方帳號 發佈到 Threads 協尋，你的個人帳號不會露出。
+            照欄位填，系統會套用統一模版由 DiuLa! 官方帳號 發佈到 Threads 協尋，你的個人帳號不會露出。
           </div>
 
           <div className={label} style={{ left: 27, top: 100 }}>物品名稱</div>

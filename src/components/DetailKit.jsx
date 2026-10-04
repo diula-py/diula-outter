@@ -18,9 +18,11 @@ export function DetailHeader({ title, onBack, height, titleTop, backLeft, backTo
       >
         <ChevronLeftIcon style={{ width: backSize, height: backSize }} />
       </button>
+      {/* truncate 會 overflow:hidden，20px 字的字形比 20px 行高略高、頂端會被切；
+          上下各多 4px padding 並把 top 往上移 4px，文字位置不變但不再被切 */}
       <h1
-        className="absolute left-0 w-full truncate px-[60px] text-center text-xl font-bold leading-5 text-brown"
-        style={{ top: titleTop }}
+        className="absolute left-0 w-full truncate px-[60px] py-1 text-center text-xl font-bold leading-5 text-brown"
+        style={{ top: titleTop - 4 }}
       >
         {title}
       </h1>
