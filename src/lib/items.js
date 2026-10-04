@@ -19,7 +19,7 @@ import {
   where,
   serverTimestamp,
 } from 'firebase/firestore'
-import { db } from './firebase'
+import { auth, db } from './firebase'
 import { LOST_STATUS } from '../data/itemStatus'
 
 function collectionFor(kind) {
@@ -64,12 +64,27 @@ function toPlainItem(id, kind, data) {
   return { id, ...fromFirestoreFields(data), kind: data.kind || kind }
 }
 
+// 舊資料（2026-10-04 之前建立的）沒有 owner_uid，Firestore 規則認不出主人。
+// 使用者自己開「我的遺失物／拾獲物」時順手把自己的那幾筆補上，補完規則就能鎖到人。
+// 規則只允許「在 owner_uid 還不存在時、且只動這一個欄位」，所以這個動作改不壞別的資料。
+// 失敗不擋畫面（例如被規則擋下或離線）——清單照樣顯示。
+function claimUnowned(col, docs) {
+  const uid = auth.currentUser?.uid
+  if (!uid) return
+  docs
+    .filter((d) => !d.data().owner_uid)
+    .forEach((d) => {
+      updateDoc(doc(db, col, d.id), { owner_uid: uid }).catch(() => {})
+    })
+}
+
 // 讀「我自己」的清單。kind='found' 讀 found_items，其餘讀 lost_items。
 export async function listMyItems(kind, userId) {
   if (!userId) return []
   const col = collectionFor(kind)
   const q = query(collection(db, col), where('user_id', '==', userId))
   const snap = await getDocs(q)
+  claimUnowned(col, snap.docs)
   const items = snap.docs.map((d) => toPlainItem(d.id, kind, d.data()))
   items.sort((a, b) => (b.timestamp?.toMillis?.() ?? 0) - (a.timestamp?.toMillis?.() ?? 0))
   return items
@@ -95,6 +110,9 @@ export async function addMyItem(kind, userId, data) {
     ...toFirestoreFields(rest),
     kind: rest.kind || kind,
     user_id: userId,
+    // Firestore 規則用這個欄位判斷「這筆是不是你的」。必須等於 request.auth.uid，
+    // 否則 create 會被規則擋下（見 diula-outter/firestore.rules）。
+    owner_uid: auth.currentUser?.uid ?? null,
     timestamp: serverTimestamp(),
   }
   if (kind === 'found') payload.picker_id = userId

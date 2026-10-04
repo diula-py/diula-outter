@@ -43,10 +43,13 @@ export default function ConfirmTagsPage() {
         }),
       })
       const json = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(json.error || `伺服器回應 ${res.status}`)
+      // 429 = 被限流（後端 MATCH_PER_IP_HOURLY），錯誤訊息本身就講得清楚，
+      // 這種情況不要再補「請確認 Flask 有啟動」，那會把人導向錯的方向。
+      if (!res.ok) throw new Error(json.error || `伺服器回應 ${res.status}`, { cause: res.status })
       navigate('/search/results', { state: { query: { date, place, tags }, base64Image: data.base64Image, ...json } })
     } catch (e) {
-      setError(`比對失敗：${e.message}（請確認 Flask :5001 有啟動）`)
+      const serverAnswered = typeof e.cause === 'number'
+      setError(serverAnswered ? `比對失敗：${e.message}` : `比對失敗：${e.message}（請確認 Flask :5001 有啟動）`)
     } finally {
       setBusy(false)
     }
