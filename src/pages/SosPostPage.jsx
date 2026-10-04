@@ -9,6 +9,16 @@ import { useAuth } from '../context/AuthContext'
 import { flask } from '../lib/api'
 import { getAuthHeaders } from '../lib/authToken'
 import { LOST_STATUS } from '../data/itemStatus'
+import { TAG_TAXONOMY } from '../data/tagTaxonomy'
+
+const COLOR_TAGS = new Set(TAG_TAXONOMY.find((c) => c.category === '顏色').tags)
+
+// 物品名稱預設值：顏色在前、物品在後，中間不加分隔（例：黑色紅色錢包水杯）
+function defaultName(tags = []) {
+  const colors = tags.filter((t) => COLOR_TAGS.has(t))
+  const others = tags.filter((t) => !COLOR_TAGS.has(t))
+  return [...colors, ...others].join('')
+}
 
 // Threads 抓外部圖有下載逾時上限，原始手機照太大會 2207003（下載逾時）→ 先縮圖再送。
 function downscale(dataUrl, maxSide = 1280, quality = 0.82) {
@@ -58,7 +68,7 @@ export default function SosPostPage() {
   const date = q.date || ''    // 鎖死：來自比對條件
   const place = q.place || ''   // 鎖死：來自比對條件
 
-  const [name, setName] = useState((q.tags && q.tags.join('、')) || '')
+  const [name, setName] = useState(defaultName(q.tags))
   const [detail, setDetail] = useState('') // 詳細遺失地點（選填）
   const [note, setNote] = useState('')     // 備註（選填）
   const [step, setStep] = useState('form') // form | preview
