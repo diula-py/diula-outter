@@ -78,7 +78,9 @@ body {
   /* Flat Design 2.0 — 全站零陰影 */
 }
 
-/* 手機直向、避免橡皮筋捲動時露出底色 */
-#root {
+/* 關掉整頁橡皮筋回彈：硬拉時 header 會被拖離頂端的狀態列色帶（StatusBarColor），中間露出白底。
+   真正捲動的是整份文件，所以要設在 html／body，設在 #root 沒有作用。 */
+html,
+body {
   overscroll-behavior-y: none;
 }
