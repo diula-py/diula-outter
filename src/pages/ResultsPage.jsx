@@ -57,7 +57,7 @@ export default function ResultsPage() {
   return (
     <div className="flex flex-col items-center pb-[120px]">
       {/* Header 80px：只有標題、沒有返回鍵（inner page-06） */}
-      <header className="relative z-10 flex h-[80px] w-full shrink-0 items-center justify-center rounded-b-[20px] bg-card">
+      <header className="safe-header relative z-10 flex w-full shrink-0 items-center justify-center rounded-b-[20px] bg-card [--header-h:80px]">
         <h1 className="text-xl font-bold text-brown">比對結果</h1>
       </header>
 

@@ -7,21 +7,23 @@ import { ChevronLeftIcon, ChevronDownIcon, CircleCheckIcon } from './icons'
 import { CITY_ORDER, TAIWAN_REGIONS } from '../data/taiwanRegions'
 import { asset } from '../lib/asset'
 
-/** 80px 標頭：標題置中 20/700，返回鍵 30×30 在 (22,25)。onBack 省略＝不顯示返回鍵（如「確認標籤」）。 */
+/** 80px 標頭（有瀏海時＝狀態列＋73px，見 index.css .safe-header）：標題置中 20/700，返回鍵 30×30 垂直置中、left 22。onBack 省略＝不顯示返回鍵（如「確認標籤」）。 */
 export function FormHeader({ title, onBack }) {
   return (
-    <header className="relative z-10 flex h-[80px] w-full shrink-0 items-center justify-center rounded-b-[20px] bg-card">
-      {onBack && (
-        <button
-          type="button"
-          onClick={onBack}
-          aria-label="返回"
-          className="absolute left-[22px] top-[25px] h-[30px] w-[30px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-        >
-          <ChevronLeftIcon className="h-[30px] w-[30px]" />
-        </button>
-      )}
-      <h1 className="text-xl font-bold text-brown">{title}</h1>
+    <header className="safe-header relative z-10 w-full shrink-0 rounded-b-[20px] bg-card [--header-h:80px]">
+      <div className="relative flex h-full items-center justify-center">
+        {onBack && (
+          <button
+            type="button"
+            onClick={onBack}
+            aria-label="返回"
+            className="absolute left-[22px] top-1/2 h-[30px] w-[30px] -translate-y-1/2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+          >
+            <ChevronLeftIcon className="h-[30px] w-[30px]" />
+          </button>
+        )}
+        <h1 className="text-xl font-bold text-brown">{title}</h1>
+      </div>
     </header>
   )
 }
