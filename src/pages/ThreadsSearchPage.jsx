@@ -65,7 +65,7 @@ export default function ThreadsSearchPage() {
       </div>
 
       {/* 貼文清單：340 寬、卡片間距 15；卡片 padding 20、間距 15、文字 16/500 最多 3 行 */}
-      <div className="mt-5 flex w-full max-w-[340px] flex-col gap-[15px]">
+      <div className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-[15px]">
         {state === 'loading' && <div className="py-5 text-center text-base opacity-60">載入中...</div>}
         {state === 'error' && <div className="py-5 text-center text-sm leading-normal text-error">載入失敗，請確認後端（:8080）有啟動。</div>}
         {state === 'offline' && <div className="py-5 text-center text-sm leading-normal text-error">目前離線，尚未儲存 Threads 貼文，請連上網路後再試一次</div>}

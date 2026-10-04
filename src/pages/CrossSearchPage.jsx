@@ -92,7 +92,7 @@ export default function CrossSearchPage() {
           />
         </>
       ) : (
-        <div className="mt-[25px] box-border flex h-[200px] w-full max-w-[340px] shrink-0 rounded-[10px] border border-black bg-input p-5">
+        <div className="mt-[25px] box-border flex h-[200px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] border border-black bg-input p-5">
           <textarea
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
@@ -114,7 +114,7 @@ export default function CrossSearchPage() {
         />
       </FormCard>
 
-      {error && <p className="mt-[15px] w-full max-w-[340px] text-sm leading-normal text-error">{error}</p>}
+      {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error">{error}</p>}
       <SubmitButton onClick={handleSubmit}>填寫完成，AI 辨識產生標籤</SubmitButton>
     </FormPage>
   )

@@ -77,7 +77,7 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
         </button>
         <h1 className="absolute left-0 top-[74px] w-full text-center text-xl font-bold leading-5 text-brown">{title}</h1>
 
-        <div className="absolute left-1/2 top-[109px] flex w-full max-w-[340px] -translate-x-1/2 gap-[10px]">
+        <div className="absolute left-1/2 top-[109px] flex w-[calc(100%-40px)] max-w-[340px] -translate-x-1/2 gap-[10px]">
           <label className="relative flex h-[47px] w-[97px] shrink-0 items-center justify-center rounded-[50px] border border-black bg-card">
             <CalendarIcon className="pointer-events-none h-5 w-5" />
             {dateFilter && <span className="pointer-events-none absolute right-[14px] top-2 h-2 w-2 rounded-full bg-error" />}
@@ -102,7 +102,7 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
         </div>
       </header>
 
-      <div className="mt-5 flex w-full max-w-[340px] flex-col gap-[15px]">
+      <div className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-[15px]">
         {loading && <p className={`${note} text-brown`}>載入中...</p>}
         {!loading && filtered.length === 0 && <p className={`${note} text-[#888]`}>{emptyText}</p>}
 

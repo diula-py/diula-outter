@@ -116,9 +116,10 @@ export default function SosPostPage() {
     }
   }
 
-  // 步驟一（inner page-20）：全部絕對定位，座標直接抄 inner
-  const label = 'absolute text-xs font-medium leading-3 text-brown'
-  const pill = 'absolute box-border flex h-10 w-[340px] items-center px-[15px] py-[10px] text-xs font-normal'
+  // 步驟一（inner page-20）：393 寬時座標與 inner 相同（欄位左緣 27、寬 340，標籤與欄位的間距照抄）。
+  // 改成由上往下排，窄螢幕欄位跟著縮短；少數 inner 差 1px 的左緣用 relative 位移保留。
+  const label = 'w-fit text-xs font-medium leading-3 text-brown'
+  const pill = 'box-border flex h-10 w-full items-center px-[15px] py-[10px] text-xs font-normal'
   const fieldInput = 'h-5 w-full bg-transparent p-0 text-xs font-normal leading-5 text-brown outline-none placeholder:text-[#888]'
 
   return (
@@ -135,42 +136,46 @@ export default function SosPostPage() {
 
       {/* 步驟一：填表單 */}
       {step === 'form' && (
-        <div className="relative h-[660px] w-full">
-          <div className="absolute left-[27px] top-5 box-border flex h-[60px] w-[340px] items-center rounded-[10px] bg-card px-[15px] py-[10px] text-xs font-medium leading-normal text-brown">
+        <div className="flex w-full flex-col pb-[112px] pl-[27px] pr-[26px] pt-5">
+          <div className="box-border flex min-h-[60px] w-full items-center rounded-[10px] bg-card px-[15px] py-[10px] text-xs font-medium leading-normal text-brown">
             照欄位填，系統會套用統一模版由 DiuLa! 官方帳號 發佈到 Threads 協尋，你的個人帳號不會露出。
           </div>
 
-          <div className={label} style={{ left: 27, top: 100 }}>物品名稱</div>
-          <div className={`${pill} rounded-[10px] border border-black bg-input`} style={{ left: 27, top: 122 }}>
+          <div className={`${label} mt-5`}>物品名稱</div>
+          <div className={`${pill} mt-[10px] rounded-[10px] border border-black bg-input`}>
             <input value={name} onChange={(e) => setName(e.target.value)} className={fieldInput} />
           </div>
 
-          <div className={label} style={{ left: 26, top: 172 }}>遺失日期</div>
-          <div className={`${pill} rounded-[10px] bg-input`} style={{ left: 27, top: 198 }}>
+          <div className={`${label} relative -left-px mt-[10px]`}>遺失日期</div>
+          <div className={`${pill} mt-[14px] rounded-[10px] bg-input`}>
             <span className="opacity-70">{(date || '').replaceAll('-', '/') || '--'}</span>
           </div>
 
-          <div className={label} style={{ left: 27, top: 248 }}>遺失地點</div>
-          <div className={`${pill} rounded-[10px] bg-input`} style={{ left: 28, top: 274 }}>
-            <span className="opacity-70">{place || '--'}</span>
+          <div className={`${label} mt-[10px]`}>遺失地點</div>
+          <div className={`${pill} relative left-px mt-[14px] rounded-[10px] bg-input`}>
+            <span className="truncate opacity-70">{place || '--'}</span>
           </div>
 
-          <div className={label} style={{ left: 27, top: 324 }}>詳細地點（選填）</div>
-          <div className={`${pill} rounded-[10px] border border-black bg-input`} style={{ left: 27, top: 346 }}>
+          <div className={`${label} mt-[10px]`}>詳細地點（選填）</div>
+          <div className={`${pill} mt-[10px] rounded-[10px] border border-black bg-input`}>
             <input value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="如：世新山洞口、景美站2號出口" className={fieldInput} />
           </div>
 
-          <div className={label} style={{ left: 28, top: 396 }}>備註</div>
-          <div className={`${pill} rounded-[10px] border border-black bg-input`} style={{ left: 28, top: 418 }}>
+          <div className={`${label} relative left-px mt-[10px]`}>備註</div>
+          <div className={`${pill} relative left-px mt-[10px] rounded-[10px] border border-black bg-input`}>
             <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="如：對我很有紀念意義，謝謝大家幫忙留意" className={fieldInput} />
           </div>
 
-          {error && <p className="absolute left-[27px] top-[466px] w-[340px] text-sm leading-normal text-error">{error}</p>}
+          {/* 錯誤訊息疊在備註和送出鈕之間（inner top 466），不推動送出鈕。
+              送出鈕在寬度不到 380 的螢幕縮小內距與間距，文字維持一行 */}
+          <div className="relative">
+            {error && <p className="absolute left-0 top-2 w-full text-sm leading-normal text-error">{error}</p>}
+          </div>
 
           <button
             type="button"
             onClick={goPreview}
-            className="absolute left-1/2 top-[488px] box-border flex h-[60px] w-[350px] -translate-x-1/2 items-center justify-center gap-[30px] rounded-[50px] border border-black bg-card px-10 py-[30px]
+            className="relative -left-[0.5px] mt-[30px] self-center box-border flex h-[60px] w-[calc(100%+13px)] max-w-[350px] items-center justify-center gap-[15px] rounded-[50px] border border-black bg-card px-5 py-[30px] min-[380px]:gap-[30px] min-[380px]:px-10
                        text-base font-medium text-brown transition hover:brightness-[.98]
                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
           >
