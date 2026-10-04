@@ -47,11 +47,20 @@ body,
   height: 100%;
 }
 
-/* 離線提示條（components/OfflineBanner.jsx）顯示時整頁往下推 24px（= 提示條文字那一行），
-   各頁標題列才會完整出現在提示條下方，不會被壓住。提示條本身另外涵蓋 safe-area。 */
-html.is-offline #root {
+/* 整頁往下推 --top-inset：
+   - iOS 狀態列（black-translucent 時網頁會畫到狀態列底下），那一塊由 StatusBarColor 的色帶補色；
+   - 離線提示條（components/OfflineBanner.jsx）顯示時再多推 24px（= 提示條文字那一行），
+     各頁標題列才會完整出現在提示條下方，不會被壓住。提示條本身另外涵蓋 safe-area。
+   各頁外框用 min-h-[calc(100dvh-var(--top-inset))]，扣掉這段才不會多出可捲動的空白。 */
+html {
+  --top-inset: env(safe-area-inset-top, 0px);
+}
+html.is-offline {
+  --top-inset: calc(24px + env(safe-area-inset-top, 0px));
+}
+#root {
   box-sizing: border-box;
-  padding-top: 24px;
+  padding-top: var(--top-inset);
 }
 
 body {

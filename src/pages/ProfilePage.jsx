@@ -40,7 +40,7 @@ export default function ProfilePage() {
   return (
     <div className="flex flex-col items-center">
       {/* 藍色 header 109px + logo 106×35（比照 inner page-14） */}
-      <header className="flex h-[109px] w-full items-end justify-center rounded-b-[20px] bg-blue pb-[10px] pt-[env(safe-area-inset-top)]">
+      <header className="flex h-[109px] w-full items-end justify-center rounded-b-[20px] bg-blue pb-[10px]">
         <div className="flex h-[35px] w-[106px] items-center justify-center overflow-hidden">
           <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="w-full" />
         </div>

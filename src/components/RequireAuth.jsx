@@ -9,7 +9,7 @@ export default function RequireAuth({ children }) {
 
   if (loading) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-paper text-brown">
+      <div className="flex min-h-[calc(100dvh-var(--top-inset))] items-center justify-center bg-paper text-brown">
         載入中…
       </div>
     )

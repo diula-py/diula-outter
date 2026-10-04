@@ -65,7 +65,7 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
   const note = 'p-5 text-center text-base leading-normal'
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col items-center bg-paper pb-[120px]">
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[120px]">
       <header className="relative h-[174px] w-full shrink-0 rounded-b-[20px] bg-card">
         <button
           type="button"

@@ -33,7 +33,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col items-center">
       {/* 頂部 banner：淺藍、下圓角、109px 高，logo 106×35 在 top:64（比照 inner） */}
-      <header className="flex h-[109px] w-full items-end justify-center rounded-b-[20px] bg-blue pb-[10px] pt-[env(safe-area-inset-top)]">
+      <header className="flex h-[109px] w-full items-end justify-center rounded-b-[20px] bg-blue pb-[10px]">
         <div className="flex h-[35px] w-[106px] items-center justify-center overflow-hidden">
           <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="w-full" />
         </div>

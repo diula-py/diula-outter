@@ -28,7 +28,7 @@ export default function ResultDetailPage() {
   return (
     <div>
       {/* Header */}
-      <header className="relative flex h-20 items-center justify-center rounded-b-[20px] bg-card pt-[env(safe-area-inset-top)]">
+      <header className="relative flex h-20 items-center justify-center rounded-b-[20px] bg-card">
         <button
           type="button"
           onClick={() => navigate(-1)}

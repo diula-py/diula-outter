@@ -16,8 +16,12 @@
         document.querySelector('meta[name="viewport"]').content += ', maximum-scale=1'
       }
     </script>
-    <!-- iOS 狀態列底色；實際顏色由 src/components/StatusBarColor.jsx 依頁面切換 -->
+    <!-- 狀態列底色：Safari／Android 看 theme-color；iOS 主畫面 App 不吃 theme-color，
+         改用 black-translucent 讓網頁畫到狀態列底下，再由 src/components/StatusBarColor.jsx 補一條同色色帶。
+         apple-mobile-web-app-* 是加到主畫面當下讀取的，改了要刪掉重新加入才生效。 -->
     <meta name="theme-color" content="#dfeaf5" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>DiuLa! 遺失物協尋</title>
     <!-- design.md §3：英數字用 Comfortaa（中文用自架的 GenSenRounded2 TW，見 src/fonts.css）。
          Chiron GoRound TC 是源泉圓體下載完成前／罕見字的圓體備援：Google Fonts 依 unicode-range 切片，很快就能顯示。 -->
