@@ -39,13 +39,13 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* 內容欄 350 寬（x=21.5）：標題文字 y=134、第一顆膠囊 y=169、兩顆間距 20、第二區標題 y=414 */}
-      <section className="mt-[25px] w-[350px]">
+      {/* 內容欄 350 寬（x=21.5；窄螢幕左右各留 20）：標題文字 y=134、第一顆膠囊 y=169、兩顆間距 20、第二區標題 y=414 */}
+      <section className="mt-[25px] w-[calc(100%-40px)] max-w-[350px]">
         <SectionTitle>尋找遺失物</SectionTitle>
         <div className="mt-[15px] flex flex-col gap-5">{FIND_ITEMS.map(renderItem)}</div>
       </section>
 
-      <section className="mt-[25px] w-[350px]">
+      <section className="mt-[25px] w-[calc(100%-40px)] max-w-[350px]">
         <SectionTitle>登錄拾獲物</SectionTitle>
         <div className="mt-[15px] flex flex-col gap-5">{REGISTER_ITEMS.map(renderItem)}</div>
       </section>

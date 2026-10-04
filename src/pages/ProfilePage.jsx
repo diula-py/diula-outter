@@ -10,7 +10,7 @@ function MenuButton({ icon, label, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="flex h-[100px] w-[350px] items-center justify-center gap-10 rounded-[50px] border border-black bg-card px-10 py-[30px]
+      className="flex h-[100px] w-full max-w-[350px] items-center justify-center gap-10 rounded-[50px] border border-black bg-card px-10 py-[30px]
                  text-base font-medium text-brown transition hover:bg-[#eee8d7] active:scale-[.99]
                  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
     >
@@ -46,8 +46,8 @@ export default function ProfilePage() {
         </div>
       </header>
 
-      {/* 使用者卡：360×200、x=18、y=129；頭像 72、間距 20、名稱 16/500、編號 12/500 */}
-      <div className="mt-5 flex h-[200px] w-[360px] flex-col items-center justify-center gap-5 self-start rounded-[20px] bg-card/50 px-[115px] py-[30px] ml-[18px]">
+      {/* 使用者卡：360×200、x=18、y=129（窄螢幕右側留 15、跟著縮短）；頭像 72、間距 20、名稱 16/500、編號 12/500 */}
+      <div className="mt-5 flex h-[200px] w-[calc(100%-33px)] max-w-[360px] flex-col items-center justify-center gap-5 self-start rounded-[20px] bg-card/50 px-5 py-[30px] ml-[18px]">
         <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-full border border-black bg-white">
           <img src={avatarSrc} alt="大頭貼" onError={() => setAvatarBroken(true)} className="h-full w-full object-cover" />
         </div>
@@ -55,8 +55,8 @@ export default function ProfilePage() {
         <div className="whitespace-nowrap text-xs font-medium">{displayCode && `User ID：${displayCode}`}</div>
       </div>
 
-      {/* 我的遺失物 / 我的拾獲物：350×100、x=22、y=351／471 */}
-      <div className="mt-[22px] flex flex-col gap-5 self-start pl-[22px]">
+      {/* 我的遺失物 / 我的拾獲物：350×100、x=22、y=351／471（窄螢幕右側留 21、跟著縮短） */}
+      <div className="mt-[22px] flex w-full flex-col gap-5 self-start pl-[22px] pr-[21px]">
         <MenuButton
           icon={<CubesIcon className="h-10 w-10 shrink-0" />}
           label="我的遺失物"

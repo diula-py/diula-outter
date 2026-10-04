@@ -62,12 +62,12 @@ export default function ConfirmTagsPage() {
 
       {/* 圖片模式：340×200；文字模式：米色卡片＋筆圖示＋描述（inner page-05） */}
       {data.mode === 'text' ? (
-        <div className="mt-5 box-border flex w-full max-w-[340px] shrink-0 items-center gap-[15px] rounded-[10px] bg-card p-[15px]">
+        <div className="mt-5 box-border flex w-[calc(100%-40px)] max-w-[340px] shrink-0 items-center gap-[15px] rounded-[10px] bg-card p-[15px]">
           <img src={asset('/icons/square-pen.png')} alt="" aria-hidden="true" className="h-10 w-10 shrink-0 object-contain" />
           <div className="min-w-0 flex-1 break-words text-sm font-normal leading-normal text-brown">{data.desc}</div>
         </div>
       ) : (
-        <div className="mt-5 h-[200px] w-full max-w-[340px] shrink-0 overflow-hidden rounded-[10px]">
+        <div className="mt-5 h-[200px] w-[calc(100%-40px)] max-w-[340px] shrink-0 overflow-hidden rounded-[10px]">
           {data.photoUrl && <img src={data.photoUrl} alt="" className="h-full w-full bg-input object-contain" />}
         </div>
       )}
@@ -86,7 +86,7 @@ export default function ConfirmTagsPage() {
       </FormCard>
 
       {/* AI 標籤（可增刪）：340 寬、padding 20、標題 16/600（同 inner）、chip 高 30 */}
-      <div className="mt-5 box-border min-h-[98px] w-full max-w-[340px] shrink-0 rounded-[10px] bg-card p-5">
+      <div className="mt-5 box-border min-h-[98px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card p-5">
         <div className="mb-[10px] text-base font-semibold text-brown">AI 標籤</div>
         <div className="flex flex-wrap gap-[10px]">
           {tags.map((tag) => (
@@ -106,7 +106,7 @@ export default function ConfirmTagsPage() {
         </div>
       </div>
 
-      {error && <p className="mt-[15px] w-full max-w-[340px] text-sm leading-normal text-error">{error}</p>}
+      {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error">{error}</p>}
 
       <SubmitButton tone="card" onClick={handleConfirm} disabled={busy}>
         {busy ? '比對中…' : '確認！開始比對尋找'}

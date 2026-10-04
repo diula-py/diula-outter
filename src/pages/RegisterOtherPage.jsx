@@ -101,7 +101,7 @@ export default function RegisterOtherPage() {
         </FormRow>
       </FormCard>
 
-      {error && <p className="mt-[15px] w-full max-w-[340px] text-sm leading-normal text-error">{error}</p>}
+      {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error">{error}</p>}
       <SubmitButton onClick={handleSubmit} disabled={status === 'submitting'}>
         {status === 'submitting' ? '送出中…' : '填寫完成，AI 辨識產生標籤'}
       </SubmitButton>

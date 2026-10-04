@@ -53,7 +53,7 @@ export default function RegisterConfirmPage() {
       {/* Header（cream，80px，僅標題、沒有返回鍵；同 inner page-11） */}
       <FormHeader title="確認標籤" />
 
-      <div className="mt-5 h-[200px] w-full max-w-[340px] shrink-0 overflow-hidden rounded-[10px]">
+      <div className="mt-5 h-[200px] w-[calc(100%-40px)] max-w-[340px] shrink-0 overflow-hidden rounded-[10px]">
         {item.image && <img src={item.image} alt="" className="h-full w-full bg-input object-contain" />}
       </div>
 
@@ -74,7 +74,7 @@ export default function RegisterConfirmPage() {
       </FormCard>
 
       {/* AI 標籤（可增刪）：340 寬、padding 20、標題 16/600、chip 高 30 */}
-      <div className="mt-5 box-border min-h-[98px] w-full max-w-[340px] shrink-0 rounded-[10px] bg-card p-5">
+      <div className="mt-5 box-border min-h-[98px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card p-5">
         <div className="mb-[10px] text-base font-semibold text-brown">AI 標籤</div>
         <div className="flex flex-wrap gap-[10px]">
           {tags.map((tag) => (
@@ -94,7 +94,7 @@ export default function RegisterConfirmPage() {
         </div>
       </div>
 
-      {error && <p className="mt-[15px] w-full max-w-[340px] text-sm leading-normal text-error">{error}</p>}
+      {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error">{error}</p>}
 
       <SubmitButton tone="card" onClick={handleSubmit} disabled={busy}>
         {busy ? '正在寫入中...' : '確認標籤，完成登錄'}

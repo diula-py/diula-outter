@@ -43,7 +43,7 @@ export function UploadBox({ mt = 20, onClick, ariaLabel, src, alt = '', cameraAl
       onClick={onClick}
       aria-label={ariaLabel}
       style={{ marginTop: mt }}
-      className="flex h-[200px] w-full max-w-[340px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-black bg-input
+      className="flex h-[200px] w-[calc(100%-40px)] max-w-[340px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-black bg-input
                  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
     >
       {src ? (
@@ -55,12 +55,12 @@ export function UploadBox({ mt = 20, onClick, ariaLabel, src, alt = '', cameraAl
   )
 }
 
-/** 米色表單卡片：340 寬、padding 15、列距 10。 */
+/** 米色表單卡片：340 寬、padding 15、列距 10。寬度不到 380 的螢幕 padding 縮成 10、圖示左縮改 5，下拉選單的字才放得下。 */
 export function FormCard({ mt = 20, children }) {
   return (
     <div
       style={{ marginTop: mt }}
-      className="flex w-full max-w-[340px] shrink-0 flex-col gap-[10px] rounded-[10px] bg-card p-[15px]"
+      className="flex w-[calc(100%-40px)] max-w-[340px] shrink-0 flex-col gap-[10px] rounded-[10px] bg-card p-[10px] min-[380px]:p-[15px]"
     >
       {children}
     </div>
@@ -75,9 +75,9 @@ export function FormRow({ icon, text, children, pillClass = 'px-[15px]', typing 
   return (
     <div className="flex items-center gap-[10px]">
       {text ? (
-        <div className="ml-[10px] flex h-10 w-[35px] shrink-0 items-center justify-center text-base font-normal">{text}</div>
+        <div className="ml-[5px] flex h-10 w-[35px] shrink-0 items-center justify-center text-base font-normal min-[380px]:ml-[10px]">{text}</div>
       ) : (
-        <div className="ml-[10px] flex h-[35px] w-[35px] shrink-0 items-center justify-center">{icon}</div>
+        <div className="ml-[5px] flex h-[35px] w-[35px] shrink-0 items-center justify-center min-[380px]:ml-[10px]">{icon}</div>
       )}
       <div className={`flex h-10 min-w-0 flex-1 items-center border border-black bg-white py-[10px] ${typing ? 'rounded-[10px]' : 'rounded-[50px]'} ${pillClass}`}>
         {children}
@@ -144,7 +144,7 @@ export function RegionField({ icon, prefix = '', city, setCity, district, setDis
   }
   return (
     <div className="flex items-center gap-[10px]">
-      <div className="ml-[10px] flex h-[35px] w-[35px] shrink-0 items-center justify-center">{icon}</div>
+      <div className="ml-[5px] flex h-[35px] w-[35px] shrink-0 items-center justify-center min-[380px]:ml-[10px]">{icon}</div>
       {[cityEl, distEl].map((make, i) => (
         <div key={i} className="flex h-10 min-w-0 flex-1 items-center rounded-[50px] border border-black bg-white px-[10px] py-[10px]">
           {make('min-w-0 flex-1')}
@@ -155,15 +155,18 @@ export function RegionField({ icon, prefix = '', city, setCity, district, setDis
   )
 }
 
-/** 350×60 送出鈕。tone：blue（#DFEAF5，多數頁）／card（#F3F0E1，確認標籤頁）。 */
+/**
+ * 350×60 送出鈕。tone：blue（#DFEAF5，多數頁）／card（#F3F0E1，確認標籤頁）。
+ * 寬度不到 380 的螢幕縮小內距、間距與字級（15px），最長的「填寫完成，為該筆資料新增標籤」才排得進一行。
+ */
 export function SubmitButton({ onClick, disabled, children, tone = 'blue' }) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`mb-[20px] mt-[35px] flex h-[60px] w-full max-w-[350px] shrink-0 items-center justify-center gap-[15px] rounded-[50px] border border-black
-                  px-[30px] py-[20px] text-base font-medium text-brown transition hover:brightness-[.98] disabled:opacity-60
+      className={`mb-[20px] mt-[35px] flex h-[60px] w-[calc(100%-40px)] max-w-[350px] shrink-0 items-center justify-center gap-[10px] rounded-[50px] border border-black
+                  px-2 py-[20px] text-[15px] font-medium min-[380px]:gap-[15px] min-[380px]:px-[30px] min-[380px]:text-base text-brown transition hover:brightness-[.98] disabled:opacity-60
                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
                   ${tone === 'card' ? 'bg-card' : 'bg-blue'}`}
     >

@@ -96,11 +96,12 @@ export default function MyLostDetailPage() {
       {/* Header 90px：標題 top:55、返回鍵 30×30 在 (21,50) */}
       <DetailHeader title={item.name} onBack={() => navigate(-1)} height={90} titleTop={55} backLeft={20} backTop={50} backSize={30} />
 
-      {/* 狀態／編號徽章：y=110、高 30、藍底圓角 10、padding 7 15、16/400 */}
+      {/* 狀態／編號徽章：y=110、高 30、藍底圓角 10、padding 7 15、16/400。
+          編號徽章 393 寬時在 x=198、最寬 175；窄螢幕以畫面中線定位、最寬到右側留 20 */}
       <div className="relative mt-5 h-[30px] w-full shrink-0">
         <span className="absolute left-5 top-0 flex h-[30px] items-center rounded-[10px] bg-blue px-[15px] text-base font-normal leading-4">{status}</span>
-        <span className="absolute left-[198px] top-0 flex h-[30px] max-w-[175px] items-center overflow-hidden whitespace-nowrap rounded-[10px] bg-blue px-[15px] text-base font-normal leading-4">
-          <span className="max-w-[145px] truncate">{item.code}</span>
+        <span className="absolute left-[calc(50%+1.5px)] top-0 flex h-[30px] max-w-[calc(50%-21.5px)] items-center overflow-hidden whitespace-nowrap rounded-[10px] bg-blue px-[15px] text-base font-normal leading-4">
+          <span className="min-w-0 truncate">{item.code}</span>
         </span>
       </div>
 
@@ -116,15 +117,15 @@ export default function MyLostDetailPage() {
 
       {/* Threads 協尋文連結（僅 Threads 自動發文的項目有；非 Threads 不顯示） */}
       {threadUrl && (
-        <div className="mt-5 box-border flex h-[60px] w-full max-w-[340px] shrink-0 items-center gap-[10px] rounded-[10px] bg-card p-[10px]">
+        <div className="mt-5 box-border flex h-[60px] w-[calc(100%-40px)] max-w-[340px] shrink-0 items-center gap-[10px] rounded-[10px] bg-card p-[10px]">
           <img src={asset('/icons/threads.png')} alt="Threads" className="h-10 w-10 shrink-0 object-contain" />
           <a
             href={threadUrl}
             target="_blank"
             rel="noreferrer"
-            className="flex h-10 w-[190px] shrink-0 items-center justify-center rounded-[10px] bg-white text-xs font-normal text-black underline"
+            className="flex h-10 min-w-0 max-w-[190px] flex-1 items-center justify-center rounded-[10px] bg-white text-xs font-normal text-black underline"
           >
-            <span className="max-w-[170px] truncate">{threadUrl}</span>
+            <span className="max-w-[calc(100%-20px)] truncate">{threadUrl}</span>
           </a>
           <button
             type="button"

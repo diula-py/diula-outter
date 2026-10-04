@@ -46,7 +46,7 @@ export default function TagPickerModal({ open, value, onClose, onConfirm, taxono
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50" onClick={onClose}>
       <div
-        className="relative flex max-h-[80vh] w-[300px] flex-col overflow-hidden rounded-[10px] bg-card shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
+        className="relative flex max-h-[80vh] w-[calc(100vw-20px)] max-w-[300px] flex-col overflow-hidden rounded-[10px] bg-card shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* header：X（左）／打勾（右，未選時淡灰 50%）／「已選標籤」置中／已選 chip */}

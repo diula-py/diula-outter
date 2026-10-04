@@ -3,14 +3,17 @@ import { NavLink } from 'react-router-dom'
 import { asset } from '../lib/asset'
 
 const TABS = [
-  { to: '/', icon: asset('/icons/house.png'), label: '首頁', end: true, left: 'left-[11px]' },
-  { to: '/profile', icon: asset('/icons/user.png'), label: '個人', left: 'left-[184px]' },
+  { to: '/', icon: asset('/icons/house.png'), label: '首頁', end: true },
+  { to: '/profile', icon: asset('/icons/user.png'), label: '個人' },
 ]
 
-/** 底部導覽列（inner）：340×65 淺藍膠囊，兩個 145×46 項目分別在 x=11、x=184、y=10，選中態白底圓角 42。 */
+/**
+ * 底部導覽列（inner）：340×65 淺藍膠囊，兩個 145×46 項目分別在 x=11、x=184、y=10，選中態白底圓角 42。
+ * 窄螢幕：外框左右各留 20，兩個項目各佔一半（中間距 28）一起縮短。
+ */
 export default function TabBar() {
   return (
-    <nav aria-label="主導覽" className="relative h-[65px] w-[340px] rounded-[50px] bg-blue">
+    <nav aria-label="主導覽" className="flex h-[65px] w-[calc(100vw-40px)] max-w-[340px] justify-between rounded-[50px] bg-blue px-[11px] pt-[10px]">
       {TABS.map((tab) => (
         <NavLink
           key={tab.to}
@@ -18,7 +21,7 @@ export default function TabBar() {
           end={tab.end}
           aria-label={tab.label}
           className={({ isActive }) =>
-            `absolute top-[10px] flex h-[46px] w-[145px] items-center justify-center rounded-[42px] transition-colors duration-300 ${tab.left} ${
+            `flex h-[46px] w-[calc(50%-14px)] max-w-[145px] items-center justify-center rounded-[42px] transition-colors duration-300 ${
               isActive ? 'bg-paper' : ''
             }`
           }

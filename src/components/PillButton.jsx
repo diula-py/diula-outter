@@ -1,13 +1,14 @@
 /**
  * 米色圓角膠囊按鈕：icon + 文字並排靠左（比照 design.md／inner：
  * 100px 高、30px 40px padding、icon 與文字間 gap 40px），咖啡色細框。
+ * 寬度不到 380 的螢幕 padding 與 gap 縮成 20，「非證件類遺失物登錄」才排得進一行。
  * 兩種用法：
  *   1. 內部路由 / 動作 → 傳 onClick（渲染成 <button>）
  *   2. 外部頁面連結   → 傳 href（渲染成 <a>，整頁跳轉、可中鍵開新分頁）
  * props: icon, label, onClick?, href?, external?
  */
 const BASE_CLASS =
-  'flex h-[100px] w-full items-center gap-10 rounded-[50px] px-10 py-[30px] ' +
+  'flex h-[100px] w-full items-center gap-5 rounded-[50px] px-5 py-[30px] min-[380px]:gap-10 min-[380px]:px-10 ' +
   'border border-brown bg-card text-base font-medium text-brown no-underline ' +
   'transition hover:bg-[#eee8d7] active:scale-[.985] ' +
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown'

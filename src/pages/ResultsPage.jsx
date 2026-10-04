@@ -61,8 +61,9 @@ export default function ResultsPage() {
         <h1 className="text-xl font-bold text-brown">比對結果</h1>
       </header>
 
-      {/* 來源分頁：4 顆 80×45、間距 10、置中；DiuLa! 那顆用 68×37 的 logo 圖 */}
-      <div className="mt-5 flex shrink-0 gap-[10px]">
+      {/* 來源分頁：4 顆 80×45、間距 10、置中；DiuLa! 那顆用 68×37 的 logo 圖。
+          窄螢幕（放不下 350）4 顆平均縮小，文字仍置中 */}
+      <div className="mt-5 flex w-[calc(100%-40px)] max-w-[350px] shrink-0 justify-center gap-[10px]">
         {SOURCES.map((s) => {
           const active = source === s.key
           const isDiula = s.key === 'diula'
@@ -73,13 +74,13 @@ export default function ResultsPage() {
               onClick={() => selectSource(s.key)}
               aria-pressed={active}
               aria-label={s.label}
-              className={`box-border flex h-[45px] w-20 items-center justify-center rounded-[50px] text-base text-black
+              className={`box-border flex h-[45px] w-20 min-w-0 items-center justify-center rounded-[50px] text-base text-black
                 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
-                ${isDiula ? 'px-[6px] py-1' : 'px-[14px] py-2'}
+                ${isDiula ? 'px-[6px] py-1' : 'py-2'}
                 ${active ? 'border-[1.5px] border-black bg-card' : 'border border-black bg-input font-normal'}`}
             >
               {isDiula ? (
-                <img src={asset('/icons/diula-logo-cropped.png')} alt="" aria-hidden="true" className="h-[37px] w-[68px] shrink-0 object-contain" />
+                <img src={asset('/icons/diula-logo-cropped.png')} alt="" aria-hidden="true" className="h-[37px] w-full max-w-[68px] object-contain" />
               ) : (
                 s.label
               )}
@@ -89,7 +90,7 @@ export default function ResultsPage() {
       </div>
 
       {/* 結果清單：340 寬、卡片間距 20 */}
-      <div className="mt-5 flex w-full max-w-[340px] flex-col gap-5">
+      <div className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-5">
         {results.length === 0 && <div className={emptyBox}>沒有比對資料（請從跨平台頁送出協尋單）</div>}
         {results.length > 0 && list.length === 0 && (
           <div className={emptyBox}>
@@ -141,7 +142,7 @@ export default function ResultsPage() {
       </div>
 
       {/* 都沒有我的物品：80×80 藍色圓鈕，固定在視窗底部 145px、右緣對齊 340 欄（inner） */}
-      <div className="pointer-events-none fixed bottom-[145px] left-1/2 z-[90] flex w-[340px] -translate-x-1/2 justify-end">
+      <div className="pointer-events-none fixed bottom-[145px] left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[340px] -translate-x-1/2 justify-end">
         <button
           type="button"
           onClick={() => setSosOpen(true)}
@@ -155,7 +156,7 @@ export default function ResultsPage() {
       {/* 「都沒有我的東西」選項彈窗（inner notfound-modal：寬 300、padding 30 20、X 30×30、按鈕間距 12） */}
       {sosOpen && (
         <Overlay onClose={() => setSosOpen(false)}>
-          <div role="dialog" aria-modal="true" aria-label="都沒有我的東西" className="relative box-border w-[300px] rounded-[10px] bg-card px-5 py-[30px]">
+          <div role="dialog" aria-modal="true" aria-label="都沒有我的東西" className="relative box-border w-[calc(100vw-20px)] max-w-[300px] rounded-[10px] bg-card px-5 py-[30px]">
             <button
               type="button"
               onClick={() => setSosOpen(false)}
