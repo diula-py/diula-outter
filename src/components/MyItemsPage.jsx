@@ -47,10 +47,15 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
   }, [kind, userId])
 
   const filtered = useMemo(() => {
-    const q = normalizeIdWording(query.trim())
+    // 搜尋範圍：inner 的日期／地點／備註／描述／標籤，加上 outter 的物品名、編號與拾獲物的送往地點；
+    // 不分大小寫，「身份／身分」視為相同。日期同時比對 2026-09-29 與畫面上的 2026/09/29。
+    const q = normalizeIdWording(query.trim().toLowerCase())
     return items.filter((it) => {
-      const has = (s) => normalizeIdWording(String(s || '')).includes(q)
-      const okText = !q || has(it.name) || has(it.id) || (it.tags || []).some(has)
+      const haystack = [
+        it.name, it.id, it.date, (it.date || '').replaceAll('-', '/'),
+        it.place, it.dropLocation, it.remark, it.desc, ...(it.tags || []),
+      ].filter(Boolean).join(' ').toLowerCase()
+      const okText = !q || normalizeIdWording(haystack).includes(q)
       const okDate = !dateFilter || it.date === dateFilter
       return okText && okDate
     })
