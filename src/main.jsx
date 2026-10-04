@@ -7,6 +7,7 @@ import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import './lib/debugItems.js'
 import { registerSW } from 'virtual:pwa-register'
+import { prefetchThreadsSnapshot } from './lib/api'
 
 // PWA Service Worker（設定在 vite.config.js）。autoUpdate：有新版就自動換上並重新整理頁面。
 // 展場裝置可能整天開著不重整 → 每小時、以及每次切回這個分頁時都主動檢查一次更新。
@@ -23,6 +24,9 @@ registerSW({
     })
   },
 })
+
+// 背景先抓一次 Threads 快照存起來，離線時 Threads 頁才有東西看（見 lib/api.js）。
+prefetchThreadsSnapshot()
 
 // GitHub Pages 沒有伺服器路由，重整/直連深層網址會 404 → 用 HashRouter（網址帶 #）。
 createRoot(document.getElementById('root')).render(
