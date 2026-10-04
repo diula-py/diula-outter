@@ -3,11 +3,13 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   signInAnonymously,
+  signInWithCustomToken,
   onAuthStateChanged,
   signOut as firebaseSignOut,
 } from 'firebase/auth'
 import { auth } from '../lib/firebase'
 import { getOrCreateUserId } from '../lib/userId'
+import { fetchLineCustomToken, LINE_UID_PREFIX } from '../lib/authToken'
 import {
   initLiff,
   isLiffLoggedIn,
@@ -16,7 +18,7 @@ import {
   logoutLine,
 } from '../lib/liff'
 
-// user 形狀：{ provider: 'line' | 'google', uid, userId, displayName, photoURL }
+// user 形狀：{ provider: 'line' | 'google', uid, userId, displayName, photoURL, email }
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
@@ -26,22 +28,43 @@ export function AuthProvider({ children }) {
   const resolveFromLine = useCallback(async () => {
     if (!isLiffLoggedIn()) return null
     const profile = await getLiffProfile()
-    const userId = await getOrCreateUserId('L', profile.userId)
-    // Firestore 規則仍可能需要 Firebase 的登入狀態，背景補一個匿名帳號；
-    // 識別使用者身分一律以 LINE userId 為準，不使用這個匿名帳號的 uid。
-    if (!auth.currentUser) {
+    // ⚠️ 順序很重要：要先有 Firebase 登入狀態，才能碰 Firestore。firestore.rules 要求
+    // request.auth != null；如果等到 getOrCreateUserId 之後才登入，那筆讀寫會被規則擋掉
+    // → 退回「用當下年月重算 user_id」的舊 bug，使用者換月登入後既有物品全部查不到。
+    //
+    // 這裡用後端簽的 custom token 登入，uid 固定是 line_<LINE userId>，所以 Firestore
+    // 規則可以寫 owner_uid == request.auth.uid。以前用 signInAnonymously() 拿到的是隨機
+    // uid，規則只能寫 request.auth != null，而匿名帳號誰都能開 → 等於沒鎖。
+    const expectedUid = LINE_UID_PREFIX + profile.userId
+    if (auth.currentUser?.uid !== expectedUid) {
       try {
-        await signInAnonymously(auth)
+        const customToken = await fetchLineCustomToken()
+        if (!customToken) throw new Error('後端沒有回傳 custom token')
+        await signInWithCustomToken(auth, customToken)
       } catch (e) {
-        console.warn('Firebase 匿名登入失敗:', e)
+        // 後端睡著（Render 冷啟動 ~50 秒）或暫時掛掉時，不要讓使用者整個登不進來。
+        // 退回匿名登入：功能照舊，只是這個 session 寫入的資料蓋不到正確的 owner_uid。
+        console.warn('換 Firebase custom token 失敗，退回匿名登入：', e)
+        if (!auth.currentUser) {
+          try {
+            await signInAnonymously(auth)
+          } catch (e2) {
+            console.warn('Firebase 匿名登入失敗:', e2)
+          }
+        }
       }
     }
+    // 識別使用者身分一律以 LINE userId 為準，不使用 Firebase uid。
+    const userId = await getOrCreateUserId('L', profile.userId)
     return {
       provider: 'line',
       uid: profile.userId,
       userId,
       displayName: profile.displayName || 'LINE 使用者',
       photoURL: profile.pictureUrl || null,
+      // LIFF 的 ID token 預設不含 email，所以 LINE 使用者沒有可驗證的信箱。
+      // 後端的 Email 訂閱會因此擋下他們（見 diula-outter/auth_token.py）。
+      email: null,
     }
   }, [])
 
@@ -84,6 +107,7 @@ export function AuthProvider({ children }) {
           userId,
           displayName: fbUser.displayName || 'Google 使用者',
           photoURL: fbUser.photoURL || null,
+          email: fbUser.emailVerified ? fbUser.email : null,
         })
       } else {
         setUser(null)
@@ -108,6 +132,7 @@ export function AuthProvider({ children }) {
       userId,
       displayName: fbUser.displayName || 'Google 使用者',
       photoURL: fbUser.photoURL || null,
+      email: fbUser.emailVerified ? fbUser.email : null,
     })
     return userId
   }, [])

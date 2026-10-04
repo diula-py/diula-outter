@@ -7,6 +7,7 @@ import PhotoMaskModal from '../components/PhotoMaskModal'
 import { addMyItem } from '../lib/items'
 import { useAuth } from '../context/AuthContext'
 import { flask } from '../lib/api'
+import { getAuthHeaders } from '../lib/authToken'
 import { LOST_STATUS } from '../data/itemStatus'
 
 // Threads 抓外部圖有下載逾時上限，原始手機照太大會 2207003（下載逾時）→ 先縮圖再送。
@@ -82,9 +83,12 @@ export default function SosPostPage() {
       // 送出當下才縮圖，保證不會送到還沒縮的原圖（Threads 抓大圖會逾時 2207003）。
       // 有打碼就送打碼後的圖，原圖不外流。
       const image = displayImage ? await downscale(displayImage) : null
+      // 用官方帳號發文，後端要求登入憑證（見 diula-outter 的 auth_token.py）。
+      const authHeaders = await getAuthHeaders()
+      if (!authHeaders) throw new Error('登入狀態已失效，請重新登入')
       const res = await fetch(flask('/threads/submit'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify({ text, image, name, lost_date: date, location: fullPlace }),
       })
       const json = await res.json().catch(() => ({}))
