@@ -136,7 +136,7 @@ export default function SosPostPage() {
       {step === 'form' && (
         <div className="relative h-[660px] w-full">
           <div className="absolute left-[27px] top-5 box-border flex h-[60px] w-[340px] items-center rounded-[10px] bg-card px-[15px] py-[10px] text-xs font-medium leading-normal text-brown">
-            照欄位填，系統會套用統一模版由 DiuLa 官方帳號 發佈到 Threads 協尋，你的個人帳號不會露出。
+            照欄位填，系統會套用統一模版由 DiuLa! 官方帳號 發佈到 Threads 協尋，你的個人帳號不會露出。
           </div>
 
           <div className={label} style={{ left: 27, top: 100 }}>物品名稱</div>
