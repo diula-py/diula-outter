@@ -6,7 +6,7 @@ import { WandIcon } from './icons'
  */
 export default function AnalyzingScreen({ pct, error, onRetry, children }) {
   return (
-    <div className="relative mx-auto min-h-dvh w-full max-w-[393px] overflow-hidden bg-[#CDDCF0]">
+    <div className="relative mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] overflow-hidden bg-[#CDDCF0]">
       <div className="absolute left-[112px] top-[207px] flex h-[170px] w-[170px] items-center justify-center rounded-full bg-card">
         <WandIcon className="h-20 w-20" />
       </div>

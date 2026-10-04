@@ -40,7 +40,7 @@ export default function LoginPage() {
 
   return (
     // 版面比照 inner page-01：393 寬的畫布，各元素用絕對位置（數值直接抄 inner）
-    <div className="relative mx-auto min-h-dvh w-full max-w-[393px] overflow-hidden bg-blue">
+    <div className="relative mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] overflow-hidden bg-blue">
       <div className="absolute left-0 top-[189px] flex h-[128px] w-full items-center justify-center overflow-hidden">
         <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="w-full" />
       </div>

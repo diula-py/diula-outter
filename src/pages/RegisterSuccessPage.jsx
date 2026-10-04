@@ -12,7 +12,7 @@ export default function RegisterSuccessPage() {
   const id = useLocation().state?.id
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col items-center bg-paper px-[22px] pb-[40px] text-brown">
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper px-[22px] pb-[40px] text-brown">
       <div className="flex w-full flex-1 flex-col items-center justify-center text-center">
         <CircleCheckIcon className="mb-6 h-[120px] w-[120px]" />
         <h1 className="mb-4 text-xl font-bold leading-5">登錄成功！</h1>

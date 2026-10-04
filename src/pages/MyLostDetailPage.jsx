@@ -92,7 +92,7 @@ export default function MyLostDetailPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col items-center bg-paper pb-[100px]">
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[100px]">
       {/* Header 90px：標題 top:55、返回鍵 30×30 在 (21,50) */}
       <DetailHeader title={item.name} onBack={() => navigate(-1)} height={90} titleTop={55} backLeft={20} backTop={50} backSize={30} />
 

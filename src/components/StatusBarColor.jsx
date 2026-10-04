@@ -2,8 +2,10 @@ import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 
 /**
- * iOS 主畫面 PWA 的狀態列（時間・電量那條）預設是白底，跟 header 之間會多一條白色色塊。
- * 用 <meta name="theme-color"> 讓狀態列底色跟著目前頁面頂端的顏色走。
+ * 狀態列（時間・電量那條）底色跟著目前頁面頂端的顏色走，不再多一條白色色塊。
+ * - iOS 主畫面 App：index.html 設了 black-translucent，網頁會畫到狀態列底下，
+ *   #root 已往下推 safe-area（見 index.css --top-inset），這裡補一條固定在頂端的同色色帶。
+ * - Safari／Android：另外同步 <meta name="theme-color">。
  * 沒列到的頁面 header 都是米色卡片（bg-card）。
  */
 const COLOR_BY_PATH = {
@@ -19,6 +21,7 @@ const DEFAULT_COLOR = '#f3f0e1'
 
 export default function StatusBarColor() {
   const { pathname } = useLocation()
+  const color = COLOR_BY_PATH[pathname] ?? DEFAULT_COLOR
 
   useEffect(() => {
     let meta = document.querySelector('meta[name="theme-color"]')
@@ -27,8 +30,15 @@ export default function StatusBarColor() {
       meta.name = 'theme-color'
       document.head.appendChild(meta)
     }
-    meta.content = COLOR_BY_PATH[pathname] ?? DEFAULT_COLOR
-  }, [pathname])
+    meta.content = color
+  }, [color])
 
-  return null
+  // z-40：蓋過捲上來的頁面內容；離線提示條（z-50）與各種對話框會蓋在它上面
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-x-0 top-0 z-40 h-[env(safe-area-inset-top)]"
+      style={{ background: color }}
+    />
+  )
 }

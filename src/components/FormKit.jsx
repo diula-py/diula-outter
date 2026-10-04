@@ -10,7 +10,7 @@ import { asset } from '../lib/asset'
 /** 80px 標頭：標題置中 20/700，返回鍵 30×30 在 (22,25)。onBack 省略＝不顯示返回鍵（如「確認標籤」）。 */
 export function FormHeader({ title, onBack }) {
   return (
-    <header className="relative z-10 flex h-[80px] w-full shrink-0 items-center justify-center rounded-b-[20px] bg-card pt-[env(safe-area-inset-top)]">
+    <header className="relative z-10 flex h-[80px] w-full shrink-0 items-center justify-center rounded-b-[20px] bg-card">
       {onBack && (
         <button
           type="button"
@@ -29,7 +29,7 @@ export function FormHeader({ title, onBack }) {
 /** 表單頁外框：置中欄，底部留 80px（inner 的 padding-bottom）。 */
 export function FormPage({ children }) {
   return (
-    <div className="mx-auto flex min-h-dvh w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(80px+env(safe-area-inset-bottom))]">
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(80px+env(safe-area-inset-bottom))]">
       {children}
     </div>
   )
