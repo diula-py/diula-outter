@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { flask } from '../lib/api'
 import { getAuthHeaders } from '../lib/authToken'
 import { LOST_STATUS } from '../data/itemStatus'
+import { downscale } from '../lib/image'
 
 export default function SubscribePage() {
   const navigate = useNavigate()
@@ -55,6 +56,8 @@ export default function SubscribePage() {
       })
       const json = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`)
+      // 使用者上傳的照片一起存進「我的遺失物」；縮小一點，避免超過 Firestore 單筆 1MB 上限
+      const image = state.base64Image ? await downscale(state.base64Image, 800, 0.8) : null
       await addMyItem('lost', userId, {
         kind: 'subscription',
         code: '#' + (json.id ? String(json.id).slice(-6) : Date.now().toString().slice(-6)),
@@ -62,7 +65,7 @@ export default function SubscribePage() {
         date: q.date,
         place: q.place,
         tags: q.tags || [],
-        image: null,
+        image,
         status: LOST_STATUS.BROADCASTING,
         sub_id: json.id,
       })

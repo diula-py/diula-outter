@@ -1,5 +1,9 @@
 import { initializeApp } from 'firebase/app'
-import { getFirestore } from 'firebase/firestore'
+import {
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+} from 'firebase/firestore'
 import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth'
 import { getFunctions } from 'firebase/functions'
 
@@ -15,7 +19,11 @@ const firebaseConfig = {
 }
 
 export const app = initializeApp(firebaseConfig)
-export const db = getFirestore(app)
+// Firestore 離線快取（存在 IndexedDB）：看過的 lost_items / found_items 離線也讀得到，
+// getDocs / getDoc 離線時會自動改讀快取。multipleTab：同時開多個分頁也能共用快取。
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+})
 export const auth = getAuth(app)
 export const functions = getFunctions(app, 'asia-east1')
 
