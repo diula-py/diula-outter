@@ -6,7 +6,7 @@ import { itemTitle } from '../lib/text'
 const SOURCE_LINK = {
   npa: { label: '警政署拾得遺失物管理系統', url: 'https://op2.npa.gov.tw/NM107-512Client/OP01A01Q_01.jsp' },
   metro: { label: '台北捷運智慧客服', url: 'https://www.gov.taipei/News_Content.aspx?n=EEC70A4186D4C828&sms=87415A8B9CE81B16&s=609D08500F8C9D4C' },
-  hsr: { label: '台鐵高鐵遺失物查詢', url: 'https://www.thsrc.com.tw/ArticleContent/83cbc68f-d82a-4b6e-9540-82a885f8e512' },
+  hsr: { label: '台灣高鐵遺失物查詢', url: 'https://www.thsrc.com.tw/ArticleContent/83cbc68f-d82a-4b6e-9540-82a885f8e512' },
 }
 
 const fmtDate = (s) => (s ? String(s).slice(0, 10).replaceAll('-', '/') : '')

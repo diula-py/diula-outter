@@ -19,6 +19,35 @@ import {
 // user 形狀：{ provider: 'line' | 'google', uid, userId, displayName, photoURL }
 const AuthContext = createContext(null)
 
+// LINE 使用者離線時 liff.init() 一定失敗、會被當成沒登入而導去 /login，連快取資料都看不到。
+// 所以每次 LINE 登入成功就把 user 存一份在 localStorage；離線開網頁時拿它當登入狀態，只用來讀快取。
+const LAST_LINE_USER_KEY = 'diula_last_line_user'
+
+function saveLastLineUser(u) {
+  try {
+    localStorage.setItem(LAST_LINE_USER_KEY, JSON.stringify(u))
+  } catch {
+    /* storage 不能用就算了，只是離線時沒有 fallback */
+  }
+}
+
+function loadLastLineUser() {
+  try {
+    const u = JSON.parse(localStorage.getItem(LAST_LINE_USER_KEY) || 'null')
+    return u?.provider === 'line' && u.userId ? u : null
+  } catch {
+    return null
+  }
+}
+
+function clearLastLineUser() {
+  try {
+    localStorage.removeItem(LAST_LINE_USER_KEY)
+  } catch {
+    /* ignore */
+  }
+}
+
 export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
@@ -46,6 +75,16 @@ export function AuthProvider({ children }) {
   }, [])
 
   useEffect(() => {
+    // 離線開啟、且之前用 LINE 登入過 → 直接用上次的 LINE 身分，不跑 LIFF（離線必定失敗）。
+    if (!navigator.onLine) {
+      const lastLineUser = loadLastLineUser()
+      if (lastLineUser) {
+        setUser(lastLineUser)
+        setLoading(false)
+        return
+      }
+    }
+
     let cancelled = false
 
     async function bootstrap() {
@@ -58,6 +97,7 @@ export function AuthProvider({ children }) {
       const lineUser = await resolveFromLine().catch(() => null)
       if (cancelled) return
       if (lineUser) {
+        saveLastLineUser(lineUser)
         setUser(lineUser)
         setLoading(false)
       }
@@ -76,6 +116,7 @@ export function AuthProvider({ children }) {
         !fbUser.isAnonymous &&
         fbUser.providerData.some((p) => p.providerId === 'google.com')
       ) {
+        clearLastLineUser()
         const userId = await getOrCreateUserId('G', fbUser.uid)
         if (cancelled) return
         setUser({
@@ -117,6 +158,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   const logout = useCallback(async () => {
+    clearLastLineUser()
     if (user?.provider === 'line') {
       logoutLine()
     } else {

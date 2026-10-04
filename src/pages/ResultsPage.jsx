@@ -93,9 +93,19 @@ export default function ResultsPage() {
         {results.length === 0 && <div className={emptyBox}>沒有比對資料（請從跨平台頁送出協尋單）</div>}
         {results.length > 0 && list.length === 0 && (
           <div className={emptyBox}>
-            {source === 'diula'
-              ? '目前站內尚無符合標籤的拾獲物，DiuLa! 會持續為您比對。您也可以點擊右下角「都沒有我的物品」開啟自動推播或發佈協尋文。'
-              : '此來源沒有相符的結果'}
+            {source === 'diula' ? (
+              <>
+                目前站內尚無符合標籤的拾獲物，
+                <br />
+                DiuLa! 會持續為您比對。
+                <br />
+                您也可以點擊右下角「都沒有我的物品」
+                <br />
+                開啟自動推播或發佈協尋文。
+              </>
+            ) : (
+              '此來源沒有相符的結果'
+            )}
           </div>
         )}
 
