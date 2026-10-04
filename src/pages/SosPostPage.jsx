@@ -8,6 +8,7 @@ import { addMyItem } from '../lib/items'
 import { useAuth } from '../context/AuthContext'
 import { flask } from '../lib/api'
 import { LOST_STATUS } from '../data/itemStatus'
+import { titleFromTags } from '../data/tagTaxonomy'
 
 // Threads 抓外部圖有下載逾時上限，原始手機照太大會 2207003（下載逾時）→ 先縮圖再送。
 function downscale(dataUrl, maxSide = 1280, quality = 0.82) {
@@ -57,7 +58,7 @@ export default function SosPostPage() {
   const date = q.date || ''    // 鎖死：來自比對條件
   const place = q.place || ''   // 鎖死：來自比對條件
 
-  const [name, setName] = useState((q.tags && q.tags.join('、')) || '')
+  const [name, setName] = useState(titleFromTags(q.tags))
   const [detail, setDetail] = useState('') // 詳細遺失地點（選填）
   const [note, setNote] = useState('')     // 備註（選填）
   const [step, setStep] = useState('form') // form | preview

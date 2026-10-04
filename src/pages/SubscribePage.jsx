@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { flask } from '../lib/api'
 import { LOST_STATUS } from '../data/itemStatus'
 import { downscale } from '../lib/image'
+import { titleFromTags } from '../data/tagTaxonomy'
 
 export default function SubscribePage() {
   const navigate = useNavigate()
@@ -52,7 +53,7 @@ export default function SubscribePage() {
       await addMyItem('lost', userId, {
         kind: 'subscription',
         code: '#' + (json.id ? String(json.id).slice(-6) : Date.now().toString().slice(-6)),
-        name: resolved.category_name || (q.tags || []).join('、') || '協尋',
+        name: titleFromTags(q.tags || []) || resolved.category_name || '協尋',
         date: q.date,
         place: q.place,
         tags: q.tags || [],
