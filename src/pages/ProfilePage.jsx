@@ -24,6 +24,9 @@ export default function ProfilePage() {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
   const [confirmLogout, setConfirmLogout] = useState(false)
+  // LINE / Google 頭貼是外部網址，離線或過期會抓不到 → 改顯示預設頭貼
+  const [avatarBroken, setAvatarBroken] = useState(false)
+  const avatarSrc = user?.photoURL && !avatarBroken ? user.photoURL : asset('/icons/icon_profile.png')
 
   const displayName = user?.displayName || '訪客'
   const displayCode = user?.userId || ''
@@ -46,7 +49,7 @@ export default function ProfilePage() {
       {/* 使用者卡：360×200、x=18、y=129；頭像 72、間距 20、名稱 16/500、編號 12/500 */}
       <div className="mt-5 flex h-[200px] w-[360px] flex-col items-center justify-center gap-5 self-start rounded-[20px] bg-card/50 px-[115px] py-[30px] ml-[18px]">
         <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-full border border-black bg-white">
-          <img src={user?.photoURL || asset('/icons/avatar.png')} alt="大頭貼" className="h-full w-full object-cover" />
+          <img src={avatarSrc} alt="大頭貼" onError={() => setAvatarBroken(true)} className="h-full w-full object-cover" />
         </div>
         <div className="text-base font-medium">{displayName}</div>
         <div className="whitespace-nowrap text-xs font-medium">{displayCode && `User ID：${displayCode}`}</div>
