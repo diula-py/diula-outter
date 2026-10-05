@@ -63,9 +63,14 @@ html.is-offline {
   padding-top: var(--top-inset);
 }
 
+/* 底色設在 html、body 保持透明：StatusBarColor 會依頁面改 html 底色（登入頁藍、其他白），
+   body 若有底色會蓋住 html，iOS 主畫面 App 底部那段（100dvh 少算狀態列高度）就會露出白色。 */
+html {
+  background: var(--color-paper);
+}
+
 body {
   margin: 0;
-  background: var(--color-paper);
   color: var(--color-brown);
   font-family: var(--font-round);
   line-height: 1; /* design.md §3：行距 100%；多行段落用 leading-normal 例外 */
