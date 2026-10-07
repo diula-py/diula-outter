@@ -76,11 +76,11 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
           type="button"
           onClick={() => navigate(-1)}
           aria-label="返回"
-          className="absolute left-[21px] top-[calc(69px+var(--hshift))] h-[30px] w-[30px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+          className="back-hit absolute left-[21px] top-[calc(69px+var(--hshift))] h-[30px] w-[30px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >
           <ChevronLeftIcon className="h-[30px] w-[30px]" />
         </button>
-        <h1 className="absolute left-0 top-[calc(74px+var(--hshift))] w-full text-center text-xl font-bold leading-5 text-brown">{title}</h1>
+        <h1 className="pointer-events-none absolute left-0 top-[calc(74px+var(--hshift))] w-full text-center text-xl font-bold leading-5 text-brown">{title}</h1>
 
         <div className="absolute left-1/2 top-[calc(109px+var(--hshift))] flex w-[calc(100%-40px)] max-w-[340px] -translate-x-1/2 gap-[10px]">
           <label className="relative flex h-[47px] w-[97px] shrink-0 items-center justify-center rounded-[50px] border border-black bg-card">

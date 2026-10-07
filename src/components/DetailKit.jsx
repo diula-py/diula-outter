@@ -17,16 +17,17 @@ export function DetailHeader({ title, onBack, height, titleTop, backLeft, backTo
         type="button"
         onClick={onBack}
         aria-label="返回"
-        className="absolute focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+        className="back-hit absolute focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         style={{ left: backLeft, top: `calc(${backTop}px + ${shift})`, width: backSize, height: backSize }}
       >
         <ChevronLeftIcon style={{ width: backSize, height: backSize }} />
       </button>
       {/* truncate 會 overflow:hidden，20px 字的字形比 20px 行高略高、頂端會被切；
           上下各多 4px padding 並把 top 往上移 4px，文字位置不變但不再被切。
-          字級 20px；螢幕窄於 378px 時隨寬度縮小（320 寬約 17px），長標題（如「幫你發Threads的協尋文」）才放得下 */}
+          字級 20px；螢幕窄於 378px 時隨寬度縮小（320 寬約 17px），長標題（如「幫你發Threads的協尋文」）才放得下
+          標題整排寬、疊在返回鍵上面，所以設 pointer-events-none，點擊才會落到返回鍵 */}
       <h1
-        className="absolute left-0 w-full truncate px-[60px] py-1 text-center text-[clamp(17px,5.3vw,20px)] font-bold leading-5 text-brown"
+        className="pointer-events-none absolute left-0 w-full truncate px-[60px] py-1 text-center text-[clamp(17px,5.3vw,20px)] font-bold leading-5 text-brown"
         style={{ top: `calc(${titleTop - 4}px + ${shift})` }}
       >
         {title}

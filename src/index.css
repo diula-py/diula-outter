@@ -101,6 +101,18 @@ body {
   height: max(var(--header-h), calc(env(safe-area-inset-top, 0px) + 73px));
 }
 
+/* 返回鍵的可點範圍：圖示只有 30～35px，用透明的 ::after 把點擊範圍撐到 44×44（Apple 建議的最小觸控尺寸），
+   圖示大小與位置不變。按鈕本身要是定位元素（目前全站返回鍵都是 absolute）。 */
+.back-hit::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+}
+
 /* 絕對定位排版的 header（我的遺失物／拾獲物列表、詳情頁）：inner 的原設計高度本來就含狀態列，
    只要往上延伸到狀態列底下，總高就等於設計值。 */
 .safe-header-bleed {

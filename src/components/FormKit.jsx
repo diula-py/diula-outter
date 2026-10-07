@@ -17,7 +17,7 @@ export function FormHeader({ title, onBack }) {
             type="button"
             onClick={onBack}
             aria-label="返回"
-            className="absolute left-[22px] top-1/2 h-[30px] w-[30px] -translate-y-1/2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+            className="back-hit absolute left-[22px] top-1/2 h-[30px] w-[30px] -translate-y-1/2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
           >
             <ChevronLeftIcon className="h-[30px] w-[30px]" />
           </button>
