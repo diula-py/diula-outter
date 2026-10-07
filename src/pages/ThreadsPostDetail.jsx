@@ -45,7 +45,7 @@ export default function ThreadsPostDetail() {
             type="button"
             onClick={() => navigate(-1)}
             aria-label="返回"
-            className="absolute left-[22px] top-1/2 -translate-y-1/2 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+            className="back-hit absolute left-[22px] top-1/2 -translate-y-1/2 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
           >
             <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
           </button>
