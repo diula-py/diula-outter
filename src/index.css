@@ -63,9 +63,14 @@ html.is-offline {
   padding-top: var(--top-inset);
 }
 
+/* 底色設在 html、body 保持透明：StatusBarColor 會依頁面改 html 底色（登入頁藍、其他白），
+   body 若有底色會蓋住 html，iOS 主畫面 App 底部那段（100dvh 少算狀態列高度）就會露出白色。 */
+html {
+  background: var(--color-paper);
+}
+
 body {
   margin: 0;
-  background: var(--color-paper);
   color: var(--color-brown);
   font-family: var(--font-round);
   line-height: 1; /* design.md §3：行距 100%；多行段落用 leading-normal 例外 */
@@ -83,4 +88,21 @@ body {
 html,
 body {
   overscroll-behavior-y: none;
+}
+
+/* 頂端 header 延伸到狀態列底下（抵銷 #root 的 safe-area 推移），header 的總高才是「含狀態列」：
+   - 沒有瀏海的裝置／桌機：safe-area＝0，總高＝--header-h（原設計值）；
+   - 有瀏海／動態島：總高＝狀態列＋73px（iPhone 15/16 Pro 為 132px）。
+   padding-top 讓 header 內容排在狀態列下方。 */
+.safe-header {
+  box-sizing: border-box;
+  margin-top: calc(-1 * env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
+  height: max(var(--header-h), calc(env(safe-area-inset-top, 0px) + 73px));
+}
+
+/* 絕對定位排版的 header（我的遺失物／拾獲物列表、詳情頁）：inner 的原設計高度本來就含狀態列，
+   只要往上延伸到狀態列底下，總高就等於設計值。 */
+.safe-header-bleed {
+  margin-top: calc(-1 * env(safe-area-inset-top, 0px));
 }

@@ -7,14 +7,17 @@ import { ChevronLeftIcon, CircleCheckIcon } from './icons'
 import { asset } from '../lib/asset'
 
 export function DetailHeader({ title, onBack, height, titleTop, backLeft, backTop, backSize }) {
+  // header 延伸到狀態列底下（safe-header-bleed），inner 的數值本來就含狀態列；
+  // 但若返回鍵／標題會壓到狀態列（如我的遺失物詳情 top 50 < 動態島 59），整組往下推到狀態列下方 5px。
+  const shift = `max(0px, env(safe-area-inset-top, 0px) + ${5 - Math.min(titleTop, backTop)}px)`
   return (
-    <header className="relative w-full shrink-0 rounded-b-[20px] bg-card" style={{ height }}>
+    <header className="safe-header-bleed relative w-full shrink-0 rounded-b-[20px] bg-card" style={{ height: `calc(${height}px + ${shift})` }}>
       <button
         type="button"
         onClick={onBack}
         aria-label="返回"
         className="absolute focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-        style={{ left: backLeft, top: backTop, width: backSize, height: backSize }}
+        style={{ left: backLeft, top: `calc(${backTop}px + ${shift})`, width: backSize, height: backSize }}
       >
         <ChevronLeftIcon style={{ width: backSize, height: backSize }} />
       </button>
@@ -23,7 +26,7 @@ export function DetailHeader({ title, onBack, height, titleTop, backLeft, backTo
           字級 20px；螢幕窄於 378px 時隨寬度縮小（320 寬約 17px），長標題（如「幫你發Threads的協尋文」）才放得下 */}
       <h1
         className="absolute left-0 w-full truncate px-[60px] py-1 text-center text-[clamp(17px,5.3vw,20px)] font-bold leading-5 text-brown"
-        style={{ top: titleTop - 4 }}
+        style={{ top: `calc(${titleTop - 4}px + ${shift})` }}
       >
         {title}
       </h1>

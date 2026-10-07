@@ -66,7 +66,7 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
 
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[120px]">
-      <header className="relative h-[174px] w-full shrink-0 rounded-b-[20px] bg-card">
+      <header className="safe-header-bleed relative h-[174px] w-full shrink-0 rounded-b-[20px] bg-card">
         <button
           type="button"
           onClick={() => navigate(-1)}

@@ -57,11 +57,11 @@ export default function ResultsPage() {
   return (
     <div className="flex flex-col items-center pb-[120px]">
       {/* Header 80px：只有標題、沒有返回鍵（inner page-06） */}
-      <header className="relative z-10 flex h-[80px] w-full shrink-0 items-center justify-center rounded-b-[20px] bg-card">
+      <header className="safe-header relative z-10 flex w-full shrink-0 items-center justify-center rounded-b-[20px] bg-card [--header-h:80px]">
         <h1 className="text-xl font-bold text-brown">比對結果</h1>
       </header>
 
-      {/* 來源分頁：4 顆 80×45、間距 10、置中；DiuLa! 那顆用 68×37 的 logo 圖。
+      {/* 來源分頁：4 顆 80×45、間距 10、置中；DiuLa! 那顆用最大 54×24 的 logo 圖。
           窄螢幕（放不下 350）4 顆平均縮小，文字仍置中 */}
       <div className="mt-5 flex w-[calc(100%-40px)] max-w-[350px] shrink-0 justify-center gap-[10px]">
         {SOURCES.map((s) => {
@@ -80,7 +80,7 @@ export default function ResultsPage() {
                 ${active ? 'border-[1.5px] border-black bg-card' : 'border border-black bg-input font-normal'}`}
             >
               {isDiula ? (
-                <img src={asset('/icons/diula-logo-cropped.png')} alt="" aria-hidden="true" className="h-[37px] w-full max-w-[68px] object-contain" />
+                <img src={asset('/icons/diula-logo-cropped.png')} alt="" aria-hidden="true" className="h-6 w-full max-w-[54px] object-contain" />
               ) : (
                 s.label
               )}

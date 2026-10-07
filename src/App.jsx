@@ -25,11 +25,13 @@ import MyFoundDetailPage from './pages/MyFoundDetailPage'
 import PlaceholderPage from './pages/PlaceholderPage'
 import OfflineBanner from './components/OfflineBanner'
 import StatusBarColor from './components/StatusBarColor'
+import ScrollToTop from './components/ScrollToTop'
 
 export default function App() {
   return (
     <>
       <StatusBarColor />
+      <ScrollToTop />
       <OfflineBanner />
       <Routes>
         {/* 登入頁本身不能被擋，否則會變成無窮迴圈 */}
