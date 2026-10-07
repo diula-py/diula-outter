@@ -106,7 +106,7 @@ export function ConfirmFoundModal({ onCancel, onConfirm, busy }) {
 export function DeleteConfirmModal({ onCancel, onConfirm, busy }) {
   return (
     <WireDialog height={251} onClose={onCancel} label="是否永久刪除此筆資料">
-      <DialogTitle top={95} width={220}>是否永久刪除此筆資料？</DialogTitle>
+      <DialogTitle top={99} width={220}>是否永久刪除此筆資料？</DialogTitle>
       <DialogButton left={41} top={146} width={90} onClick={onConfirm} disabled={busy}>是</DialogButton>
       <DialogButton left={170} top={146} width={90} tone="blue" onClick={onCancel}>否</DialogButton>
     </WireDialog>

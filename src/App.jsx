@@ -46,7 +46,6 @@ export default function App() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/search/threads" element={<ThreadsSearchPage />} />
             <Route path="/search/threads/:id" element={<ThreadsPostDetail />} />
-            <Route path="/search/results" element={<ResultsPage />} />
             <Route path="/search/results/:id" element={<ResultDetailPage />} />
             <Route path="/search/sos" element={<SosPostPage />} />
           </Route>
@@ -56,6 +55,8 @@ export default function App() {
           <Route path="/search/analyzing" element={<AiAnalyzingPage />} />
           <Route path="/search/confirm" element={<ConfirmTagsPage />} />
           <Route path="/search/subscribe" element={<SubscribePage />} />
+          {/* 比對結果頁不放底部 TabBar：容易誤觸離開，改用右上角「回首頁」＋確認彈窗 */}
+          <Route path="/search/results" element={<ResultsPage />} />
 
           {/* 個人頁的目的地 —— 待做 */}
           <Route path="/my/lost" element={<MyLostPage />} />
