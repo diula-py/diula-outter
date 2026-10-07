@@ -66,18 +66,23 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
 
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[120px]">
-      <header className="safe-header-bleed relative h-[174px] w-full shrink-0 rounded-b-[20px] bg-card">
+      {/* inner 的數值含狀態列（約 59px）。iPhone PWA（狀態列 59）跟原本一樣；
+          LINE App／瀏覽器裡沒有狀態列（safe-area＝0），整組上移、不留狀態列的空白（返回鍵離頂端 30px）。 */}
+      <header
+        className="safe-header-bleed relative w-full shrink-0 rounded-b-[20px] bg-card"
+        style={{ '--hshift': 'calc(max(env(safe-area-inset-top, 0px), 20px) - 59px)', height: 'calc(174px + var(--hshift))' }}
+      >
         <button
           type="button"
           onClick={() => navigate(-1)}
           aria-label="返回"
-          className="absolute left-[21px] top-[69px] h-[30px] w-[30px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+          className="absolute left-[21px] top-[calc(69px+var(--hshift))] h-[30px] w-[30px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >
           <ChevronLeftIcon className="h-[30px] w-[30px]" />
         </button>
-        <h1 className="absolute left-0 top-[74px] w-full text-center text-xl font-bold leading-5 text-brown">{title}</h1>
+        <h1 className="absolute left-0 top-[calc(74px+var(--hshift))] w-full text-center text-xl font-bold leading-5 text-brown">{title}</h1>
 
-        <div className="absolute left-1/2 top-[109px] flex w-[calc(100%-40px)] max-w-[340px] -translate-x-1/2 gap-[10px]">
+        <div className="absolute left-1/2 top-[calc(109px+var(--hshift))] flex w-[calc(100%-40px)] max-w-[340px] -translate-x-1/2 gap-[10px]">
           <label className="relative flex h-[47px] w-[97px] shrink-0 items-center justify-center rounded-[50px] border border-black bg-card">
             <CalendarIcon className="pointer-events-none h-5 w-5" />
             {dateFilter && <span className="pointer-events-none absolute right-[14px] top-2 h-2 w-2 rounded-full bg-error" />}
