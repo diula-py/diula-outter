@@ -125,7 +125,10 @@ export async function addMyItem(kind, userId, data) {
 
 export async function updateMyItem(kind, id, patch) {
   const col = collectionFor(kind)
-  await updateDoc(doc(db, col, id), toFirestoreFields(patch))
+  const fields = toFirestoreFields(patch)
+  // 已建立的遺失物之後才開自動推播，一樣要記開始時間（同 addMyItem）
+  if (patch.status === LOST_STATUS.BROADCASTING) fields.autoPushStartedAt = serverTimestamp()
+  await updateDoc(doc(db, col, id), fields)
 }
 
 export async function removeMyItem(kind, id) {

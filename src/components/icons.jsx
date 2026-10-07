@@ -14,6 +14,10 @@ export function ChevronLeftIcon(props) {
   return <Icon src="/icons/chevron-left.png" {...props} />
 }
 
+export function HouseIcon(props) {
+  return <Icon src="/icons/house.png" {...props} />
+}
+
 export function ChevronDownIcon(props) {
   return <Icon src="/icons/chevron-down.png" {...props} />
 }

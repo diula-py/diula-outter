@@ -4,7 +4,7 @@ import { CircleCheckIcon } from '../components/icons'
 import { DetailHeader } from '../components/DetailKit'
 import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import PhotoMaskModal from '../components/PhotoMaskModal'
-import { addMyItem } from '../lib/items'
+import { addMyItem, updateMyItem } from '../lib/items'
 import { useAuth } from '../context/AuthContext'
 import { flask } from '../lib/api'
 import { getAuthHeaders } from '../lib/authToken'
@@ -94,8 +94,8 @@ export default function SosPostPage() {
       })
       const json = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`)
-      // 存進「我的遺失物」本機紀錄，讓發出去的協尋出現在清單。
-      await addMyItem('lost', userId, {
+      // 更新「我的遺失物」裡按下比對時建立的那一筆（沒有的話才新增），讓發出去的協尋出現在清單。
+      const fields = {
         kind: 'threads',
         code: '#' + (json.post_id ? String(json.post_id).slice(-6) : Date.now().toString().slice(-6)),
         name: name.trim(),
@@ -107,7 +107,9 @@ export default function SosPostPage() {
         status: LOST_STATUS.POSTED,
         thread_post_id: json.post_id,
         thread_post_url: json.permalink,
-      })
+      }
+      if (state.lostId) await updateMyItem('lost', state.lostId, fields)
+      else await addMyItem('lost', userId, fields)
       setResult(json)
       setStatus('success')
     } catch (e) {

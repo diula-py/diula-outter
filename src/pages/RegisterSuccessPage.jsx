@@ -29,7 +29,7 @@ export default function RegisterSuccessPage() {
       <button
         type="button"
         onClick={() => navigate('/', { replace: true })}
-        className="box-border flex h-[60px] w-full max-w-[350px] shrink-0 items-center justify-center rounded-[50px] border border-black bg-white text-base font-medium
+        className="box-border flex h-[60px] w-full max-w-[350px] shrink-0 items-center justify-center rounded-[50px] border border-black bg-blue text-base font-medium
                    transition hover:brightness-[.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
       >
         返回首頁

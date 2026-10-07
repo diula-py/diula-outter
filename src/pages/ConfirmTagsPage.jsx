@@ -6,10 +6,16 @@ import { asset } from '../lib/asset'
 import TagPickerModal from '../components/TagPickerModal'
 import { flask } from '../lib/api'
 import { todayStr } from '../lib/date'
+import { downscale } from '../lib/image'
+import { addMyItem, updateMyItem } from '../lib/items'
+import { useAuth } from '../context/AuthContext'
+import { LOST_STATUS } from '../data/itemStatus'
+import { titleFromTags } from '../data/tagTaxonomy'
 
 export default function ConfirmTagsPage() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { userId } = useAuth()
   const data = location.state || {}
 
   const [date, setDate] = useState(data.date || todayStr())
@@ -30,6 +36,25 @@ export default function ConfirmTagsPage() {
     setError('')
     if (tags.length === 0) { setError('至少要有一個標籤才能比對'); return }
     setBusy(true)
+    // 先存進「我的遺失物」再比對；已存過（重試、或從結果頁返回再按一次）就更新同一筆
+    let lostId = data.lostId
+    try {
+      const fields = { name: titleFromTags(tags), date, place, tags }
+      if (lostId) {
+        await updateMyItem('lost', lostId, fields)
+      } else {
+        // 縮小一點，避免超過 Firestore 單筆 1MB 上限
+        const image = data.base64Image ? await downscale(data.base64Image, 800, 0.8) : null
+        const saved = await addMyItem('lost', userId, { ...fields, kind: 'lost', image, status: LOST_STATUS.SEARCHING })
+        lostId = saved.id
+        // 記進這一頁的 history state，從結果頁返回時還拿得到，不會重複新增
+        navigate(location.pathname, { replace: true, state: { ...data, lostId } })
+      }
+    } catch (e) {
+      setError(`儲存失敗：${e.message}`)
+      setBusy(false)
+      return
+    }
     try {
       const res = await fetch(flask('/match'), {
         method: 'POST',
@@ -46,7 +71,7 @@ export default function ConfirmTagsPage() {
       // 429 = 被限流（後端 MATCH_PER_IP_HOURLY），錯誤訊息本身就講得清楚，
       // 這種情況不要再補「請確認 Flask 有啟動」，那會把人導向錯的方向。
       if (!res.ok) throw new Error(json.error || `伺服器回應 ${res.status}`, { cause: res.status })
-      navigate('/search/results', { state: { query: { date, place, tags }, base64Image: data.base64Image, ...json } })
+      navigate('/search/results', { state: { query: { date, place, tags }, base64Image: data.base64Image, lostId, ...json } })
     } catch (e) {
       const serverAnswered = typeof e.cause === 'number'
       setError(serverAnswered ? `比對失敗：${e.message}` : `比對失敗：${e.message}（請確認 Flask :5001 有啟動）`)

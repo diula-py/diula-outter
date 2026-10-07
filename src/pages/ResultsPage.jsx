@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ChevronLeftIcon } from '../components/icons'
+import { ChevronLeftIcon, HouseIcon } from '../components/icons'
 import { Overlay, WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import { XmarkIcon } from '../components/icons'
 import { itemTitle } from '../lib/text'
@@ -55,10 +55,20 @@ export default function ResultsPage() {
     'box-border w-full rounded-[10px] border border-black bg-input px-5 py-[30px] text-center text-sm font-medium leading-normal opacity-70'
 
   return (
-    <div className="flex flex-col items-center pb-[120px]">
-      {/* Header 80px：只有標題、沒有返回鍵（inner page-06） */}
-      <header className="safe-header relative z-10 flex w-full shrink-0 items-center justify-center rounded-b-[20px] bg-card [--header-h:80px]">
-        <h1 className="text-xl font-bold text-brown">比對結果</h1>
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(140px+env(safe-area-inset-bottom))]">
+      {/* Header 80px：標題＋右上角「回首頁」（先跳確認彈窗）；沒有返回鍵（inner page-06） */}
+      <header className="safe-header relative z-10 w-full shrink-0 rounded-b-[20px] bg-card [--header-h:80px]">
+        <div className="relative flex h-full items-center justify-center">
+          <h1 className="text-xl font-bold text-brown">比對結果</h1>
+          <button
+            type="button"
+            onClick={() => setHomeConfirm(true)}
+            aria-label="回首頁"
+            className="back-hit absolute right-[22px] top-1/2 h-[30px] w-[30px] -translate-y-1/2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+          >
+            <HouseIcon className="h-[30px] w-[30px]" />
+          </button>
+        </div>
       </header>
 
       {/* 來源分頁：4 顆 80×45、間距 10、置中；DiuLa! 那顆用最大 54×24 的 logo 圖。
@@ -141,8 +151,9 @@ export default function ResultsPage() {
         })}
       </div>
 
-      {/* 都沒有我的物品：80×80 藍色圓鈕，固定在視窗底部 145px、右緣對齊 340 欄（inner） */}
-      <div className="pointer-events-none fixed bottom-[145px] left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[340px] -translate-x-1/2 justify-end">
+      {/* 都沒有我的物品：80×80 藍色圓鈕，右緣對齊 340 欄（inner）。
+          這頁沒有 TabBar，固定在離視窗底部 40px（＋iOS 底部橫條安全區），原本 TabBar 的高度 */}
+      <div className="pointer-events-none fixed bottom-[calc(40px+env(safe-area-inset-bottom))] left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[340px] -translate-x-1/2 justify-end">
         <button
           type="button"
           onClick={() => setSosOpen(true)}
@@ -153,20 +164,21 @@ export default function ResultsPage() {
         </button>
       </div>
 
-      {/* 「都沒有我的東西」選項彈窗（inner notfound-modal：寬 300、padding 30 20、X 30×30、按鈕間距 12） */}
+      {/* 「都沒有我的東西」選項彈窗（照 Figma：305×380、陰影、X 35×35 在 (12,14)、
+          標題 24/700 離頂端 49、按鈕 254×70 間距 20、第一顆離頂端 105、底部留 25） */}
       {sosOpen && (
         <Overlay onClose={() => setSosOpen(false)}>
-          <div role="dialog" aria-modal="true" aria-label="都沒有我的東西" className="relative box-border w-[calc(100vw-20px)] max-w-[300px] rounded-[10px] bg-card px-5 py-[30px]">
+          <div role="dialog" aria-modal="true" aria-label="都沒有我的東西" className="relative box-border flex h-[380px] w-[calc(100vw-20px)] max-w-[305px] flex-col items-center rounded-[10px] bg-card pt-[49px] shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
             <button
               type="button"
               onClick={() => setSosOpen(false)}
               aria-label="關閉"
-              className="absolute left-[11px] top-[10px] h-[30px] w-[30px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+              className="absolute left-3 top-[14px] h-[35px] w-[35px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
             >
-              <XmarkIcon className="h-[30px] w-[30px]" />
+              <XmarkIcon className="h-[35px] w-[35px]" />
             </button>
-            <div className="mb-5 mt-[25px] text-center text-xl font-bold">都沒有我的東西！</div>
-            <div className="flex flex-col gap-3">
+            <div className="text-center text-2xl font-bold leading-6">都沒有我的東西！</div>
+            <div className="mt-8 flex w-[254px] max-w-[calc(100%-40px)] flex-col gap-5">
               {[
                 { label: '開啟自動尋找並推播', tone: 'bg-blue', go: () => navigate('/search/subscribe', { state: location.state }) },
                 { label: '幫我在Threads發協尋文', tone: 'bg-white', go: () => navigate('/search/sos', { state: location.state }) },
@@ -176,7 +188,7 @@ export default function ResultsPage() {
                   key={b.label}
                   type="button"
                   onClick={b.go}
-                  className={`box-border flex items-center justify-center rounded-[50px] border border-black p-[15px] text-base font-medium text-brown ${b.tone}
+                  className={`box-border flex h-[70px] items-center justify-center rounded-[50px] border border-black text-base font-medium leading-4 text-brown ${b.tone}
                               focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown`}
                 >
                   {b.label}
@@ -190,12 +202,12 @@ export default function ResultsPage() {
       {/* 確認是否回首頁（inner notfound-home-confirm：300×251） */}
       {homeConfirm && (
         <WireDialog height={251} onClose={() => setHomeConfirm(false)} label="確認要返回首頁">
-          <DialogTitle top={85} width={200} lineHeight={26}>是否確認要返回首頁？</DialogTitle>
+          <DialogTitle top={85} width={200}>是否確認要返回首頁？</DialogTitle>
           <div className="absolute left-1/2 top-[116px] w-[228px] -translate-x-1/2 text-center text-xs font-normal leading-3 opacity-70">
             提醒：返回首頁後此次比對結果將無法返回
           </div>
-          <DialogButton left={41} top={146} width={92} height={62} onClick={() => navigate("/")}>是</DialogButton>
-          <DialogButton left={170} top={146} width={92} height={62} tone="blue" onClick={() => setHomeConfirm(false)}>否</DialogButton>
+          <DialogButton left={41} top={146} width={90} onClick={() => navigate("/")}>是</DialogButton>
+          <DialogButton left={170} top={146} width={90} tone="blue" onClick={() => setHomeConfirm(false)}>否</DialogButton>
         </WireDialog>
       )}
     </div>
