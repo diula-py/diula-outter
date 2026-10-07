@@ -39,6 +39,11 @@ const liffReady = navigator.onLine
 
 // GitHub Pages 沒有伺服器路由，重整/直連深層網址會 404 → 用 HashRouter（網址帶 #）。
 liffReady.then(() => {
+  // 保險：liff.init() 失敗或逾時，網址 # 後面可能還留著 LINE 的參數（不是「#/」開頭的路由）→ 一樣會白畫面。
+  // 這種情況直接把 hash 換成首頁，讓 RequireAuth 照常判斷要不要導去 /login。
+  if (window.location.hash && !window.location.hash.startsWith('#/')) {
+    window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#/`)
+  }
   createRoot(document.getElementById('root')).render(
     <StrictMode>
       <HashRouter>
