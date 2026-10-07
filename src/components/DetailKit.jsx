@@ -7,9 +7,10 @@ import { ChevronLeftIcon, CircleCheckIcon } from './icons'
 import { asset } from '../lib/asset'
 
 export function DetailHeader({ title, onBack, height, titleTop, backLeft, backTop, backSize }) {
-  // header 延伸到狀態列底下（safe-header-bleed），inner 的數值本來就含狀態列；
-  // 但若返回鍵／標題會壓到狀態列（如我的遺失物詳情 top 50 < 動態島 59），整組往下推到狀態列下方 5px。
-  const shift = `max(0px, env(safe-area-inset-top, 0px) + ${5 - Math.min(titleTop, backTop)}px)`
+  // header 延伸到狀態列底下（safe-header-bleed），inner 的數值本來就含狀態列（約 59px）。
+  // 整組移到「狀態列下方 5px」：iPhone PWA（狀態列 59）跟原本一樣；
+  // LINE App／瀏覽器裡沒有狀態列（safe-area＝0），不留狀態列的空白，返回鍵改離頂端 25px。
+  const shift = `calc(max(env(safe-area-inset-top, 0px), 20px) + ${5 - Math.min(titleTop, backTop)}px)`
   return (
     <header className="safe-header-bleed relative w-full shrink-0 rounded-b-[20px] bg-card" style={{ height: `calc(${height}px + ${shift})` }}>
       <button
