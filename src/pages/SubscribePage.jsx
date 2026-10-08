@@ -17,12 +17,14 @@ export default function SubscribePage() {
   const resolved = state.resolved || {}
   const results = state.results || []
 
-  const [channel, setChannel] = useState('email') // email | line
-  // 後端只接受「自己登入帳號已驗證的信箱」，所以這裡直接帶入、不讓改
-  // （見 diula-outter/auth_token.py 的 verified_email）。
-  const [email, setEmail] = useState(user?.email || '')
+  // 通道依登入方式自動決定：LINE 登入 → LINE 推播（登入時已拿到 userId，電腦用 liff.login()
+  // 網頁登入一樣會跳 LINE 取得 ID）；Google 登入 → Email（寄到登入帳號信箱）。不給手動選。
+  const channel = user?.provider === 'line' ? 'line' : 'email'
+  const email = user?.email || ''
   const [status, setStatus] = useState('idle') // idle | submitting | success
   const [error, setError] = useState('')
+  // LINE 推播只送得到官方帳號好友；沒加的話後端會回 add_friend_url，成功頁給連結。
+  const [addFriendUrl, setAddFriendUrl] = useState('')
 
   const canSubmit = !!resolved.category_id && !!q.date
 
@@ -34,7 +36,6 @@ export default function SubscribePage() {
       return
     }
     if (channel === 'email' && !/^\S+@\S+\.\S+$/.test(email)) { setError('請輸入正確的 Email'); return }
-    if (channel === 'line') { setError('LINE 通道需在 LINE App（LIFF）內開啟才能取得你的 LINE ID'); return }
 
     setStatus('submitting')
     try {
@@ -57,6 +58,7 @@ export default function SubscribePage() {
       })
       const json = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`)
+      if (channel === 'line') setAddFriendUrl(json.add_friend_url || json.bind?.add_friend_url || '')
       // 使用者上傳的照片一起存進「我的遺失物」；縮小一點，避免超過 Firestore 單筆 1MB 上限
       const image = state.base64Image ? await downscale(state.base64Image, 800, 0.8) : null
       // 更新按下比對時建立的那一筆（沒有的話才新增）
@@ -91,6 +93,12 @@ export default function SubscribePage() {
           <p className="mb-6 max-w-[300px] text-sm font-normal leading-normal">
             五天內有新的相符失物就會用{channel === 'email' ? ' Email ' : ' LINE '}通知你，找到後可在「我的遺失物」中停止。
           </p>
+          {channel === 'line' && addFriendUrl && (
+            <p className="mb-6 max-w-[300px] text-xs leading-normal text-brown/60">
+              推播只送得到官方帳號的好友。還沒加的話{' '}
+              <a href={addFriendUrl} target="_blank" rel="noreferrer" className="font-medium text-brown underline">點這裡加好友</a>。
+            </p>
+          )}
           <button
             type="button"
             onClick={() => navigate('/my/lost', { replace: true })}
@@ -137,35 +145,22 @@ export default function SubscribePage() {
           <p className="truncate"><span className="text-brown/60">標籤：</span>{(q.tags || []).join('、') || '—'}</p>
         </div>
 
-        {/* 通道 */}
+        {/* 通知方式：依登入方式自動決定，不給手動選 */}
         <div>
           <p className="mb-2 text-sm font-medium text-brown">通知方式</p>
-          <div className="flex gap-3">
-            {[{ k: 'email', l: 'Email' }, { k: 'line', l: 'LINE' }].map((c) => (
-              <button key={c.k} type="button" onClick={() => setChannel(c.k)}
-                className={`h-11 flex-1 rounded-[50px] border border-black text-base text-brown transition
-                  ${channel === c.k ? 'border-[1.5px] bg-card font-medium' : 'bg-input font-normal'}`}>
-                {c.l}
-              </button>
-            ))}
+          <div className="flex h-11 items-center justify-center rounded-[50px] border-[1.5px] border-black bg-card text-base font-medium text-brown">
+            {channel === 'line' ? 'LINE 推播' : 'Email'}
           </div>
-        </div>
-
-        {channel === 'email' ? (
-          <>
-            <input type="email" value={email} readOnly placeholder="（這個登入方式沒有 Email）"
-              className="w-full rounded-[10px] border border-black bg-input px-4 py-2.5 text-sm text-brown outline-none placeholder:text-brown/50" />
-            <p className="mt-2 text-xs leading-normal text-brown/70">
-              {user?.email
-                ? '通知會寄到你登入帳號的信箱，不能改寄到其他信箱。'
-                : '這個登入方式沒有已驗證的 Email，請改用 LINE 通道，或改用 Google 登入。'}
-            </p>
-          </>
-        ) : (
-          <p className="rounded-[10px] bg-input p-3 text-xs leading-normal text-brown/70">
-            LINE 通知需在 <b>LINE App</b> 內開啟本頁（LIFF）才能取得你的 LINE ID。目前用瀏覽器開，請改用 Email。
+          <p className="mt-2 text-xs leading-normal text-brown/70">
+            {channel === 'line'
+              ? '你用 LINE 登入，會由丟拉的 LINE 官方帳號推播給你（需為官方帳號好友，還沒加的話訂閱完成後會給你連結）。'
+              : '你用 Google 登入，通知會寄到你登入帳號的信箱。'}
           </p>
-        )}
+          {channel === 'email' && (
+            <input type="email" value={email} readOnly aria-label="通知信箱"
+              className="mt-2 w-full rounded-[10px] border border-black bg-input px-4 py-2.5 text-sm text-brown outline-none" />
+          )}
+        </div>
 
         {error && <p className="text-sm leading-normal text-error">{error}</p>}
 
