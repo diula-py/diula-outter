@@ -76,9 +76,25 @@ export default function MyLostDetailPage() {
     navigate('/my/lost', { replace: true })
   }
 
-  // 刪除此筆資料：刪 Firestore 文件 → 「該筆資料已被刪除！」→ 確認後回列表。
+  // 刪除此筆資料：先停掉自動推播訂閱、撤下 Threads 協尋文（避免刪了紀錄還一直收到通知／
+  // 留下孤兒貼文），再刪本機紀錄 →「該筆資料已被刪除！」→ 確認後回列表。
   async function deleteItem() {
     setBusy(true)
+    // 後端清理（best-effort）：網路錯誤也照樣刪本機，不卡住使用者
+    try {
+      const authHeaders = await getAuthHeaders()
+      const headers = { 'Content-Type': 'application/json', ...authHeaders }
+      if (passed?.sub_id) {
+        await fetch(flask('/subscriptions/found'), {
+          method: 'POST', headers, body: JSON.stringify({ id: passed.sub_id }),
+        })
+      }
+      if (passed?.thread_post_id) {
+        await fetch(flask('/threads/delete'), {
+          method: 'POST', headers, body: JSON.stringify({ post_id: passed.thread_post_id }),
+        })
+      }
+    } catch { /* 清理失敗也照樣刪本機 */ }
     try {
       if (passed?.id) await removeMyItem(passed.kind || 'lost', passed.id)
       setDialog('deleted')
