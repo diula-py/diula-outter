@@ -27,6 +27,9 @@ export default function RegisterConfirmPage() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
+  // 身分證／健保卡／學生證：證件別已由分頁明確指定，標籤鎖死不可增刪。
+  const tagsLocked = ['national_id', 'health_card', 'student_id'].includes(item?.docType)
+
   // 直接開這個網址、沒有帶資料 → 回首頁。
   useEffect(() => {
     if (!item) navigate('/', { replace: true })
@@ -80,17 +83,21 @@ export default function RegisterConfirmPage() {
           {tags.map((tag) => (
             <div key={tag} className="box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border border-black bg-blue px-5 py-[10px] text-xs font-normal text-brown">
               {tag}
-              <button type="button" onClick={() => setTags((prev) => prev.filter((x) => x !== tag))} aria-label={`移除 ${tag}`} className="ml-[6px] text-sm font-bold">×</button>
+              {!tagsLocked && (
+                <button type="button" onClick={() => setTags((prev) => prev.filter((x) => x !== tag))} aria-label={`移除 ${tag}`} className="ml-[6px] text-sm font-bold">×</button>
+              )}
             </div>
           ))}
-          <button
-            type="button"
-            onClick={() => setPickerOpen(true)}
-            className="box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border border-black bg-white px-5 py-[10px] text-xs font-normal text-brown"
-          >
-            <PlusIcon className="h-3 w-3 shrink-0" />
-            新增
-          </button>
+          {!tagsLocked && (
+            <button
+              type="button"
+              onClick={() => setPickerOpen(true)}
+              className="box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border border-black bg-white px-5 py-[10px] text-xs font-normal text-brown"
+            >
+              <PlusIcon className="h-3 w-3 shrink-0" />
+              新增
+            </button>
+          )}
         </div>
       </div>
 
