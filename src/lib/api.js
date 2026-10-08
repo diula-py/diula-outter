@@ -14,6 +14,40 @@ export const spring = (path) => `${SPRING}${path}`
 // AI 圖片辨識（Render）
 export const aiApi = (path) => `${AI}${path}`
 
+// 喚醒 Render AI 服務：免費方案閒置會休眠，冷啟動 ~60 秒。
+// 在填表頁一進來就先戳一下，等使用者按送出時多半已醒。fire-and-forget、回 404 也無所謂。
+// 5 分鐘內戳過就不再戳（服務閒置約 15 分鐘才睡）。
+let lastAiWake = 0
+export function wakeAi() {
+  if (!navigator.onLine || Date.now() - lastAiWake < 5 * 60 * 1000) return
+  lastAiWake = Date.now()
+  fetch(aiApi('/'), { method: 'GET' }).catch(() => {})
+}
+
+// AI 圖片辨識：逾時就放棄，避免 Render 或 Gemini 卡住時畫面停在進度條。
+// 90 秒 = 冷啟動 ~60 秒 + Gemini 辨識的餘裕。
+const AI_TIMEOUT_MS = 90 * 1000
+export async function analyzeItem({ text, base64Image }) {
+  const ctrl = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(), AI_TIMEOUT_MS)
+  try {
+    const res = await fetch(aiApi('/analyze-item'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, base64Image }),
+      signal: ctrl.signal,
+    })
+    const json = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`)
+    return json
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error('AI 回應逾時，請再試一次')
+    throw e
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
 // Threads 貼文：優先讀每日靜態快照（diula-web GitHub Pages，永遠醒著、CDN、秒開），
 // 讀不到才退回會睡的 Spring Boot /api/posts（Render 冷啟動要 ~50 秒）。
 // 資料一天才更新一次（scraper 每天跑），快照由每日同步的 export_threads_snapshot.py 產生並推上 Pages。

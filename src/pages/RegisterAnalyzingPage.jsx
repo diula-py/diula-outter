@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import AnalyzingScreen from '../components/AnalyzingScreen'
-import { aiApi } from '../lib/api'
+import { analyzeItem } from '../lib/api'
 import { normalizeIdWording } from '../lib/text'
-
-const AI_API = aiApi('/analyze-item') // dev 走 /ext-ai proxy；prod 直連 Render AI
 
 // 登錄拾獲物的 AI 辨識過場（證件類／非證件類共用）：拿圖去 AI 服務要標籤，
 // 補進這筆拾獲物後交給「確認標籤」頁（/register/confirm），使用者確認後才寫進「我的拾獲物」（同 inner page-11）。
@@ -35,13 +33,7 @@ export default function RegisterAnalyzingPage() {
 
     ;(async () => {
       try {
-        const res = await fetch(AI_API, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: normalizeIdWording(data.desc || ''), base64Image: data.base64Image || null }),
-        })
-        const json = await res.json().catch(() => ({}))
-        if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`)
+        const json = await analyzeItem({ text: normalizeIdWording(data.desc || ''), base64Image: data.base64Image || null })
         const tags = []
         for (const it of json.items || []) {
           if (it.sub_tag) tags.push(normalizeIdWording(it.sub_tag))

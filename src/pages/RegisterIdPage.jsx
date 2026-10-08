@@ -4,7 +4,7 @@ import { CalendarIcon, LocationIcon, PersonChalkboardIcon } from '../components/
 import MaskingModal from '../components/MaskingModal'
 import { FormHeader, FormPage, UploadBox, FormCard, FormRow, RegionField, SubmitButton, pillInput } from '../components/FormKit'
 import TagPickerModal from '../components/TagPickerModal'
-import { spring } from '../lib/api'
+import { spring, wakeAi } from '../lib/api'
 import { getAuthHeaders } from '../lib/authToken'
 import { todayStr } from '../lib/date'
 import { downscale } from '../lib/image'
@@ -55,6 +55,7 @@ export default function RegisterIdPage() {
   // 這支 GET 現在會回 401（沒帶憑證），但喚醒的效果一樣，不必為它附 token。
   useEffect(() => {
     fetch(SUBMIT_ENDPOINT, { method: 'GET' }).catch(() => {})
+    wakeAi() // 送出後還要跑 AI 辨識，一起喚醒
   }, [])
 
   function handlePhoto(e) {

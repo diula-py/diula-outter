@@ -2,10 +2,8 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import AnalyzingScreen from '../components/AnalyzingScreen'
 
-import { aiApi } from '../lib/api'
+import { analyzeItem } from '../lib/api'
 import { normalizeIdWording } from '../lib/text'
-
-const AI_API = aiApi('/analyze-item') // dev 走 /ext-ai proxy；prod 直連 Render AI
 
 // AI 圖片辨識過場：實際呼叫 AI 服務，拿回標籤才進確認頁。
 // Render 免費方案冷啟動可能要 ~1 分鐘，進度條期間慢慢爬到 90%，回來才補到 100%。
@@ -22,13 +20,7 @@ export default function AiAnalyzingPage() {
 
     ;(async () => {
       try {
-        const res = await fetch(AI_API, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: normalizeIdWording(data.desc || ''), base64Image: data.base64Image || null }),
-        })
-        const json = await res.json().catch(() => ({}))
-        if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`)
+        const json = await analyzeItem({ text: normalizeIdWording(data.desc || ''), base64Image: data.base64Image || null })
 
         const tags = []
         for (const it of json.items || []) {
