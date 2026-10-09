@@ -36,11 +36,11 @@ function downscale(dataUrl, maxSide = 1280, quality = 0.82) {
 // 文案模版（對齊設計稿預覽頁）
 function buildText({ name, date, place, note }) {
   return [
-    `🔍協尋遺失物：${name || '（未填）'}`,
+    `🔍 #協尋 遺失物：${name || '（未填）'}`,
     `📅遺失日期：${(date || '').replaceAll('-', '/') || '（未填）'}`,
     `📍遺失地點：${place || '（未填）'}`,
     ...(note ? [`📝${note}`] : []),
-    '若您拾獲，請私訊 DiuLa 官方帳號🙏',
+    '若您拾獲，請在這則貼文底下留言，物主會主動與您聯繫🙏',
     '#協尋 #遺失物 #DiuLa',
   ].join('\n')
 }
