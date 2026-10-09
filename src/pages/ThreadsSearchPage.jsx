@@ -3,24 +3,33 @@ import { Link, useNavigate } from 'react-router-dom'
 import { MagnifyingGlassIcon } from '../components/icons'
 import { FormHeader } from '../components/FormKit'
 
-import { spring, fetchThreadsPosts } from '../lib/api'
+import { fetchThreadsPosts } from '../lib/api'
 import { normalizeIdWording } from '../lib/text'
+import { asset } from '../lib/asset'
 
-const IMAGE_PROXY = spring('/api/image?url=')
-
-/** 貼文縮圖：有圖走 proxy，失效／無圖顯示 placeholder（依後端設計，圖過期是正常的）。 */
+/**
+ * 貼文縮圖：直接載 Instagram CDN 的圖（CDN 允許跨站嵌入，約 0.3 秒），
+ * 不再繞 Spring Boot /api/image 代理——那台在 Render 免費方案會休眠，冷啟動 ~50 秒，圖要等很久。
+ * 捲到才載（lazy），一張約 500KB，不會一進來就抓 47 張。
+ * 沒有圖、或網址過期（CDN 網址約 3～5 天失效，回 403）→ 藍底驚嘆號 logo（同比對結果頁的預設圖）。
+ */
 function Thumb({ url }) {
   const [broken, setBroken] = useState(false)
   const showImg = url && !broken
   return (
     <div className="h-[100px] w-[100px] shrink-0 overflow-hidden rounded-[10px] bg-card">
-      {showImg && (
+      {showImg ? (
         <img
-          src={IMAGE_PROXY + encodeURIComponent(url)}
+          src={url}
           alt=""
+          loading="lazy"
+          decoding="async"
+          referrerPolicy="no-referrer"
           className="h-full w-full object-cover"
           onError={() => setBroken(true)}
         />
+      ) : (
+        <img src={asset('/icons/logo2.png')} alt="" className="h-full w-full object-cover" />
       )}
     </div>
   )
@@ -49,7 +58,8 @@ export default function ThreadsSearchPage() {
   }, [posts, query])
 
   return (
-    <div className="flex flex-col items-center pb-[120px]">
+    // 沒有 AppLayout（無 TabBar），外框與底部留白（含 iOS safe-area）自己處理
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(40px+env(safe-area-inset-bottom))]">
       <FormHeader title="Threads尋找遺失物" onBack={() => navigate(-1)} />
 
       {/* 搜尋列（inner）：寬 calc(100% - 44px)、最大 340、高 46、圓角 10、padding 10 20、間距 10、icon 20×20 */}
