@@ -4,6 +4,7 @@ import AnalyzingScreen from '../components/AnalyzingScreen'
 
 import { analyzeItem } from '../lib/api'
 import { normalizeIdWording } from '../lib/text'
+import { cleanAiTags } from '../data/tagTaxonomy'
 
 // AI 圖片辨識過場：實際呼叫 AI 服務，拿回標籤才進確認頁。
 // Render 免費方案冷啟動可能要 ~1 分鐘，進度條期間慢慢爬到 90%，回來才補到 100%。
@@ -27,11 +28,14 @@ export default function AiAnalyzingPage() {
           if (it.sub_tag) tags.push(normalizeIdWording(it.sub_tag))
           for (const c of it.colors || []) tags.push(c)
         }
-        const uniq = [...new Set(tags)]
+        // 只留標籤清單裡的（AI 吐簡體會先轉繁體）
+        const uniq = cleanAiTags(tags)
         if (!uniq.length) throw new Error('AI 沒認出東西，換張清楚一點的照片或改用文字描述')
 
         const first = (json.items || [])[0] || {}
-        const name = `${(first.colors && first.colors[0]) || ''}${normalizeIdWording(first.sub_tag || '')}` || '確認標籤'
+        const [firstColor = ''] = cleanAiTags(first.colors || [])
+        const [firstTag = ''] = cleanAiTags([normalizeIdWording(first.sub_tag || '')])
+        const name = `${firstColor}${firstTag}` || '確認標籤'
 
         if (!alive) return
         clearInterval(grow)

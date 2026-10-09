@@ -4,7 +4,8 @@ import { CircleCheckIcon } from '../components/icons'
 import { DetailHeader } from '../components/DetailKit'
 import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import PhotoMaskModal from '../components/PhotoMaskModal'
-import { addMyItem, updateMyItem } from '../lib/items'
+import { addMyItem, getMyItem, updateMyItem } from '../lib/items'
+import { markLostHandled } from '../lib/handledLost'
 import { useAuth } from '../context/AuthContext'
 import { flask } from '../lib/api'
 import { getAuthHeaders } from '../lib/authToken'
@@ -65,6 +66,7 @@ export default function SosPostPage() {
   const [step, setStep] = useState('form') // form | preview
   const [status, setStatus] = useState('idle') // idle | submitting | success
   const [result, setResult] = useState(null)
+  const [savedItem, setSavedItem] = useState(null) // 發文成功後存進「我的遺失物」的那一筆，成功彈窗帶去詳情頁用
   const [error, setError] = useState('')
 
   function goPreview() {
@@ -108,14 +110,27 @@ export default function SosPostPage() {
         thread_post_id: json.post_id,
         thread_post_url: json.permalink,
       }
-      if (state.lostId) await updateMyItem('lost', state.lostId, fields)
-      else await addMyItem('lost', userId, fields)
+      let savedId = state.lostId
+      if (savedId) await updateMyItem('lost', savedId, fields)
+      else savedId = (await addMyItem('lost', userId, fields)).id
+      markLostHandled(savedId) // 發文與自動推播只能擇一
+      // 詳情頁的資料是從上一頁帶過去的（location.state.item），所以讀回完整的一筆；讀不到就用剛寫入的欄位
+      const fresh = await getMyItem('lost', savedId).catch(() => null)
+      setSavedItem(fresh || { id: savedId, ...fields })
       setResult(json)
       setStatus('success')
     } catch (e) {
       setError(`發布失敗：${e.message}`)
       setStatus('idle')
     }
+  }
+
+  // 發文成功 → 這件物品的詳情頁。瀏覽紀錄整理成「我的 → 我的遺失物 → 詳情」：
+  // 協尋文頁換成「我的」，所以詳情頁返回是「我的遺失物」、再返回是「我的」（不會回到協尋文頁重發）。
+  function goToDetail() {
+    navigate('/profile', { replace: true })
+    navigate('/my/lost')
+    navigate(`/my/lost/${savedItem.id}`, { state: { item: savedItem } })
   }
 
   // 步驟一（inner page-20）：393 寬時座標與 inner 相同（欄位左緣 27、寬 340，標籤與欄位的間距照抄）。
@@ -239,11 +254,11 @@ export default function SosPostPage() {
         />
       )}
 
-      {/* 發布成功彈窗（inner notfound-thread-success：300×251） */}
+      {/* 發布成功彈窗（inner notfound-thread-success：300×251）：按鈕或關閉都到這件物品的詳情頁 */}
       {status === 'success' && (
-        <WireDialog height={251} onClose={() => navigate('/my/lost')} label="Threads串文已排定發佈">
-          <DialogTitle top={87} width={246} lineHeight={22}>Threads串文已排定發佈！</DialogTitle>
-          <DialogButton left={41} top={146} width={214} tone="blue" onClick={() => navigate('/my/lost')}>返回我的遺失物</DialogButton>
+        <WireDialog height={251} onClose={goToDetail} label="Threads串文已發佈">
+          <DialogTitle top={87} width={246} lineHeight={22}>Threads串文已發佈！</DialogTitle>
+          <DialogButton left={41} top={146} width={214} tone="blue" onClick={goToDetail}>查看我的遺失物</DialogButton>
         </WireDialog>
       )}
     </div>

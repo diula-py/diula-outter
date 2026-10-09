@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, CalendarIcon, LocationIcon, DiulaPinIcon } from '../components/icons'
 import { itemTitle } from '../lib/text'
+import { displayTags } from '../data/tagTaxonomy'
 
 // 各來源官方遺失物查詢系統（點卡片詳情底部的按鈕連過去）。
 const SOURCE_LINK = {
@@ -23,7 +24,8 @@ export default function ResultDetailPage() {
   const place = [item.city, item.district].filter(Boolean).join('') || item.holding_place || item.station || ''
   const isDiula = item.source === 'diula'
   const link = SOURCE_LINK[item.source]
-  const tags = [...(item.free_tags || []), ...(item.color || [])]
+  // 後端 /match 回傳的標籤／顏色可能有簡體，顯示前轉繁體
+  const tags = displayTags([...(item.free_tags || []), ...(item.color || [])])
 
   return (
     // 沒有 AppLayout（無 TabBar），外框與底部留白自己處理
