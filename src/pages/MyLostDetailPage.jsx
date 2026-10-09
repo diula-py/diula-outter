@@ -113,10 +113,12 @@ export default function MyLostDetailPage() {
       <DetailHeader title={item.name} onBack={() => navigate(-1)} height={90} titleTop={55} backLeft={20} backTop={50} backSize={30} />
 
       {/* 狀態／編號徽章：y=110、高 30、藍底圓角 10、padding 7 15、16/400。
-          編號徽章 393 寬時在 x=198、最寬 175；窄螢幕以畫面中線定位、最寬到右側留 20 */}
+          編號徽章 393 寬時在 x=198、最寬 175；窄螢幕以畫面中線定位、最寬到右側留 20。
+          編號用 12px（design.md Body 2）：最長的編號（如 ＃DL-LI-260902-WMW）約 128px，375～430 寬都放得下；
+          16px 要 171px 會被截斷。320 寬的舊手機再縮到 11px、左右內距 10 才放得下 */}
       <div className="relative mt-5 h-[30px] w-full shrink-0">
         <span className="absolute left-5 top-0 flex h-[30px] items-center rounded-[10px] bg-blue px-[15px] text-base font-normal leading-4">{status}</span>
-        <span className="absolute left-[calc(50%+1.5px)] top-0 flex h-[30px] max-w-[calc(50%-21.5px)] items-center overflow-hidden whitespace-nowrap rounded-[10px] bg-blue px-[15px] text-base font-normal leading-4">
+        <span className="absolute left-[calc(50%+1.5px)] top-0 flex h-[30px] max-w-[calc(50%-21.5px)] items-center overflow-hidden whitespace-nowrap rounded-[10px] bg-blue px-[15px] text-xs font-normal leading-4 max-[374px]:px-[10px] max-[374px]:text-[11px]">
           <span className="min-w-0 truncate">{item.code}</span>
         </span>
       </div>
