@@ -110,10 +110,10 @@ function SelectBox({ value, onChange, disabled, placeholder, options, className 
 const chevron = <ChevronDownIcon className="pointer-events-none h-3 w-3 shrink-0" />
 
 /**
- * 地點列。split＝兩個獨立膠囊（page-03/05/10：各 padding 10、select 後接 12px 箭頭）；
- * 否則是單一膠囊內含兩個 select（page-12 證件登錄）。
+ * 地點列：縣市、地區兩個獨立膠囊（page-03/05/10：各 padding 10、select 後接 12px 箭頭）。
+ * 證件登錄（page-12）原本是單一膠囊內含兩個 select，2026-10 起也改成兩個膠囊，全站一致。
  */
-export function RegionField({ icon, prefix = '', city, setCity, district, setDistrict, split = true }) {
+export function RegionField({ icon, prefix = '', city, setCity, district, setDistrict }) {
   const cityEl = (cls) => (
     <SelectBox
       value={city}
@@ -133,22 +133,13 @@ export function RegionField({ icon, prefix = '', city, setCity, district, setDis
       className={cls}
     />
   )
-
-  if (!split) {
-    return (
-      <FormRow icon={icon} pillClass="gap-[10px] px-[15px]">
-        {cityEl('w-1/2')}
-        {chevron}
-        {distEl('w-1/2')}
-        {chevron}
-      </FormRow>
-    )
-  }
   return (
     <div className="flex items-center gap-[10px]">
       <div className="ml-[5px] flex h-[35px] w-[35px] shrink-0 items-center justify-center min-[380px]:ml-[10px]">{icon}</div>
       {[cityEl, distEl].map((make, i) => (
-        <div key={i} className="flex h-10 min-w-0 flex-1 items-center rounded-[50px] border border-black bg-white px-[10px] py-[10px]">
+        // 左內距 15：跟上方日期膠囊（FormRow px-15）的文字對齊；右內距 10 留給下拉箭頭。
+        // 小於 375 寬（320 的舊手機）選單只剩約 55px，放不下「拾獲的縣市」（60px），左內距退回 10
+        <div key={i} className="flex h-10 min-w-0 flex-1 items-center rounded-[50px] border border-black bg-white py-[10px] pl-[15px] pr-[10px] max-[374px]:pl-[10px]">
           {make('min-w-0 flex-1')}
           <span className="ml-[6px] flex shrink-0">{chevron}</span>
         </div>

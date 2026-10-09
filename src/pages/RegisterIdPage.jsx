@@ -170,7 +170,7 @@ export default function RegisterIdPage() {
               aria-pressed={active}
               className={`flex h-[45px] w-20 min-w-0 items-center justify-center rounded-[50px] py-2 text-base text-brown
                 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
-                ${active ? 'border-[1.5px] border-black bg-card font-medium' : 'border border-black bg-input font-normal'}`}
+                ${active ? 'border-[1.5px] border-black bg-card font-bold' : 'border border-black bg-input font-normal'}`}
             >
               {t}
             </button>
@@ -206,7 +206,6 @@ export default function RegisterIdPage() {
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="拾獲日期" className={pillInput} />
         </FormRow>
         <RegionField
-          split={false}
           icon={<LocationIcon className="h-[35px] w-[35px]" />}
           prefix="拾獲的"
           city={foundCity} setCity={setFoundCity}
