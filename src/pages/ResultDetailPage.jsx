@@ -26,7 +26,8 @@ export default function ResultDetailPage() {
   const tags = [...(item.free_tags || []), ...(item.color || [])]
 
   return (
-    <div>
+    // 沒有 AppLayout（無 TabBar），外框與底部留白自己處理
+    <div className="mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] bg-paper pb-[calc(40px+env(safe-area-inset-bottom))]">
       {/* Header */}
       <header className="safe-header relative rounded-b-[20px] bg-card [--header-h:80px]">
         <div className="relative flex h-full items-center justify-center">

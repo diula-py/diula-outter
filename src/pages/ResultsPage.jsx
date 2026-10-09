@@ -15,12 +15,17 @@ const SOURCES = [
 
 const fmtDate = (s) => (s ? String(s).slice(0, 10).replaceAll('-', '/') : '')
 
+// 沒有圖（北捷／高鐵一律沒有；警政署、DiuLa! 部分沒有）或圖載入失敗 → 藍底驚嘆號 logo（同我的遺失物列表的預設圖）
 function ResultThumb({ src }) {
   const [broken, setBroken] = useState(false)
   const ok = src && /^https?:\/\//.test(src) && !broken
   return (
     <div className="h-[100px] w-[100px] shrink-0 overflow-hidden rounded-[10px] bg-card">
-      {ok && <img src={src} alt="" className="h-full w-full object-cover" onError={() => setBroken(true)} />}
+      {ok ? (
+        <img src={src} alt="" className="h-full w-full object-cover" onError={() => setBroken(true)} />
+      ) : (
+        <img src={asset('/icons/logo2.png')} alt="" className="h-full w-full object-cover" />
+      )}
     </div>
   )
 }
