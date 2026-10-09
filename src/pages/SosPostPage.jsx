@@ -125,7 +125,8 @@ export default function SosPostPage() {
   const fieldInput = 'h-5 w-full bg-transparent p-0 text-xs font-normal leading-5 text-brown outline-none placeholder:text-[#888]'
 
   return (
-    <div className="pb-6">
+    // 沒有 AppLayout（無 TabBar），外框與底部留白（含 iOS safe-area）自己處理
+    <div className="mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] bg-paper pb-[calc(24px+env(safe-area-inset-bottom))]">
       <DetailHeader
         title="幫你發Threads的協尋文"
         onBack={() => (step === 'preview' ? setStep('form') : navigate(-1))}
