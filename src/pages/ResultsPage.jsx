@@ -5,6 +5,7 @@ import { Overlay, WireDialog, DialogTitle, DialogButton } from '../components/Di
 import { XmarkIcon } from '../components/icons'
 import { itemTitle } from '../lib/text'
 import { asset } from '../lib/asset'
+import { useLeaveIfHandled } from '../lib/handledLost'
 
 const SOURCES = [
   { key: 'npa', label: '警政署' },
@@ -43,6 +44,8 @@ export default function ResultsPage() {
   // 這樣點進詳情再返回時不會跳回預設分頁。
   const firstWith = SOURCES.find((s) => results.some((r) => r.item?.source === s.key))
   const [source, setSource] = useState(location.state?.source || firstWith?.key || 'diula')
+  // 這筆已發協尋文／開自動推播（只能擇一）→ 退回來也不顯示，直接換成首頁
+  const handled = useLeaveIfHandled(location.state?.lostId)
   const [sosOpen, setSosOpen] = useState(false)
   const [homeConfirm, setHomeConfirm] = useState(false)
 
@@ -94,6 +97,8 @@ export default function ResultsPage() {
   const emptyBox =
     'box-border w-full rounded-[10px] border border-black bg-input px-5 py-[30px] text-center text-sm font-medium leading-normal opacity-70'
 
+  if (handled) return null
+
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(100px+env(safe-area-inset-bottom))]">
       {/* Header 80px：標題＋右上角「回首頁」（先跳確認彈窗）；沒有返回鍵（inner page-06） */}
@@ -127,7 +132,7 @@ export default function ResultsPage() {
               className={`box-border flex h-[45px] w-20 min-w-0 items-center justify-center rounded-[50px] text-base text-black
                 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
                 ${isDiula ? 'px-[6px] py-1' : 'py-2'}
-                ${active ? 'border-[1.5px] border-black bg-card' : 'border border-black bg-input font-normal'}`}
+                ${active ? 'border-[1.5px] border-black bg-card font-bold' : 'border border-black bg-input font-normal'}`}
             >
               {isDiula ? (
                 <img src={asset('/icons/diula-logo-cropped.png')} alt="" aria-hidden="true" className="h-6 w-full max-w-[54px] object-contain" />

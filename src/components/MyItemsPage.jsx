@@ -13,10 +13,11 @@ import { normalizeIdWording } from '../lib/text'
  * 清單 340 寬、卡片間距 15，卡片 padding 10／gap 15／縮圖 100。
  */
 
-// inner renderMyLostItems 的狀態文字顏色
+// 狀態文字顏色（原本照 inner renderMyLostItems）；自動推播中改用 design.md 的品牌紅 --color-status-error
 function statusColor(status) {
   if (status === LOST_STATUS.FOUND) return '#2E7D32'
-  if (status === LOST_STATUS.BROADCASTING || status === LOST_STATUS.POSTED) return '#B8860B'
+  if (status === LOST_STATUS.BROADCASTING) return '#C72F02'
+  if (status === LOST_STATUS.POSTED) return '#B8860B'
   if (status === LOST_STATUS.BROADCAST_ENDED) return '#8C8C8C'
   return '#492C13'
 }

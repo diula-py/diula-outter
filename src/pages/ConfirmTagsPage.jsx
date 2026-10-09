@@ -11,6 +11,7 @@ import { addMyItem, updateMyItem } from '../lib/items'
 import { useAuth } from '../context/AuthContext'
 import { LOST_STATUS } from '../data/itemStatus'
 import { titleFromTags } from '../data/tagTaxonomy'
+import { useLeaveIfHandled } from '../lib/handledLost'
 
 export default function ConfirmTagsPage() {
   const navigate = useNavigate()
@@ -25,6 +26,8 @@ export default function ConfirmTagsPage() {
   const [pickerOpen, setPickerOpen] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  // 這筆已發協尋文／開自動推播 → 退回來不能再比對一次（會再進結果頁選另一個），直接換成首頁
+  const handled = useLeaveIfHandled(data.lostId)
 
   const place = [placeCity, placeDistrict].filter(Boolean).join(' ') // 遺失地點合併字串
 
@@ -79,6 +82,8 @@ export default function ConfirmTagsPage() {
       setBusy(false)
     }
   }
+
+  if (handled) return null
 
   return (
     <FormPage>

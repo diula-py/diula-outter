@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import AnalyzingScreen from '../components/AnalyzingScreen'
 import { analyzeItem } from '../lib/api'
 import { normalizeIdWording } from '../lib/text'
+import { cleanAiTags } from '../data/tagTaxonomy'
 
 // 登錄拾獲物的 AI 辨識過場（證件類／非證件類共用）：拿圖去 AI 服務要標籤，
 // 補進這筆拾獲物後交給「確認標籤」頁（/register/confirm），使用者確認後才寫進「我的拾獲物」（同 inner page-11）。
@@ -39,7 +40,7 @@ export default function RegisterAnalyzingPage() {
           if (it.sub_tag) tags.push(normalizeIdWording(it.sub_tag))
           for (const c of it.colors || []) tags.push(c)
         }
-        finish(tags)
+        finish(cleanAiTags(tags)) // 只留標籤清單裡的（AI 吐簡體會先轉繁體）
       } catch {
         // AI 掛了或沒認出東西 → 不擋登錄，用基本標籤存檔就好。
         finish([])

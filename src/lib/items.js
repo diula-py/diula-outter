@@ -20,7 +20,8 @@ import {
   serverTimestamp,
 } from 'firebase/firestore'
 import { auth, db } from './firebase'
-import { LOST_STATUS } from '../data/itemStatus'
+import { LOST_STATUS, LEGACY_LOST_STATUS } from '../data/itemStatus'
+import { displayTags } from '../data/tagTaxonomy'
 
 function collectionFor(kind) {
   return kind === 'found' ? 'found_items' : 'lost_items'
@@ -61,7 +62,11 @@ function fromFirestoreFields({ location, image_base64, notes, ...rest }) {
 }
 
 function toPlainItem(id, kind, data) {
-  return { id, ...fromFirestoreFields(data), kind: data.kind || kind }
+  const item = { id, ...fromFirestoreFields(data), kind: data.kind || kind }
+  if (LEGACY_LOST_STATUS[item.status]) item.status = LEGACY_LOST_STATUS[item.status]
+  // 以前 AI 吐的簡體標籤已經存進資料庫：資料庫不改，讀出來顯示時轉繁體
+  if (Array.isArray(item.tags)) item.tags = displayTags(item.tags)
+  return item
 }
 
 // 舊資料（2026-10-04 之前建立的）沒有 owner_uid，Firestore 規則認不出主人。

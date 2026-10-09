@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, CircleCheckIcon } from '../components/icons'
 import { addMyItem, updateMyItem } from '../lib/items'
+import { markLostHandled } from '../lib/handledLost'
 import { useAuth } from '../context/AuthContext'
 import { flask } from '../lib/api'
 import { getAuthHeaders } from '../lib/authToken'
@@ -75,6 +76,7 @@ export default function SubscribePage() {
       }
       if (state.lostId) await updateMyItem('lost', state.lostId, fields)
       else await addMyItem('lost', userId, fields)
+      markLostHandled(state.lostId) // 發文與自動推播只能擇一
       setStatus('success')
     } catch (e) {
       setError(`訂閱失敗：${e.message}`)
