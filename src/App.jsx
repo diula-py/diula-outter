@@ -44,8 +44,6 @@ export default function App() {
           <Route element={<AppLayout />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/search/threads" element={<ThreadsSearchPage />} />
-            <Route path="/search/threads/:id" element={<ThreadsPostDetail />} />
           </Route>
 
           {/* 首頁按鈕的目的地 —— 尚未做的先用 placeholder */}
@@ -58,6 +56,9 @@ export default function App() {
           <Route path="/search/results" element={<ResultsPage />} />
           <Route path="/search/results/:id" element={<ResultDetailPage />} />
           <Route path="/search/sos" element={<SosPostPage />} />
+          {/* Threads 尋找遺失物（列表／貼文詳情）也不放 TabBar：TabBar 只留首頁、我的兩個主頁面 */}
+          <Route path="/search/threads" element={<ThreadsSearchPage />} />
+          <Route path="/search/threads/:id" element={<ThreadsPostDetail />} />
 
           {/* 個人頁的目的地 —— 待做 */}
           <Route path="/my/lost" element={<MyLostPage />} />

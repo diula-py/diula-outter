@@ -2,10 +2,8 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ChevronLeftIcon, CalendarIcon, DiulaPinIcon } from '../components/icons'
 
-import { spring, fetchThreadsPosts } from '../lib/api'
+import { fetchThreadsPosts } from '../lib/api'
 import { asset } from '../lib/asset'
-
-const IMAGE_PROXY = spring('/api/image?url=')
 
 function fmtDate(s) {
   return s ? String(s).slice(0, 10).replaceAll('-', '/') : ''
@@ -37,7 +35,8 @@ export default function ThreadsPostDetail() {
   const showImg = post?.image && !imgBroken
 
   return (
-    <div>
+    // 沒有 AppLayout（無 TabBar），外框與底部留白（含 iOS safe-area）自己處理
+    <div className="mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] bg-paper pb-[calc(40px+env(safe-area-inset-bottom))]">
       {/* Header */}
       <header className="safe-header relative rounded-b-[20px] bg-card [--header-h:80px]">
         <div className="relative flex h-full items-center justify-center">
@@ -61,9 +60,12 @@ export default function ThreadsPostDetail() {
           {/* 圖片 */}
           <div className="flex w-full items-center justify-center overflow-hidden rounded-[10px] bg-[#e7e3d5]">
             {showImg ? (
+              // 直接載 CDN 的圖（同列表頁，不繞會休眠的 Spring Boot 代理）
               <img
-                src={IMAGE_PROXY + encodeURIComponent(post.image)}
+                src={post.image}
                 alt=""
+                decoding="async"
+                referrerPolicy="no-referrer"
                 className="h-[240px] w-full object-cover"
                 onError={() => setImgBroken(true)}
               />
