@@ -46,7 +46,6 @@ export default function App() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/search/threads" element={<ThreadsSearchPage />} />
             <Route path="/search/threads/:id" element={<ThreadsPostDetail />} />
-            <Route path="/search/sos" element={<SosPostPage />} />
           </Route>
 
           {/* 首頁按鈕的目的地 —— 尚未做的先用 placeholder */}
@@ -54,10 +53,11 @@ export default function App() {
           <Route path="/search/analyzing" element={<AiAnalyzingPage />} />
           <Route path="/search/confirm" element={<ConfirmTagsPage />} />
           <Route path="/search/subscribe" element={<SubscribePage />} />
-          {/* 比對結果頁與結果詳情頁不放底部 TabBar：容易誤觸離開。
-              結果頁改用右上角「回首頁」＋確認彈窗；詳情頁只能用返回鍵回結果頁 */}
+          {/* 比對結果頁、結果詳情頁、Threads 協尋文頁不放底部 TabBar：容易誤觸離開。
+              結果頁改用右上角「回首頁」＋確認彈窗；詳情頁、協尋文頁用返回鍵回結果頁 */}
           <Route path="/search/results" element={<ResultsPage />} />
           <Route path="/search/results/:id" element={<ResultDetailPage />} />
+          <Route path="/search/sos" element={<SosPostPage />} />
 
           {/* 個人頁的目的地 —— 待做 */}
           <Route path="/my/lost" element={<MyLostPage />} />
