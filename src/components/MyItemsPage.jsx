@@ -122,10 +122,12 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
           >
             <Thumb img={it.image} />
             <div className="flex min-w-0 flex-1 flex-col gap-1 overflow-hidden">
-              <div className="truncate text-xs font-bold">＃{String(it.id).toUpperCase()}</div>
-              <div className="truncate text-sm font-bold">{it.name || (it.tags || []).map((t) => `#${t}`).join(' ')}</div>
+              {/* truncate 會 overflow:hidden，行高＝字高時源泉圓體字頂會被切；上下各多 4px 內距再用負外距抵銷，位置不變但不再被切 */}
+              <div className="-my-1 truncate py-1 text-xs font-bold">＃{String(it.id).toUpperCase()}</div>
+              <div className="-my-1 truncate py-1 text-sm font-bold">{it.name || (it.tags || []).map((t) => `#${t}`).join(' ')}</div>
               <div className="text-xs font-normal">{(it.date || '').replaceAll('-', '/')}</div>
-              {it.status && (
+              {/* 拾獲物只有「保管中」一種狀態，不顯示 */}
+              {kind !== 'found' && it.status && (
                 <div className="text-xs font-medium" style={{ color: statusColor(it.status) }}>{it.status}</div>
               )}
             </div>

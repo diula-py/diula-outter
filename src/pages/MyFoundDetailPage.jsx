@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { CalendarIcon, LocationIcon, PersonChalkboardIcon } from '../components/icons'
-import { ConfirmFoundModal, DeleteConfirmModal, DeleteSuccessModal } from '../components/DialogKit'
-import { DetailHeader, DetailImage, InfoBox, InfoRow, TagsBox, ActionButton, DeleteButton } from '../components/DetailKit'
-import { updateMyItem, removeMyItem } from '../lib/items'
-import { FOUND_STATUS } from '../data/itemStatus'
+import { DeleteConfirmModal, DeleteSuccessModal } from '../components/DialogKit'
+import { DetailHeader, DetailImage, InfoBox, InfoRow, TagsBox, DeleteButton } from '../components/DetailKit'
+import { removeMyItem } from '../lib/items'
 
 export default function MyFoundDetailPage() {
   const navigate = useNavigate()
@@ -22,9 +21,8 @@ export default function MyFoundDetailPage() {
     img: passed?.image || passed?.img || null,
   }
 
-  const [dialog, setDialog] = useState(null) // null | 'confirm' | 'delete' | 'deleted'
+  const [dialog, setDialog] = useState(null) // null | 'delete' | 'deleted'
   const [busy, setBusy] = useState(false)
-  const [done, setDone] = useState(passed?.status === FOUND_STATUS.FOUND)
 
   // 刪除此筆資料：刪 Firestore 文件 → 「該筆資料已被刪除！」→ 確認後回列表。
   async function deleteItem() {
@@ -59,25 +57,12 @@ export default function MyFoundDetailPage() {
 
       {item.tags.length > 0 && <TagsBox tags={item.tags} mt={10} />}
 
-      {/* 我找到了（找到後隱藏） */}
-      {!done && <ActionButton tone="card" onClick={() => setDialog('confirm')}>我找到了！立即更新狀態</ActionButton>}
-
-      {/* 刪除此筆資料（inner：我找到了鈕下方 20px） */}
+      {/* 拾獲物沒有「我找到了」：失主找回不是拾獲者自己按的，拾獲物只有「保管中」一種狀態 */}
+      {/* 刪除此筆資料（標籤區下方 20px） */}
       <DeleteButton onClick={() => setDialog('delete')} />
 
       {dialog === 'delete' && <DeleteConfirmModal busy={busy} onCancel={() => setDialog(null)} onConfirm={deleteItem} />}
       {dialog === 'deleted' && <DeleteSuccessModal onConfirm={() => navigate('/my/found', { replace: true })} />}
-      {dialog === 'confirm' && (
-        <ConfirmFoundModal
-          onCancel={() => setDialog(null)}
-          onConfirm={() => {
-            if (passed?.id) updateMyItem('found', passed.id, { status: FOUND_STATUS.FOUND })
-            setDone(true)
-            setDialog(null)
-            navigate('/my/found', { replace: true })
-          }}
-        />
-      )}
     </div>
   )
 }
