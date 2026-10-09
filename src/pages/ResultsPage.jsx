@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ChevronLeftIcon, HouseIcon } from '../components/icons'
+import { ChevronDownIcon, ChevronLeftIcon, HouseIcon } from '../components/icons'
 import { Overlay, WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import { XmarkIcon } from '../components/icons'
 import { itemTitle } from '../lib/text'
@@ -12,6 +12,10 @@ const SOURCES = [
   { key: 'hsr', label: '高鐵' },
   { key: 'diula', label: 'DiuLa!' },
 ]
+
+// 「都沒有我的物品」膠囊：滑到第 7 筆（第 7 張卡片進入畫面）才浮現，往回滑到它上方就收起；
+// 這個分頁不到 7 筆（含沒有結果）時一進來就顯示。換分頁重新判斷。
+const SHOW_AT = 7
 
 const fmtDate = (s) => (s ? String(s).slice(0, 10).replaceAll('-', '/') : '')
 
@@ -56,11 +60,42 @@ export default function ResultsPage() {
     [results, source],
   )
 
+  const listRef = useRef(null)
+  const [showNotMine, setShowNotMine] = useState(false)
+  useEffect(() => {
+    function check() {
+      const card = listRef.current?.children[SHOW_AT - 1]
+      setShowNotMine(list.length < SHOW_AT || !card || card.getBoundingClientRect().top < window.innerHeight)
+    }
+    check()
+    window.addEventListener('scroll', check, { passive: true })
+    window.addEventListener('resize', check)
+    return () => {
+      window.removeEventListener('scroll', check)
+      window.removeEventListener('resize', check)
+    }
+  }, [source, list.length])
+
+  // 「回到頂部」圓鈕：往下滑超過一個螢幕高才出現，回到一個螢幕高以內就收起
+  const [showToTop, setShowToTop] = useState(false)
+  useEffect(() => {
+    function check() {
+      setShowToTop(window.scrollY > window.innerHeight)
+    }
+    check()
+    window.addEventListener('scroll', check, { passive: true })
+    window.addEventListener('resize', check)
+    return () => {
+      window.removeEventListener('scroll', check)
+      window.removeEventListener('resize', check)
+    }
+  }, [])
+
   const emptyBox =
     'box-border w-full rounded-[10px] border border-black bg-input px-5 py-[30px] text-center text-sm font-medium leading-normal opacity-70'
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(140px+env(safe-area-inset-bottom))]">
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(100px+env(safe-area-inset-bottom))]">
       {/* Header 80px：標題＋右上角「回首頁」（先跳確認彈窗）；沒有返回鍵（inner page-06） */}
       <header className="safe-header relative z-10 w-full shrink-0 rounded-b-[20px] bg-card [--header-h:80px]">
         <div className="relative flex h-full items-center justify-center">
@@ -105,7 +140,7 @@ export default function ResultsPage() {
       </div>
 
       {/* 結果清單：340 寬、卡片間距 20 */}
-      <div className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-5">
+      <div ref={listRef} className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-5">
         {results.length === 0 && <div className={emptyBox}>沒有比對資料（請從跨平台頁送出協尋單）</div>}
         {results.length > 0 && list.length === 0 && (
           <div className={emptyBox}>
@@ -115,7 +150,7 @@ export default function ResultsPage() {
                 <br />
                 DiuLa! 會持續為您比對。
                 <br />
-                您也可以點擊右下角「都沒有我的物品」
+                您也可以點擊下方「都沒有我的物品」
                 <br />
                 開啟自動推播或發佈協尋文。
               </>
@@ -156,24 +191,43 @@ export default function ResultsPage() {
         })}
       </div>
 
-      {/* 都沒有我的物品：80×80 藍色圓鈕，右緣對齊 340 欄（inner）。
-          這頁沒有 TabBar，固定在離視窗底部 40px（＋iOS 底部橫條安全區），原本 TabBar 的高度 */}
-      <div className="pointer-events-none fixed bottom-[calc(40px+env(safe-area-inset-bottom))] left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[340px] -translate-x-1/2 justify-end">
+      {/* 回到頂部：白底圓鈕 50×50、黑框、陰影，右緣對齊卡片欄，在「都沒有我的物品」膠囊上方 15px */}
+      <div className="pointer-events-none fixed bottom-[calc(95px+env(safe-area-inset-bottom))] left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[340px] -translate-x-1/2 justify-end">
         <button
           type="button"
-          onClick={() => setSosOpen(true)}
-          className="pointer-events-auto flex h-20 w-20 shrink-0 items-center justify-center rounded-[40px] bg-blue text-center text-base font-medium leading-4 text-brown shadow-[0_4px_8px_rgba(0,0,0,0.25)]
-                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          aria-label="回到頂部"
+          aria-hidden={!showToTop}
+          tabIndex={showToTop ? 0 : -1}
+          className={`box-border flex h-[50px] w-[50px] items-center justify-center rounded-full border border-black bg-white shadow-[0_4px_4px_rgba(0,0,0,0.25)]
+                      transition duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
+                      ${showToTop ? 'pointer-events-auto translate-y-0 opacity-100' : 'translate-y-[10px] opacity-0'}`}
         >
-          都沒有<br />我的物品
+          <ChevronDownIcon className="h-6 w-6 rotate-180" />
         </button>
       </div>
 
-      {/* 「都沒有我的東西」選項彈窗（照 Figma：305×380、陰影、X 35×35 在 (12,14)、
+      {/* 都沒有我的物品：藍底膠囊 350×60（同其他主要膠囊）、陰影，浮在離視窗底部 20px（＋iOS 底部橫條安全區）。
+          隱藏時淡出並往下 10px、不能點也不能用 Tab 選到；頁面底部留 100px，滑到底最後一張卡片不會被蓋住 */}
+      <div className="pointer-events-none fixed bottom-[calc(20px+env(safe-area-inset-bottom))] left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[350px] -translate-x-1/2 justify-center">
+        <button
+          type="button"
+          onClick={() => setSosOpen(true)}
+          aria-hidden={!showNotMine}
+          tabIndex={showNotMine ? 0 : -1}
+          className={`box-border flex h-[60px] w-full items-center justify-center rounded-[50px] border border-black bg-blue text-base font-medium leading-4 text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)]
+                      transition duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
+                      ${showNotMine ? 'pointer-events-auto translate-y-0 opacity-100' : 'translate-y-[10px] opacity-0'}`}
+        >
+          都沒有我的物品
+        </button>
+      </div>
+
+      {/* 「都沒有我的物品」選項彈窗（照 Figma：305×380、陰影、X 35×35 在 (12,14)、
           標題 24/700 離頂端 49、按鈕 254×70 間距 20、第一顆離頂端 105、底部留 25） */}
       {sosOpen && (
         <Overlay onClose={() => setSosOpen(false)}>
-          <div role="dialog" aria-modal="true" aria-label="都沒有我的東西" className="relative box-border flex h-[380px] w-[calc(100vw-20px)] max-w-[305px] flex-col items-center rounded-[10px] bg-card pt-[49px] shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
+          <div role="dialog" aria-modal="true" aria-label="都沒有我的物品" className="relative box-border flex h-[380px] w-[calc(100vw-20px)] max-w-[305px] flex-col items-center rounded-[10px] bg-card pt-[49px] shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
             <button
               type="button"
               onClick={() => setSosOpen(false)}
@@ -182,7 +236,7 @@ export default function ResultsPage() {
             >
               <XmarkIcon className="h-[35px] w-[35px]" />
             </button>
-            <div className="text-center text-2xl font-bold leading-6">都沒有我的東西！</div>
+            <div className="text-center text-2xl font-bold leading-6">都沒有我的物品！</div>
             <div className="mt-8 flex w-[254px] max-w-[calc(100%-40px)] flex-col gap-5">
               {[
                 { label: '開啟自動尋找並推播', tone: 'bg-blue', go: () => navigate('/search/subscribe', { state: location.state }) },
