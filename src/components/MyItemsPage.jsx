@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, CalendarIcon, MagnifyingGlassIcon } from './icons'
-import { listMyItems } from '../lib/items'
+import { listMyItems, getCachedMyItems } from '../lib/items'
 import { useAuth } from '../context/AuthContext'
 import { asset } from '../lib/asset'
 import { LOST_STATUS } from '../data/itemStatus'
@@ -36,8 +36,10 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
   const { userId } = useAuth()
   const [query, setQuery] = useState('')
   const [dateFilter, setDateFilter] = useState('')
-  const [items, setItems] = useState([])
-  const [loading, setLoading] = useState(true)
+  // 有上次的清單就先用（從詳情頁返回時第一個畫面就是完整清單，捲動位置才還原得回去），背景再重讀
+  const cached = getCachedMyItems(kind, userId)
+  const [items, setItems] = useState(cached || [])
+  const [loading, setLoading] = useState(!cached)
 
   useEffect(() => {
     let alive = true
