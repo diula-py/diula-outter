@@ -67,7 +67,8 @@ export default function ThreadsPostDetail() {
           {/* 圖片 */}
           <div className="flex w-full items-center justify-center overflow-hidden rounded-[10px] bg-[#e7e3d5]">
             {showImg ? (
-              // 直接載 CDN 的圖（同列表頁，不繞會休眠的 Spring Boot 代理）
+              // 載快照給的網址（同列表頁，不繞會休眠的 Spring Boot 代理）。
+              // 圖是自家鏡像在 diula-web 的 webp，不會像 Instagram CDN 的簽章網址那樣過期。
               <img
                 src={post.image}
                 alt=""

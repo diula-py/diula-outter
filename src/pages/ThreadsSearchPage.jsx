@@ -8,10 +8,12 @@ import { normalizeIdWording } from '../lib/text'
 import { asset } from '../lib/asset'
 
 /**
- * 貼文縮圖：直接載 Instagram CDN 的圖（CDN 允許跨站嵌入，約 0.3 秒），
- * 不再繞 Spring Boot /api/image 代理——那台在 Render 免費方案會休眠，冷啟動 ~50 秒，圖要等很久。
- * 捲到才載（lazy），一張約 500KB，不會一進來就抓 47 張。
- * 沒有圖、或網址過期（CDN 網址約 3～5 天失效，回 403）→ 藍底驚嘆號 logo（同比對結果頁的預設圖）。
+ * 貼文縮圖：載快照給的網址，不繞 Spring Boot /api/image 代理——那台在 Render 免費方案會休眠，
+ * 冷啟動 ~50 秒，圖要等很久。
+ * 2026-10-11 起圖是自家的：後端每天把貼文圖鏡像成 webp 縮圖放到 diula-web（GitHub Pages），
+ * 快照的 image 直接指那裡，一張約 20KB、不會過期。原本直連 Instagram CDN 的簽章網址抓完
+ * 約一個月就回 403，舊貼文的照片必然消失。
+ * 捲到才載（lazy）。沒有圖、或連自家圖也掛了 → 藍底驚嘆號 logo（同比對結果頁的預設圖）。
  */
 function Thumb({ url }) {
   const [broken, setBroken] = useState(false)
