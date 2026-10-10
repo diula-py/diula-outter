@@ -6,6 +6,7 @@ import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import PhotoMaskModal from '../components/PhotoMaskModal'
 import { addMyItem, getMyItem, updateMyItem } from '../lib/items'
 import { markLostHandled } from '../lib/handledLost'
+import { HttpError, friendlyError } from '../lib/errors'
 import { useAuth } from '../context/AuthContext'
 import { flask } from '../lib/api'
 import { getAuthHeaders } from '../lib/authToken'
@@ -65,7 +66,8 @@ export default function SosPostPage() {
   const [note, setNote] = useState('')     // 備註（選填）
   const [step, setStep] = useState('form') // form | preview
   const [status, setStatus] = useState('idle') // idle | submitting | success
-  const [result, setResult] = useState(null)
+  // Threads 已發出的結果（post_id／permalink）。拿到就記住，之後只重試存檔、絕不再發第二則公開文
+  const [posted, setPosted] = useState(null)
   const [savedItem, setSavedItem] = useState(null) // 發文成功後存進「我的遺失物」的那一筆，成功彈窗帶去詳情頁用
   const [error, setError] = useState('')
 
@@ -82,24 +84,41 @@ export default function SosPostPage() {
     setError('')
     if (!name.trim()) { setError('請填物品名稱'); return }
     setStatus('submitting')
+
+    // 第一步：發 Threads（已經發過就跳過）
+    let post = posted
+    if (!post) {
+      try {
+        // 送出當下才縮圖，保證不會送到還沒縮的原圖（Threads 抓大圖會逾時 2207003）。
+        // 有打碼就送打碼後的圖，原圖不外流。
+        const threadsImage = displayImage ? await downscale(displayImage) : null
+        // 用官方帳號發文，後端要求登入憑證（見 diula-outter 的 auth_token.py）。
+        const authHeaders = await getAuthHeaders()
+        if (!authHeaders) throw new Error('登入狀態已失效，請重新登入')
+        const res = await fetch(flask('/threads/submit'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...authHeaders },
+          body: JSON.stringify({ text, image: threadsImage, name, lost_date: date, location: fullPlace }),
+        })
+        const json = await res.json().catch(() => ({}))
+        if (!res.ok) throw new HttpError(res.status, json.error)
+        post = json
+        setPosted(json)
+      } catch (e) {
+        setError(`發佈失敗：${friendlyError(e)}`)
+        setStatus('idle')
+        return
+      }
+    }
+
+    // 第二步：存進「我的遺失物」。失敗只重試這一步，按鈕改成「重試存檔」
     try {
-      // 送出當下才縮圖，保證不會送到還沒縮的原圖（Threads 抓大圖會逾時 2207003）。
-      // 有打碼就送打碼後的圖，原圖不外流。
-      const image = displayImage ? await downscale(displayImage) : null
-      // 用官方帳號發文，後端要求登入憑證（見 diula-outter 的 auth_token.py）。
-      const authHeaders = await getAuthHeaders()
-      if (!authHeaders) throw new Error('登入狀態已失效，請重新登入')
-      const res = await fetch(flask('/threads/submit'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeaders },
-        body: JSON.stringify({ text, image, name, lost_date: date, location: fullPlace }),
-      })
-      const json = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`)
+      // 存資料庫的圖縮到 800px（同確認標籤／推播頁），避免超過 Firestore 單筆 1MB
+      const image = displayImage ? await downscale(displayImage, 800, 0.8) : null
       // 更新「我的遺失物」裡按下比對時建立的那一筆（沒有的話才新增），讓發出去的協尋出現在清單。
       const fields = {
         kind: 'threads',
-        code: '#' + (json.post_id ? String(json.post_id).slice(-6) : Date.now().toString().slice(-6)),
+        code: '#' + (post.post_id ? String(post.post_id).slice(-6) : Date.now().toString().slice(-6)),
         name: name.trim(),
         date,
         place: fullPlace,
@@ -107,8 +126,8 @@ export default function SosPostPage() {
         tags: q.tags || [],
         image,
         status: LOST_STATUS.POSTED,
-        thread_post_id: json.post_id,
-        thread_post_url: json.permalink,
+        thread_post_id: post.post_id,
+        thread_post_url: post.permalink,
       }
       let savedId = state.lostId
       if (savedId) await updateMyItem('lost', savedId, fields)
@@ -117,10 +136,9 @@ export default function SosPostPage() {
       // 詳情頁的資料是從上一頁帶過去的（location.state.item），所以讀回完整的一筆；讀不到就用剛寫入的欄位
       const fresh = await getMyItem('lost', savedId).catch(() => null)
       setSavedItem(fresh || { id: savedId, ...fields })
-      setResult(json)
       setStatus('success')
     } catch (e) {
-      setError(`發布失敗：${e.message}`)
+      setError(`協尋文已發佈，但存到「我的遺失物」時失敗（${friendlyError(e)}），請按「重試存檔」`)
       setStatus('idle')
     }
   }
@@ -240,7 +258,9 @@ export default function SosPostPage() {
                        text-base font-medium text-brown transition hover:bg-[#eee8d7] disabled:opacity-50
                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown">
             <CircleCheckIcon className="h-9 w-9 shrink-0 text-brown" />
-            {status === 'submitting' ? '發布中…' : '確認！發佈此則Threads文'}
+            {status === 'submitting'
+              ? (posted ? '存檔中…' : '發佈中…')
+              : (posted ? '重試存檔' : '確認！發佈此則Threads文')}
           </button>
         </div>
       )}

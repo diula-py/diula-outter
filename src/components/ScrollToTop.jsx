@@ -16,6 +16,7 @@ export default function ScrollToTop() {
   const location = useLocation()
   const navType = useNavigationType()
   const keyRef = useRef(location.key)
+  const pathRef = useRef(location.pathname)
 
   // 自己還原，不讓瀏覽器在內容還沒畫出來前就搶先還原
   useEffect(() => {
@@ -32,6 +33,10 @@ export default function ScrollToTop() {
   useLayoutEffect(() => {
     // 先換成新頁面的 key，再捲動：之後的捲動事件才會記到新頁面，不會把上一頁記住的位置蓋成 0
     keyRef.current = location.key
+    // 同一頁只是更新 state（例如確認標籤頁存好 lostId、比對結果頁切來源分頁）不算換頁，不捲動
+    const samePage = pathRef.current === location.pathname
+    pathRef.current = location.pathname
+    if (navType === 'REPLACE' && samePage) return
     if (navType !== 'POP') {
       window.scrollTo(0, 0)
       return
@@ -50,7 +55,7 @@ export default function ScrollToTop() {
     }
     tryRestore()
     return () => cancelAnimationFrame(frame)
-  }, [location.key, navType])
+  }, [location.key, location.pathname, navType])
 
   return null
 }

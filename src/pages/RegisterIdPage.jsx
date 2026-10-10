@@ -9,6 +9,7 @@ import { getAuthHeaders } from '../lib/authToken'
 import { todayStr } from '../lib/date'
 import { downscale } from '../lib/image'
 import { FOUND_STATUS } from '../data/itemStatus'
+import { HttpError, friendlyError } from '../lib/errors'
 
 // 分頁中文 → 後端 docType 列舉
 const DOCTYPE_MAP = {
@@ -124,7 +125,7 @@ export default function RegisterIdPage() {
       }
       setError('')
       const data = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(data.error || `伺服器回應 ${res.status}`)
+      if (!res.ok) throw new HttpError(res.status, data.error)
       // 這筆拾獲物的本機紀錄（kind: 'found'）。先不 addItem——交給 AI 過場頁，
       // 讓它補上 AI 自動標籤後再一次存進「我的拾獲物」，避免存兩次。
       const item = {
@@ -148,7 +149,7 @@ export default function RegisterIdPage() {
       })
     } catch (e) {
       setStatus('error')
-      setError(`送出失敗：${e.message}`)
+      setError(`送出失敗：${friendlyError(e)}`)
     }
   }
 

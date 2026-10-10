@@ -10,6 +10,7 @@ import { LOST_STATUS } from '../data/itemStatus'
 import { downscale } from '../lib/image'
 import { titleFromTags } from '../data/tagTaxonomy'
 import { useStatusBarColor } from '../lib/statusBarOverride'
+import { HttpError, friendlyError } from '../lib/errors'
 
 export default function SubscribePage() {
   const navigate = useNavigate()
@@ -27,6 +28,8 @@ export default function SubscribePage() {
   // 訂閱成功頁沒有 header、頂端是白底 → 狀態列色帶也改白（同登錄成功頁）；表單頁維持米色
   useStatusBarColor(status === 'success' ? '#ffffff' : null)
   const [error, setError] = useState('')
+  // 後端已建立的訂閱（拿到 id 就記住，之後只重試存檔、不再建第二筆訂閱）
+  const [subscribed, setSubscribed] = useState(null)
   // LINE 推播只送得到官方帳號好友；沒加的話後端會回 add_friend_url，成功頁給連結。
   const [addFriendUrl, setAddFriendUrl] = useState('')
 
@@ -42,7 +45,10 @@ export default function SubscribePage() {
     if (channel === 'email' && !/^\S+@\S+\.\S+$/.test(email)) { setError('請輸入正確的 Email'); return }
 
     setStatus('submitting')
-    try {
+
+    // 第一步：建立訂閱（已經建過就跳過）
+    let sub = subscribed
+    if (!sub) try {
       const authHeaders = await getAuthHeaders()
       if (!authHeaders) throw new Error('登入狀態已失效，請重新登入')
       const res = await fetch(flask('/subscriptions'), {
@@ -61,28 +67,38 @@ export default function SubscribePage() {
         }),
       })
       const json = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`)
+      if (!res.ok) throw new HttpError(res.status, json.error)
       if (channel === 'line') setAddFriendUrl(json.add_friend_url || json.bind?.add_friend_url || '')
+      sub = json
+      setSubscribed(json)
+    } catch (e) {
+      setError(`訂閱失敗：${friendlyError(e)}`)
+      setStatus('idle')
+      return
+    }
+
+    // 第二步：存進「我的遺失物」。失敗只重試這一步，按鈕改成「重試存檔」
+    try {
       // 使用者上傳的照片一起存進「我的遺失物」；縮小一點，避免超過 Firestore 單筆 1MB 上限
       const image = state.base64Image ? await downscale(state.base64Image, 800, 0.8) : null
       // 更新按下比對時建立的那一筆（沒有的話才新增）
       const fields = {
         kind: 'subscription',
-        code: '#' + (json.id ? String(json.id).slice(-6) : Date.now().toString().slice(-6)),
+        code: '#' + (sub.id ? String(sub.id).slice(-6) : Date.now().toString().slice(-6)),
         name: titleFromTags(q.tags || []) || resolved.category_name || '協尋',
         date: q.date,
         place: q.place,
         tags: q.tags || [],
         image,
         status: LOST_STATUS.BROADCASTING,
-        sub_id: json.id,
+        sub_id: sub.id,
       }
       if (state.lostId) await updateMyItem('lost', state.lostId, fields)
       else await addMyItem('lost', userId, fields)
       markLostHandled(state.lostId) // 發文與自動推播只能擇一
       setStatus('success')
     } catch (e) {
-      setError(`訂閱失敗：${e.message}`)
+      setError(`已開啟自動推播，但存到「我的遺失物」時失敗（${friendlyError(e)}），請按「重試存檔」`)
       setStatus('idle')
     }
   }
@@ -174,7 +190,9 @@ export default function SubscribePage() {
                      text-base font-medium text-brown transition hover:brightness-[.98] disabled:opacity-60
                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown">
           <CircleCheckIcon className="h-9 w-9 shrink-0 text-brown" />
-          {status === 'submitting' ? '訂閱中…' : '開啟自動推播'}
+          {status === 'submitting'
+            ? (subscribed ? '存檔中…' : '訂閱中…')
+            : (subscribed ? '重試存檔' : '開啟自動推播')}
         </button>
       </div>
     </div>

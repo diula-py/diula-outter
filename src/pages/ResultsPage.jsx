@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { ChevronDownIcon, ChevronLeftIcon, HouseIcon } from '../components/icons'
 import { Overlay, WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import { XmarkIcon } from '../components/icons'
@@ -98,6 +98,8 @@ export default function ResultsPage() {
     'box-border w-full rounded-[10px] border border-black bg-input px-5 py-[30px] text-center text-sm font-medium leading-normal opacity-70'
 
   if (handled) return null
+  // 直接開網址（沒有比對資料）→ 回首頁；有資料但 0 筆照常顯示，下方有引導文字
+  if (!location.state) return <Navigate to="/" replace />
 
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(100px+env(safe-area-inset-bottom))]">
@@ -146,8 +148,7 @@ export default function ResultsPage() {
 
       {/* 結果清單：340 寬、卡片間距 20 */}
       <div ref={listRef} className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-5">
-        {results.length === 0 && <div className={emptyBox}>沒有比對資料（請從跨平台頁送出協尋單）</div>}
-        {results.length > 0 && list.length === 0 && (
+        {list.length === 0 && (
           <div className={emptyBox}>
             {source === 'diula' ? (
               <>

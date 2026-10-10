@@ -5,6 +5,7 @@ import AnalyzingScreen from '../components/AnalyzingScreen'
 import { analyzeItem } from '../lib/api'
 import { normalizeIdWording } from '../lib/text'
 import { cleanAiTags } from '../data/tagTaxonomy'
+import { friendlyError } from '../lib/errors'
 
 // AI 圖片辨識過場：實際呼叫 AI 服務，拿回標籤才進確認頁。
 // Render 免費方案冷啟動可能要 ~1 分鐘，進度條期間慢慢爬到 90%，回來才補到 100%。
@@ -42,7 +43,7 @@ export default function AiAnalyzingPage() {
         setPct(100)
         setTimeout(() => navigate('/search/confirm', { replace: true, state: { ...data, name, tags: uniq } }), 350)
       } catch (e) {
-        if (alive) { clearInterval(grow); setError(e.message) }
+        if (alive) { clearInterval(grow); setError(friendlyError(e)) }
       }
     })()
 

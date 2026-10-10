@@ -28,13 +28,23 @@ export default function LoginPage() {
     }
   }, [loading, user, location, navigate])
 
+  const [googleBusy, setGoogleBusy] = useState(false)
+
   async function handleGoogleLogin() {
+    if (googleBusy) return // 連點會開兩個彈窗，第二個會讓第一個也報錯
     setError('')
+    setGoogleBusy(true)
     try {
       await loginWithGoogle()
     } catch (e) {
       console.error('Google 登入失敗:', e)
-      setError('登入失敗：' + (e?.message || '未知錯誤'))
+      // 使用者自己關掉／取消登入視窗：不算錯誤，不顯示
+      if (['auth/popup-closed-by-user', 'auth/cancelled-popup-request', 'auth/user-cancelled'].includes(e?.code)) return
+      if (e?.code === 'auth/popup-blocked') setError('登入視窗被瀏覽器擋住了，請允許彈出視窗後再試一次')
+      else if (e?.code === 'auth/network-request-failed') setError('無法連線，請檢查網路後再試一次')
+      else setError('登入失敗，請稍後再試')
+    } finally {
+      setGoogleBusy(false)
     }
   }
 
