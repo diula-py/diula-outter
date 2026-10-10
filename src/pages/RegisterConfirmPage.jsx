@@ -6,6 +6,7 @@ import TagPickerModal from '../components/TagPickerModal'
 import { addMyItem } from '../lib/items'
 import { useAuth } from '../context/AuthContext'
 import { todayStr } from '../lib/date'
+import { friendlyError } from '../lib/errors'
 
 /**
  * 登錄拾獲物的「確認標籤」頁（inner page-11）：AI 過場後進來，可改日期／拾獲地點／備註、
@@ -48,7 +49,7 @@ export default function RegisterConfirmPage() {
       navigate('/register/success', { replace: true, state: { id: saved.id } })
     } catch (e) {
       console.error('存進「我的拾獲物」失敗:', e)
-      setError(`登錄失敗：${e.message}`)
+      setError(`登錄失敗：${friendlyError(e)}`)
       setBusy(false)
     }
   }

@@ -1,6 +1,8 @@
 // API base 設定：跟 diula-web 一樣依 hostname 判斷，本機/線上同一份程式碼都能跑。
 //   dev（localhost）→ 回傳相對路徑，走 Vite dev proxy。
 //   prod（部署後）  → 回傳各後端的絕對網址（Render 服務）。
+import { HttpError } from './errors'
+
 const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname)
 
 const FLASK = isLocal ? '' : 'https://diula.onrender.com'
@@ -38,7 +40,7 @@ export async function analyzeItem({ text, base64Image }) {
       signal: ctrl.signal,
     })
     const json = await res.json().catch(() => ({}))
-    if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`)
+    if (!res.ok) throw new HttpError(res.status, json.error)
     return json
   } catch (e) {
     if (e.name === 'AbortError') throw new Error('AI 回應逾時，請再試一次')

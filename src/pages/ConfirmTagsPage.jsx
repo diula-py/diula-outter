@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { CalendarIcon, LocationIcon, PlusIcon } from '../components/icons'
 import { FormHeader, FormPage, FormCard, FormRow, RegionField, SubmitButton, pillInput } from '../components/FormKit'
 import { asset } from '../lib/asset'
@@ -12,6 +12,7 @@ import { useAuth } from '../context/AuthContext'
 import { LOST_STATUS } from '../data/itemStatus'
 import { titleFromTags } from '../data/tagTaxonomy'
 import { useLeaveIfHandled } from '../lib/handledLost'
+import { HttpError, friendlyError } from '../lib/errors'
 
 export default function ConfirmTagsPage() {
   const navigate = useNavigate()
@@ -22,7 +23,7 @@ export default function ConfirmTagsPage() {
   const [date, setDate] = useState(data.date || todayStr())
   const [placeCity, setPlaceCity] = useState((data.place || '').split(' ')[0] || '')
   const [placeDistrict, setPlaceDistrict] = useState((data.place || '').split(' ')[1] || '')
-  const [tags, setTags] = useState(data.tags || ['杯套', '水杯'])
+  const [tags, setTags] = useState(data.tags || [])
   const [pickerOpen, setPickerOpen] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -56,7 +57,7 @@ export default function ConfirmTagsPage() {
         navigate(location.pathname, { replace: true, state: { ...data, lostId } })
       }
     } catch (e) {
-      setError(`儲存失敗：${e.message}`)
+      setError(`儲存失敗：${friendlyError(e)}`)
       setBusy(false)
       return
     }
@@ -73,19 +74,19 @@ export default function ConfirmTagsPage() {
         }),
       })
       const json = await res.json().catch(() => ({}))
-      // 429 = 被限流（後端 MATCH_PER_IP_HOURLY），錯誤訊息本身就講得清楚，
-      // 這種情況不要再補「請確認 Flask 有啟動」，那會把人導向錯的方向。
-      if (!res.ok) throw new Error(json.error || `伺服器回應 ${res.status}`, { cause: res.status })
+      // 429 = 被限流（後端 MATCH_PER_IP_HOURLY），後端訊息是中文、會照用
+      if (!res.ok) throw new HttpError(res.status, json.error)
       navigate('/search/results', { state: { query: { date, place, tags }, base64Image: data.base64Image, lostId, ...json } })
     } catch (e) {
-      const serverAnswered = typeof e.cause === 'number'
-      setError(serverAnswered ? `比對失敗：${e.message}` : `比對失敗：${e.message}（請確認 Flask :5001 有啟動）`)
+      setError(`比對失敗：${friendlyError(e)}`)
     } finally {
       setBusy(false)
     }
   }
 
   if (handled) return null
+  // 直接開網址（書籤、分享連結）沒有上一頁帶來的資料 → 回跨平台尋找表單重新開始
+  if (!location.state) return <Navigate to="/search" replace />
 
   return (
     <FormPage>

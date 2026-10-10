@@ -50,9 +50,12 @@ export default function CrossSearchPage() {
     if (!placeCity || !placeDistrict) { setError('請選擇遺失的縣市與地區'); return }
     // 帶照片的 base64（給 AI 辨識用）+ 文字描述，進 AI 過場頁。
     // 手機實拍照片常達數 MB，先縮圖再送，避免上傳過大失敗（Load failed）並加快上傳。
-    const base64Image = photo ? await downscale(await fileToDataUrl(photo)) : null
+    // 只送目前模式的資料：圖片模式送照片、文字模式送描述。
+    // 否則在圖片模式上傳過照片再切到文字模式，那張照片仍會被存檔、帶進 Threads 協尋文
+    const isImage = mode === 'image'
+    const base64Image = isImage && photo ? await downscale(await fileToDataUrl(photo)) : null
     navigate('/search/analyzing', {
-      state: { mode, date, place, photoUrl, base64Image, desc: desc.trim() },
+      state: { mode, date, place, photoUrl: isImage ? photoUrl : '', base64Image, desc: isImage ? '' : desc.trim() },
     })
   }
 
