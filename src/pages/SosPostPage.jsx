@@ -42,7 +42,6 @@ function buildText({ name, date, place, note }) {
     `📍遺失地點：${place || '（未填）'}`,
     ...(note ? [`📝${note}`] : []),
     '若您拾獲，請在這則貼文底下留言，物主會主動與您聯繫🙏',
-    '#協尋 #遺失物 #DiuLa',
   ].join('\n')
 }
 
@@ -198,7 +197,7 @@ export default function SosPostPage() {
                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
           >
             <CircleCheckIcon className="h-10 w-10 shrink-0" />
-            <span>填寫完成！查看貼文預覽</span>
+            <span>填寫完成!查看貼文預覽</span>
           </button>
         </div>
       )}
@@ -207,7 +206,7 @@ export default function SosPostPage() {
       {step === 'preview' && (
         <div className="flex flex-col gap-4 px-[26px] pt-5">
           <div className="rounded-[10px] bg-card p-4 text-xs font-medium leading-normal text-brown">
-            由 <b>DiuLa！官方帳號</b> 幫你把協尋資訊發到 Threads，擴大協尋範圍。貼文圖片將沿用比對尋找時上傳的圖片！
+            由 <b>DiuLa!官方帳號</b> 幫你把協尋資訊發到 Threads，擴大協尋範圍。貼文圖片將沿用比對尋找時上傳的圖片!
             <b>會公開發到 Threads，發佈前可框住路人臉、車牌、地址等個資。</b>
           </div>
 
@@ -240,7 +239,7 @@ export default function SosPostPage() {
                        text-base font-medium text-brown transition hover:bg-[#eee8d7] disabled:opacity-50
                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown">
             <CircleCheckIcon className="h-9 w-9 shrink-0 text-brown" />
-            {status === 'submitting' ? '發布中…' : '確認！發佈此則Threads文'}
+            {status === 'submitting' ? '發布中…' : '確認!發佈此則Threads文'}
           </button>
         </div>
       )}
@@ -257,7 +256,7 @@ export default function SosPostPage() {
       {/* 發布成功彈窗（inner notfound-thread-success：300×251）：按鈕或關閉都到這件物品的詳情頁 */}
       {status === 'success' && (
         <WireDialog height={251} onClose={goToDetail} label="Threads串文已發佈">
-          <DialogTitle top={87} width={246} lineHeight={22}>Threads串文已發佈！</DialogTitle>
+          <DialogTitle top={87} width={246} lineHeight={22}>Threads串文已發佈!</DialogTitle>
           <DialogButton left={41} top={146} width={214} tone="blue" onClick={goToDetail}>查看我的遺失物</DialogButton>
         </WireDialog>
       )}
