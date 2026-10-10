@@ -2,6 +2,31 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { asset } from '../lib/asset'
 import { useAuth } from '../context/AuthContext'
+import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
+
+const SUPPORT_EMAIL = 'diula.112ics@gmail.com'
+
+// 複製文字：先用 Clipboard API，不支援（舊瀏覽器、非 https）時退回 execCommand
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text)
+    return true
+  } catch {
+    try {
+      const ta = document.createElement('textarea')
+      ta.value = text
+      ta.setAttribute('readonly', '')
+      ta.style.cssText = 'position:fixed;opacity:0'
+      document.body.appendChild(ta)
+      ta.select()
+      const ok = document.execCommand('copy')
+      ta.remove()
+      return ok
+    } catch {
+      return false
+    }
+  }
+}
 
 function GoogleGIcon(props) {
   return (
@@ -19,6 +44,15 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const [error, setError] = useState('')
+  const [helpOpen, setHelpOpen] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  async function copyEmail() {
+    if (await copyText(SUPPORT_EMAIL)) {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
 
   // 已經是登入狀態（例如重新整理後恢復 session）就直接跳回原本要去的頁面。
   useEffect(() => {
@@ -28,12 +62,10 @@ export default function LoginPage() {
     }
   }, [loading, user, location, navigate])
 
-  const [googleBusy, setGoogleBusy] = useState(false)
-
+  // 不鎖按鈕：iPhone 主畫面 PWA 把 Google 登入視窗關掉時，Firebase 收不到通知、上一次登入永遠不會結束，
+  // 鎖住的話按鈕就再也按不動。再按一次時 Firebase 會取消上一個（cancelled-popup-request，下面不顯示）。
   async function handleGoogleLogin() {
-    if (googleBusy) return // 連點會開兩個彈窗，第二個會讓第一個也報錯
     setError('')
-    setGoogleBusy(true)
     try {
       await loginWithGoogle()
     } catch (e) {
@@ -43,8 +75,6 @@ export default function LoginPage() {
       if (e?.code === 'auth/popup-blocked') setError('登入視窗被瀏覽器擋住了，請允許彈出視窗後再試一次')
       else if (e?.code === 'auth/network-request-failed') setError('無法連線，請檢查網路後再試一次')
       else setError('登入失敗，請稍後再試')
-    } finally {
-      setGoogleBusy(false)
     }
   }
 
@@ -88,15 +118,32 @@ export default function LoginPage() {
         )}
       </div>
 
-      <a
-        href="mailto:diula.112ics@gmail.com"
+      {/* 不直接 mailto：iPhone 預設郵件設成 Gmail 時，從 PWA 叫起 Gmail 會閃退。
+          先跳說明彈窗，可以複製信箱自己貼，或照舊用郵件 App 寄信（主旨留白） */}
+      <button
+        type="button"
+        onClick={() => setHelpOpen(true)}
         className="mt-[70px] h-[18px] w-24 translate-x-[0.5px] text-center text-base leading-[18px] text-black opacity-50"
       >
         遇到問題嗎？
-      </a>
+      </button>
       <p className="mt-[22px] w-[264px] max-w-[calc(100%-40px)] translate-x-[0.5px] text-center text-xs leading-[13px] text-black opacity-50">
         登入即代表您同意本平台的服務條款與隱私權政策
       </p>
+
+      {helpOpen && (
+        <WireDialog height={251} onClose={() => setHelpOpen(false)} label="遇到問題嗎">
+          <DialogTitle top={62} width={246}>遇到問題嗎？</DialogTitle>
+          <div className="absolute left-1/2 top-[94px] w-[246px] -translate-x-1/2 text-center text-xs font-normal leading-3 opacity-70">
+            請寄信給我們，會盡快回覆
+          </div>
+          <div className="absolute left-1/2 top-[116px] w-[246px] -translate-x-1/2 select-all text-center text-sm font-medium leading-4 text-brown">
+            {SUPPORT_EMAIL}
+          </div>
+          <DialogButton left={30} top={156} width={115} onClick={copyEmail}>{copied ? '已複製' : '複製信箱'}</DialogButton>
+          <DialogButton left={155} top={156} width={115} tone="blue" onClick={() => { window.location.href = `mailto:${SUPPORT_EMAIL}` }}>寄信</DialogButton>
+        </WireDialog>
+      )}
     </div>
   )
 }
