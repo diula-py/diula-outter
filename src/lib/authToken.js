@@ -6,8 +6,7 @@ import { spring } from './api'
 // 後端（diula-api 的 TokenAuth）吃兩種：LINE 的 ID token、Firebase 的 ID token，
 // 用 X-Auth-Provider 告訴它是哪一種，省掉一次多餘的驗證。
 //
-// ⚠️ Firebase 匿名帳號不算登入（AuthContext 會替 LINE 使用者背景補一個），後端會擋掉，
-// 所以這裡也直接跳過 isAnonymous 的使用者。
+// ⚠️ Firebase 匿名帳號不算登入，後端會擋掉，所以這裡也直接跳過 isAnonymous 的使用者。
 export async function getAuthHeaders() {
   try {
     if (isLiffLoggedIn()) {
@@ -31,6 +30,29 @@ export async function getAuthHeaders() {
 // LINE 使用者的 Firebase uid 固定長這樣（與後端 AuthController.LINE_UID_PREFIX 一致）。
 // 改這個前綴等於改掉所有既有資料的 owner_uid，別亂動。
 export const LINE_UID_PREFIX = 'line_'
+
+// LINE 登入時換 custom token 那段可能還在背景跑（AuthContext 最多只等 8 秒就先放行畫面）。
+// 讀寫 Firestore 前要等它跑完，request.auth.uid 才會是 line_xxx，規則才認得出你是主人。
+let pendingOwnerSignIn = Promise.resolve()
+export function trackOwnerSignIn(promise) {
+  pendingOwnerSignIn = promise.catch(() => {})
+}
+
+// 最多等多久。Render 冷啟動約 50 秒，再多給一點。
+const OWNER_SIGN_IN_WAIT_MS = 70000
+
+// 回傳目前登入者在 Firestore 規則裡的身分（request.auth.uid），也就是物品的 owner_uid。
+// 還沒換到正式身分（沒登入、或只有匿名帳號）就丟錯，不要用錯的身分去讀寫。
+export async function getOwnerUid() {
+  await auth.authStateReady()
+  await Promise.race([
+    pendingOwnerSignIn,
+    new Promise((resolve) => setTimeout(resolve, OWNER_SIGN_IN_WAIT_MS)),
+  ])
+  const user = auth.currentUser
+  if (!user || user.isAnonymous) throw new Error('登入尚未完成，請重新整理後再試一次')
+  return user.uid
+}
 
 // 用 LINE 的 ID token 跟後端換一個 Firebase custom token。
 // 換到之後 signInWithCustomToken() 登入，request.auth.uid 才是可信的身分，
