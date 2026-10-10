@@ -25,6 +25,9 @@ const AuthContext = createContext(null)
 // 所以每次 LINE 登入成功就把 user 存一份在 localStorage；離線開網頁時拿它當登入狀態，只用來讀快取。
 const LAST_LINE_USER_KEY = 'diula_last_line_user'
 
+// LINE 登入時跟後端換 Firebase custom token 最多等多久（見 resolveFromLine）。
+const CUSTOM_TOKEN_WAIT_MS = 8000
+
 function saveLastLineUser(u) {
   try {
     localStorage.setItem(LAST_LINE_USER_KEY, JSON.stringify(u))
@@ -66,13 +69,23 @@ export function AuthProvider({ children }) {
     // uid，規則只能寫 request.auth != null，而匿名帳號誰都能開 → 等於沒鎖。
     const expectedUid = LINE_UID_PREFIX + profile.userId
     if (auth.currentUser?.uid !== expectedUid) {
-      try {
-        const customToken = await fetchLineCustomToken()
+      const tokenSignIn = fetchLineCustomToken().then((customToken) => {
         if (!customToken) throw new Error('後端沒有回傳 custom token')
-        await signInWithCustomToken(auth, customToken)
+        return signInWithCustomToken(auth, customToken)
+      })
+      try {
+        // 後端在 Render 免費方案，睡著時冷啟動要 50 秒以上；整段期間畫面都卡在「載入中…」。
+        // 所以最多只等 CUSTOM_TOKEN_WAIT_MS，逾時就先往下走，token 晚點回來再在背景換上正確身分。
+        await Promise.race([
+          tokenSignIn,
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('換 custom token 逾時')), CUSTOM_TOKEN_WAIT_MS),
+          ),
+        ])
       } catch (e) {
-        // 後端睡著（Render 冷啟動 ~50 秒）或暫時掛掉時，不要讓使用者整個登不進來。
-        // 退回匿名登入：功能照舊，只是這個 session 寫入的資料蓋不到正確的 owner_uid。
+        tokenSignIn.catch((e2) => console.warn('背景換 Firebase custom token 失敗：', e2))
+        // 後端睡著或暫時掛掉時，不要讓使用者整個登不進來。
+        // 退回匿名登入：功能照舊，只是在換到 custom token 之前寫入的資料蓋不到正確的 owner_uid。
         console.warn('換 Firebase custom token 失敗，退回匿名登入：', e)
         if (!auth.currentUser) {
           try {
@@ -122,6 +135,11 @@ export function AuthProvider({ children }) {
       if (lineUser) {
         saveLastLineUser(lineUser)
         setUser(lineUser)
+        setLoading(false)
+      } else if (isLiffLoggedIn()) {
+        // LINE 已登入但抓個人資料失敗：onAuthStateChanged 看到 LINE 已登入會直接 return，
+        // 沒人把 loading 收尾 → 永遠卡在「載入中…」。這裡自己收尾，讓使用者回登入頁重試。
+        setUser(null)
         setLoading(false)
       }
       // 沒有 LINE 登入 → 交給下面的 onAuthStateChanged 判斷 Google 登入狀態，
