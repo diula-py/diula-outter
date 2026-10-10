@@ -37,6 +37,8 @@ export default function ConfirmTagsPage() {
 
   async function handleConfirm() {
     setError('')
+    if (!date) { setError('請選擇遺失日期'); return }
+    if (!placeCity || !placeDistrict) { setError('請選擇遺失的縣市與地區'); return }
     if (tags.length === 0) { setError('至少要有一個標籤才能比對'); return }
     setBusy(true)
     // 先存進「我的遺失物」再比對；已存過（重試、或從結果頁返回再按一次）就更新同一筆

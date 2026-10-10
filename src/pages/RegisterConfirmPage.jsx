@@ -38,6 +38,8 @@ export default function RegisterConfirmPage() {
 
   async function handleSubmit() {
     setError('')
+    if (!date) { setError('請選擇拾獲日期'); return }
+    if (!city || !district) { setError('請選擇拾獲的縣市與地區'); return }
     if (tags.length === 0) { setError('請至少選擇一個標籤！'); return }
     setBusy(true)
     try {

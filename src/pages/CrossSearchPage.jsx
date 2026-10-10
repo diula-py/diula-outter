@@ -46,6 +46,8 @@ export default function CrossSearchPage() {
     setError('')
     if (mode === 'image' && !photo) { setError('請先上傳照片'); return }
     if (mode === 'text' && !desc.trim()) { setError('請先描述遺失物特徵'); return }
+    if (!date) { setError('請選擇遺失日期'); return }
+    if (!placeCity || !placeDistrict) { setError('請選擇遺失的縣市與地區'); return }
     // 帶照片的 base64（給 AI 辨識用）+ 文字描述，進 AI 過場頁。
     // 手機實拍照片常達數 MB，先縮圖再送，避免上傳過大失敗（Load failed）並加快上傳。
     const base64Image = photo ? await downscale(await fileToDataUrl(photo)) : null
