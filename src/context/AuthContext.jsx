@@ -7,7 +7,7 @@ import {
   onAuthStateChanged,
   signOut as firebaseSignOut,
 } from 'firebase/auth'
-import { auth } from '../lib/firebase'
+import { auth, clearLocalUserData } from '../lib/firebase'
 import { getOrCreateUserId } from '../lib/userId'
 import { fetchLineCustomToken, LINE_UID_PREFIX } from '../lib/authToken'
 import {
@@ -202,12 +202,15 @@ export function AuthProvider({ children }) {
 
   const logout = useCallback(async () => {
     clearLastLineUser()
-    if (user?.provider === 'line') {
-      logoutLine()
-    } else {
-      await firebaseSignOut(auth)
-    }
+    if (user?.provider === 'line') logoutLine()
+    // 不管哪種登入都登出 Firebase：LINE 也是用 custom token 登入 Firebase（line_xxx），
+    // 只登出 LIFF 的話 Firebase 身分還留在裝置上
+    await firebaseSignOut(auth).catch((e) => console.warn('Firebase 登出失敗：', e))
     setUser(null)
+    // 清掉裝置上的使用者資料（Firestore 離線快取、擇一紀錄…），清完 db 不能再用 → 重新載入到登入頁
+    await clearLocalUserData()
+    window.history.replaceState(null, '', `${window.location.pathname}#/login`)
+    window.location.reload()
   }, [user])
 
   const value = {
