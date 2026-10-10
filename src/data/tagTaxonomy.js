@@ -21,6 +21,9 @@ export const ALL_TAGS = TAG_TAXONOMY.flatMap((c) => c.tags)
 
 const COLOR_TAGS = TAG_TAXONOMY.find((c) => c.category === '顏色').tags
 
+// 「證件」分類的標籤（身分證、健保卡、學生證、護照、駕照…）：遺失物編號的 I／N 用它判斷
+export const ID_DOC_TAGS = TAG_TAXONOMY.find((c) => c.category === '證件').tags
+
 // ── 簡體 → 繁體 ───────────────────────────────────────────
 // AI（Gemini 輕量模型）偶爾不照 prompt 的繁體清單、吐出簡體（如「蓝色」），後端 /match 的資料也可能有。
 // 只收標籤清單裡會用到的字；「折」不轉（「折傘」本來就是折），「存折」用整詞對照成「存摺」。

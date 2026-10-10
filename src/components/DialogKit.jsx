@@ -113,6 +113,17 @@ export function DeleteConfirmModal({ onCancel, onConfirm, busy }) {
   )
 }
 
+/** 刪除 Threads 協尋文確認（樣式同「是否永久刪除此筆資料？」；標題兩行） */
+export function DeleteThreadConfirmModal({ onCancel, onConfirm, busy }) {
+  return (
+    <WireDialog height={251} onClose={onCancel} label="是否刪除此則Threads協尋文">
+      <DialogTitle top={79} width={246} lineHeight={24}>是否刪除此則<br />Threads協尋文？</DialogTitle>
+      <DialogButton left={41} top={146} width={90} onClick={onConfirm} disabled={busy}>是</DialogButton>
+      <DialogButton left={170} top={146} width={90} tone="blue" onClick={onCancel}>否</DialogButton>
+    </WireDialog>
+  )
+}
+
 /** inner delete-success-modal（300×230，無 X）：「該筆資料已被刪除！」＋ 置中藍色「確認」180×60。 */
 export function DeleteSuccessModal({ onConfirm }) {
   return (

@@ -5,7 +5,7 @@ import { Overlay, WireDialog, DialogTitle, DialogButton } from '../components/Di
 import { XmarkIcon } from '../components/icons'
 import { itemTitle } from '../lib/text'
 import { asset } from '../lib/asset'
-import { useLeaveIfHandled } from '../lib/handledLost'
+import { useLeaveIfHandled, markLostHandled } from '../lib/handledLost'
 
 const SOURCES = [
   { key: 'npa', label: '警政署' },
@@ -269,9 +269,10 @@ export default function ResultsPage() {
         <WireDialog height={251} onClose={() => setHomeConfirm(false)} label="確認要返回首頁">
           <DialogTitle top={85} width={200}>是否確認要返回首頁？</DialogTitle>
           <div className="absolute left-1/2 top-[116px] w-[228px] -translate-x-1/2 text-center text-xs font-normal leading-3 opacity-70">
-            提醒：返回首頁後此次比對結果將無法返回
+            提醒：返回首頁後將結束比對流程
           </div>
-          <DialogButton left={41} top={146} width={90} onClick={() => navigate("/")}>是</DialogButton>
+          {/* 結束比對流程：記下這筆已處理、用 replace 回首頁 → 返回手勢退回比對結果／確認標籤都會被換成首頁 */}
+          <DialogButton left={41} top={146} width={90} onClick={() => { markLostHandled(location.state?.lostId); navigate('/', { replace: true }) }}>是</DialogButton>
           <DialogButton left={170} top={146} width={90} tone="blue" onClick={() => setHomeConfirm(false)}>否</DialogButton>
         </WireDialog>
       )}
