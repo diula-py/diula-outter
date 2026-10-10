@@ -5,8 +5,15 @@ import { ChevronLeftIcon, CalendarIcon, DiulaPinIcon } from '../components/icons
 import { fetchThreadsPosts } from '../lib/api'
 import { asset } from '../lib/asset'
 
+// post_date 是 UTC（例如 2026-10-09T22:42:52.000Z），直接切前 10 個字，台灣清晨的貼文會少一天。
+// 先換成本地時間再取年月日（同 lib/date.js 的做法）。
 function fmtDate(s) {
-  return s ? String(s).slice(0, 10).replaceAll('-', '/') : ''
+  if (!s) return ''
+  const d = new Date(s)
+  if (Number.isNaN(d.getTime())) return String(s).slice(0, 10).replaceAll('-', '/')
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}/${m}/${day}`
 }
 
 export default function ThreadsPostDetail() {

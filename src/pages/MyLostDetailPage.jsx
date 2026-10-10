@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { CalendarIcon, LocationIcon } from '../components/icons'
-import { ConfirmFoundModal, DeleteConfirmModal, DeleteSuccessModal } from '../components/DialogKit'
+import { ConfirmFoundModal, DeleteConfirmModal, DeleteSuccessModal, DeleteThreadConfirmModal } from '../components/DialogKit'
 import { DetailHeader, DetailImage, InfoBox, InfoRow, TagsBox, ActionButton, DeleteButton } from '../components/DetailKit'
 import { updateMyItem, removeMyItem } from '../lib/items'
 import { flask } from '../lib/api'
@@ -147,7 +147,7 @@ export default function MyLostDetailPage() {
           </a>
           <button
             type="button"
-            onClick={deleteThreadPost}
+            onClick={() => setDialog('deleteThread')}
             disabled={deletingThread}
             className="box-border h-10 w-[65px] shrink-0 rounded-[50px] border border-black bg-white text-base font-bold text-error disabled:opacity-60
                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
@@ -165,6 +165,14 @@ export default function MyLostDetailPage() {
 
       {dialog === 'confirm' && <ConfirmFoundModal busy={busy} onCancel={() => setDialog(null)} onConfirm={confirmFound} />}
       {dialog === 'delete' && <DeleteConfirmModal busy={busy} onCancel={() => setDialog(null)} onConfirm={deleteItem} />}
+      {/* 刪除公開的 Threads 協尋文無法復原，先確認 */}
+      {dialog === 'deleteThread' && (
+        <DeleteThreadConfirmModal
+          busy={deletingThread}
+          onCancel={() => setDialog(null)}
+          onConfirm={async () => { await deleteThreadPost(); setDialog(null) }}
+        />
+      )}
       {dialog === 'deleted' && <DeleteSuccessModal onConfirm={() => navigate('/my/lost', { replace: true })} />}
     </div>
   )

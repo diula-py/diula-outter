@@ -21,7 +21,7 @@ import {
 } from 'firebase/firestore'
 import { auth, db } from './firebase'
 import { LOST_STATUS, LEGACY_LOST_STATUS } from '../data/itemStatus'
-import { displayTags } from '../data/tagTaxonomy'
+import { displayTags, ID_DOC_TAGS } from '../data/tagTaxonomy'
 
 function collectionFor(kind) {
   return kind === 'found' ? 'found_items' : 'lost_items'
@@ -116,7 +116,10 @@ export async function addMyItem(kind, userId, data) {
   listCache.clear()
   const { id: _ignoredId, created_at: _ignoredCreatedAt, ...rest } = data
   const tags = rest.tags || []
-  const isIdCategory = tags.some((t) => t.includes('證件') || t.includes('卡'))
+  // 編號第二碼 I（證件）／N（非證件）：
+  // 拾獲物看是不是從「證件類登錄」送出的（有 docType）；遺失物看標籤裡有沒有「證件」分類的標籤。
+  // 原本用「標籤含『證件』或『卡』」判斷：身分證、護照判成 N，悠遊卡、記憶卡、卡夾反而判成 I
+  const isIdCategory = kind === 'found' ? !!rest.docType : tags.some((t) => ID_DOC_TAGS.includes(t))
   const newId = generateItemId(kind === 'found' ? 'F' : 'L', isIdCategory)
   const col = collectionFor(kind)
 

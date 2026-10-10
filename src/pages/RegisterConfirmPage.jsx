@@ -28,8 +28,9 @@ export default function RegisterConfirmPage() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
-  // 身分證／健保卡／學生證：證件別已由分頁明確指定，標籤鎖死不可增刪。
-  const tagsLocked = ['national_id', 'health_card', 'student_id'].includes(item?.docType)
+  // 身分證／健保卡／學生證：證件別已由分頁明確指定，只鎖住「證件別」那一個標籤；
+  // AI 補上的其他標籤（顏色、皮夾等）照常可刪、可新增（AI 辨識頁也提示「下一步可以修正」）
+  const lockedTag = ['national_id', 'health_card', 'student_id'].includes(item?.docType) ? item?.name : null
 
   // 直接開這個網址、沒有帶資料 → 回首頁。
   useEffect(() => {
@@ -86,21 +87,19 @@ export default function RegisterConfirmPage() {
           {tags.map((tag) => (
             <div key={tag} className="box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border border-black bg-blue px-5 py-[10px] text-xs font-normal text-brown">
               {tag}
-              {!tagsLocked && (
+              {tag !== lockedTag && (
                 <button type="button" onClick={() => setTags((prev) => prev.filter((x) => x !== tag))} aria-label={`移除 ${tag}`} className="ml-[6px] text-sm font-bold">×</button>
               )}
             </div>
           ))}
-          {!tagsLocked && (
-            <button
-              type="button"
-              onClick={() => setPickerOpen(true)}
-              className="box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border border-black bg-white px-5 py-[10px] text-xs font-normal text-brown"
-            >
-              <PlusIcon className="h-3 w-3 shrink-0" />
-              新增
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            className="box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border border-black bg-white px-5 py-[10px] text-xs font-normal text-brown"
+          >
+            <PlusIcon className="h-3 w-3 shrink-0" />
+            新增
+          </button>
         </div>
       </div>
 
@@ -110,7 +109,13 @@ export default function RegisterConfirmPage() {
         {busy ? '正在寫入中...' : '確認標籤，完成登錄'}
       </SubmitButton>
 
-      <TagPickerModal open={pickerOpen} value={tags} onClose={() => setPickerOpen(false)} onConfirm={setTags} />
+      {/* 彈窗裡取消勾選證件別也不會拿掉它（鎖住的標籤一律保留在第一個） */}
+      <TagPickerModal
+        open={pickerOpen}
+        value={tags}
+        onClose={() => setPickerOpen(false)}
+        onConfirm={(next) => setTags(lockedTag && !next.includes(lockedTag) ? [lockedTag, ...next] : next)}
+      />
     </FormPage>
   )
 }
