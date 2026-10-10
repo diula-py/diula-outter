@@ -74,6 +74,8 @@ export default function RegisterIdPage() {
     setError('')
     if (!maskedImage || !maskInfo) { setError('請先拍照並完成打碼'); return }
     if (type === '其他' && !otherType) { setError('請選擇證件類型'); return }
+    if (!date) { setError('請選擇拾獲日期'); return }
+    if (!foundCity || !foundDistrict) { setError('請選擇拾獲的縣市與地區'); return }
     if (!sendTo.trim()) { setError('請填寫送往的地點'); return }
 
     // 品名/標籤用實際證件類型：「其他」用選的細類（護照…），其餘用分頁名。
