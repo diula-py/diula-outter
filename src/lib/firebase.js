@@ -3,6 +3,8 @@ import {
   initializeFirestore,
   persistentLocalCache,
   persistentMultipleTabManager,
+  terminate,
+  clearIndexedDbPersistence,
 } from 'firebase/firestore'
 import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth'
 import { getFunctions } from 'firebase/functions'
@@ -31,3 +33,20 @@ export const functions = getFunctions(app, 'asia-east1')
 setPersistence(auth, browserLocalPersistence).catch((error) => {
   console.warn('Firebase Persistence Error:', error)
 })
+
+// 登出時清掉這台裝置上的使用者資料：展覽共用手機時，下一個人不會看到上一個人的
+// 遺失物／拾獲物（離線快取裡可能有證件照）。
+// Firestore 快取要先 terminate 才能清；terminate 之後 db 不能再用，所以呼叫完一定要重新載入頁面。
+export async function clearLocalUserData() {
+  try { await terminate(db) } catch { /* 已經關了 */ }
+  try {
+    await clearIndexedDbPersistence(db)
+  } catch (e) {
+    // 另一個分頁還開著同一個 App 時會清不掉（failed-precondition）；不擋登出
+    console.warn('清除 Firestore 離線快取失敗：', e)
+  }
+  try {
+    sessionStorage.removeItem('diula_handled_lost_ids') // 發文／推播擇一的紀錄
+    localStorage.removeItem('diula_my_items')           // 舊版本機「我的遺失物」紀錄
+  } catch { /* 無痕模式等存取不到就算了 */ }
+}
