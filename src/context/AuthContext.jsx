@@ -2,14 +2,13 @@ import { createContext, useContext, useEffect, useState, useCallback } from 'rea
 import {
   GoogleAuthProvider,
   signInWithPopup,
-  signInAnonymously,
   signInWithCustomToken,
   onAuthStateChanged,
   signOut as firebaseSignOut,
 } from 'firebase/auth'
 import { auth, clearLocalUserData } from '../lib/firebase'
 import { getOrCreateUserId } from '../lib/userId'
-import { fetchLineCustomToken, LINE_UID_PREFIX } from '../lib/authToken'
+import { fetchLineCustomToken, trackOwnerSignIn, LINE_UID_PREFIX } from '../lib/authToken'
 import {
   initLiff,
   isLiffLoggedIn,
@@ -61,18 +60,20 @@ export function AuthProvider({ children }) {
     if (!isLiffLoggedIn()) return null
     const profile = await getLiffProfile()
     // ⚠️ 順序很重要：要先有 Firebase 登入狀態，才能碰 Firestore。firestore.rules 要求
-    // request.auth != null；如果等到 getOrCreateUserId 之後才登入，那筆讀寫會被規則擋掉
+    // 非匿名的登入身分；如果等到 getOrCreateUserId 之後才登入，那筆讀寫會被規則擋掉
     // → 退回「用當下年月重算 user_id」的舊 bug，使用者換月登入後既有物品全部查不到。
     //
     // 這裡用後端簽的 custom token 登入，uid 固定是 line_<LINE userId>，所以 Firestore
     // 規則可以寫 owner_uid == request.auth.uid。以前用 signInAnonymously() 拿到的是隨機
-    // uid，規則只能寫 request.auth != null，而匿名帳號誰都能開 → 等於沒鎖。
+    // uid，規則只能寫 request.auth != null，而匿名帳號誰都能開 → 等於沒鎖（firestore.rules 現在直接不認匿名帳號）。
     const expectedUid = LINE_UID_PREFIX + profile.userId
     if (auth.currentUser?.uid !== expectedUid) {
       const tokenSignIn = fetchLineCustomToken().then((customToken) => {
         if (!customToken) throw new Error('後端沒有回傳 custom token')
         return signInWithCustomToken(auth, customToken)
       })
+      // items.js 讀寫 Firestore 前會等這個跑完（getOwnerUid）
+      trackOwnerSignIn(tokenSignIn)
       try {
         // 後端在 Render 免費方案，睡著時冷啟動要 50 秒以上；整段期間畫面都卡在「載入中…」。
         // 所以最多只等 CUSTOM_TOKEN_WAIT_MS，逾時就先往下走，token 晚點回來再在背景換上正確身分。
@@ -83,17 +84,17 @@ export function AuthProvider({ children }) {
           ),
         ])
       } catch (e) {
-        tokenSignIn.catch((e2) => console.warn('背景換 Firebase custom token 失敗：', e2))
-        // 後端睡著或暫時掛掉時，不要讓使用者整個登不進來。
-        // 退回匿名登入：功能照舊，只是在換到 custom token 之前寫入的資料蓋不到正確的 owner_uid。
-        console.warn('換 Firebase custom token 失敗，退回匿名登入：', e)
-        if (!auth.currentUser) {
-          try {
-            await signInAnonymously(auth)
-          } catch (e2) {
-            console.warn('Firebase 匿名登入失敗:', e2)
-          }
-        }
+        // 後端睡著或暫時掛掉時，不要讓使用者整個卡在載入中：先放行畫面，token 在背景繼續換。
+        // 不再退回匿名登入：匿名帳號誰都能開，規則不能信任它；用它寫入的資料也會掛在錯的 owner_uid 上。
+        // 換到之前要碰 Firestore 的地方會在 getOwnerUid() 等它。
+        console.warn('換 Firebase custom token 還沒完成，先放行畫面：', e)
+        tokenSignIn
+          .then(async () => {
+            // 剛才沒有 Firebase 身分，user_registry 讀不到，user_id 可能是臨時算的 → 換到身分後重抓一次
+            const userId = await getOrCreateUserId('L', profile.userId)
+            setUser((u) => (u?.provider === 'line' && u.uid === profile.userId ? { ...u, userId } : u))
+          })
+          .catch((e2) => console.warn('背景換 Firebase custom token 失敗：', e2))
       }
     }
     // 識別使用者身分一律以 LINE userId 為準，不使用 Firebase uid。

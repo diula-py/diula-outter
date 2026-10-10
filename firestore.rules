@@ -1,0 +1,49 @@
+// DiuLa Firestore 規則（專案 diula--test）
+// 這份是版控用的正本，實際生效的是 Firebase Console → Firestore → 規則 裡發布的版本。
+// 改完這裡要貼到 Console 發布，兩邊才會一致。
+//
+// 重點：遺失物／拾獲物只有主人（owner_uid == request.auth.uid）讀得到、改得到。
+// 2026-10-11 之前讀取條件只有「有登入」，任何人登入後就能在主控台把全部物品和照片撈出來。
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 匿名帳號誰都能開，不算登入。
+    function signedIn() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    function isOwner() {
+      return signedIn() && resource.data.owner_uid == request.auth.uid;
+    }
+
+    match /lost_items/{id} {
+      // resource == null：讀不存在的文件（例如打錯編號）回「找不到」而不是權限錯誤，不會洩漏任何資料。
+      allow get: if signedIn() && (resource == null || isOwner());
+      allow list: if isOwner();
+      allow create: if signedIn() && request.resource.data.owner_uid == request.auth.uid;
+      allow update: if isOwner() && request.resource.data.owner_uid == request.auth.uid;
+      allow delete: if isOwner();
+    }
+
+    match /found_items/{id} {
+      allow get: if signedIn() && (resource == null || isOwner());
+      allow list: if isOwner();
+      allow create: if signedIn() && request.resource.data.owner_uid == request.auth.uid;
+      allow update: if isOwner() && request.resource.data.owner_uid == request.auth.uid;
+      allow delete: if isOwner();
+    }
+
+    // 文件 id 是 `${provider}_${4 碼雜湊}`，內容只有 user_id、登入方式、註冊年月。
+    match /user_registry/{id} {
+      allow read, create: if signedIn();
+      allow update, delete: if false;
+    }
+
+    // 證件登錄只走後端（Admin SDK），前端完全不碰。
+    match /diula_id_card/{id} {
+      allow read, write: if false;
+    }
+  }
+}
