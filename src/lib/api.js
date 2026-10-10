@@ -89,7 +89,20 @@ export function prefetchThreadsSnapshot() {
   fetchSnapshot().catch(() => {})
 }
 
+// 上次讀到的 Threads 貼文（記憶體）。從貼文詳情返回列表時先拿這份畫出完整列表，
+// 瀏覽器才捲得回原本的位置（不然先顯示「載入中」、頁面太短，iOS 會留一大塊白色沒畫）。
+let threadsCache = null
+export function getCachedThreadsPosts() {
+  return threadsCache
+}
+
 export async function fetchThreadsPosts() {
+  const posts = await fetchThreadsPostsUncached()
+  if (Array.isArray(posts)) threadsCache = posts
+  return posts
+}
+
+async function fetchThreadsPostsUncached() {
   try {
     // 離線時這個 fetch 會由 SW 回傳快取的快照
     return await fetchSnapshot()

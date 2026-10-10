@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { MagnifyingGlassIcon } from '../components/icons'
 import { FormHeader } from '../components/FormKit'
 
-import { fetchThreadsPosts } from '../lib/api'
+import { fetchThreadsPosts, getCachedThreadsPosts } from '../lib/api'
 import { normalizeIdWording } from '../lib/text'
 import { asset } from '../lib/asset'
 
@@ -37,15 +37,18 @@ function Thumb({ url }) {
 
 export default function ThreadsSearchPage() {
   const navigate = useNavigate()
-  const [posts, setPosts] = useState([])
-  const [state, setState] = useState('loading') // loading | ready | error | offline
+  // 有上次的貼文就先用（從詳情返回時第一個畫面就是完整列表，捲動位置才還原得回去），背景再重讀
+  const cached = getCachedThreadsPosts()
+  const [posts, setPosts] = useState(cached || [])
+  const [state, setState] = useState(cached ? 'ready' : 'loading') // loading | ready | error | offline
   const [query, setQuery] = useState('')
 
   useEffect(() => {
     let alive = true
     fetchThreadsPosts()
       .then((data) => { if (alive) { setPosts(Array.isArray(data) ? data : []); setState('ready') } })
-      .catch((e) => { if (alive) setState(e?.offline ? 'offline' : 'error') })
+      // 已經有上次的貼文在畫面上就不蓋掉，只有一開始就沒資料時才顯示錯誤
+      .catch((e) => { if (alive) setState((s) => (s === 'ready' ? s : e?.offline ? 'offline' : 'error')) })
     return () => { alive = false }
   }, [])
 

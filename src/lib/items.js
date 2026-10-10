@@ -84,6 +84,13 @@ function claimUnowned(col, docs) {
 }
 
 // 讀「我自己」的清單。kind='found' 讀 found_items，其餘讀 lost_items。
+// 上次讀到的清單（記憶體，重新整理就沒了）。從詳情頁返回清單時先拿這份畫出完整清單，
+// 瀏覽器才捲得回原本的位置；背景照樣重讀一次。任何寫入（新增／修改／刪除）都清掉，避免顯示舊資料。
+const listCache = new Map()
+export function getCachedMyItems(kind, userId) {
+  return listCache.get(`${collectionFor(kind)}:${userId}`) || null
+}
+
 export async function listMyItems(kind, userId) {
   if (!userId) return []
   const col = collectionFor(kind)
@@ -92,6 +99,7 @@ export async function listMyItems(kind, userId) {
   claimUnowned(col, snap.docs)
   const items = snap.docs.map((d) => toPlainItem(d.id, kind, d.data()))
   items.sort((a, b) => (b.timestamp?.toMillis?.() ?? 0) - (a.timestamp?.toMillis?.() ?? 0))
+  listCache.set(`${col}:${userId}`, items)
   return items
 }
 
@@ -105,6 +113,7 @@ export async function getMyItem(kind, id) {
 // 新增一筆。kind 決定 collection；data.kind（若有，例如 'threads'/'subscription'）
 // 會照樣存進文件裡，供列表頁／詳情頁區分顯示用。
 export async function addMyItem(kind, userId, data) {
+  listCache.clear()
   const { id: _ignoredId, created_at: _ignoredCreatedAt, ...rest } = data
   const tags = rest.tags || []
   const isIdCategory = tags.some((t) => t.includes('證件') || t.includes('卡'))
@@ -129,6 +138,7 @@ export async function addMyItem(kind, userId, data) {
 }
 
 export async function updateMyItem(kind, id, patch) {
+  listCache.clear()
   const col = collectionFor(kind)
   const fields = toFirestoreFields(patch)
   // 已建立的遺失物之後才開自動推播，一樣要記開始時間（同 addMyItem）
@@ -137,6 +147,7 @@ export async function updateMyItem(kind, id, patch) {
 }
 
 export async function removeMyItem(kind, id) {
+  listCache.clear()
   const col = collectionFor(kind)
   await deleteDoc(doc(db, col, id))
 }
