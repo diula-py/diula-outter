@@ -9,6 +9,7 @@ import { getAuthHeaders } from '../lib/authToken'
 import { LOST_STATUS } from '../data/itemStatus'
 import { downscale } from '../lib/image'
 import { titleFromTags } from '../data/tagTaxonomy'
+import { useStatusBarColor } from '../lib/statusBarOverride'
 
 export default function SubscribePage() {
   const navigate = useNavigate()
@@ -23,6 +24,8 @@ export default function SubscribePage() {
   const channel = user?.provider === 'line' ? 'line' : 'email'
   const email = user?.email || ''
   const [status, setStatus] = useState('idle') // idle | submitting | success
+  // 訂閱成功頁沒有 header、頂端是白底 → 狀態列色帶也改白（同登錄成功頁）；表單頁維持米色
+  useStatusBarColor(status === 'success' ? '#ffffff' : null)
   const [error, setError] = useState('')
   // LINE 推播只送得到官方帳號好友；沒加的話後端會回 add_friend_url，成功頁給連結。
   const [addFriendUrl, setAddFriendUrl] = useState('')

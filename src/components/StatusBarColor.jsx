@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
+import { useStatusBarOverrideValue } from '../lib/statusBarOverride'
 
 /**
  * 狀態列（時間・電量那條）底色跟著目前頁面頂端的顏色走，不再多一條白色色塊。
@@ -7,6 +8,7 @@ import { useLocation } from 'react-router-dom'
  *   #root 已往下推 safe-area（見 index.css --top-inset），這裡補一條固定在頂端的同色色帶。
  * - Safari／Android：另外同步 <meta name="theme-color">。
  * 沒列到的頁面 header 都是米色卡片（bg-card）。
+ * 同一個網址畫面會換的頁面（如訂閱成功），由頁面用 useStatusBarColor() 自己指定，優先於網址。
  *
  * 另外：iOS 主畫面 App（black-translucent）的 100dvh 比螢幕少一個狀態列高度，
  * 頁面底部會露出一段 html 底色。整頁是色底的頁面（登入、AI 分析中）把 html 底色設成同色，
@@ -32,7 +34,8 @@ const DEFAULT_PAGE_BG = '#ffffff'
 
 export default function StatusBarColor() {
   const { pathname } = useLocation()
-  const color = COLOR_BY_PATH[pathname] ?? DEFAULT_COLOR
+  const override = useStatusBarOverrideValue()
+  const color = override ?? COLOR_BY_PATH[pathname] ?? DEFAULT_COLOR
   const pageBg = PAGE_BG_BY_PATH[pathname] ?? DEFAULT_PAGE_BG
 
   useEffect(() => {

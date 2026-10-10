@@ -129,7 +129,7 @@ export default function ResultsPage() {
               onClick={() => selectSource(s.key)}
               aria-pressed={active}
               aria-label={s.label}
-              className={`box-border flex h-[45px] w-20 min-w-0 items-center justify-center rounded-[50px] text-base text-black
+              className={`box-border flex h-[45px] w-20 min-w-0 items-center justify-center rounded-[50px] text-base text-brown
                 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
                 ${isDiula ? 'px-[6px] py-1' : 'py-2'}
                 ${active ? 'border-[1.5px] border-black bg-card font-bold' : 'border border-black bg-input font-normal'}`}
