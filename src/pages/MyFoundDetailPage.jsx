@@ -12,6 +12,7 @@ export default function MyFoundDetailPage() {
 
   const item = {
     name: passed?.name || '拾獲物',
+    code: passed?.id ? `＃${String(passed.id).toUpperCase()}` : '--', // 同遺失物詳情：＃文件 ID（大寫）
     date: (passed?.date || '').replaceAll('-', '/') || '—',
     // inner：「拾獲地點：…」「送往：…」，空值顯示「未知地點」；備註沒填改顯示描述
     place: `拾獲地點：${passed?.place || '未知地點'}`,
@@ -43,6 +44,15 @@ export default function MyFoundDetailPage() {
     <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[100px]">
       {/* Header 109px：標題 top:70、返回鍵 35×35 在 (26,62)（page-19 比 page-16 高） */}
       <DetailHeader title={item.name} onBack={() => navigate(-1)} height={109} titleTop={70} backLeft={25} backTop={62} backSize={35} />
+
+      {/* 編號徽章：同遺失物詳情的徽章樣式（高 30、藍底圓角 10、padding 0 15、16/400）。
+          拾獲物只有「保管中」一種狀態、沒有狀態徽章，編號靠左、左緣對齊下方圖片框（這一排跟圖片框同寬）；
+          一排只有它，16px 放得下完整編號 */}
+      <div className="mt-5 flex h-[30px] w-[calc(100%-40px)] max-w-[340px] shrink-0">
+        <span className="flex h-[30px] min-w-0 items-center overflow-hidden whitespace-nowrap rounded-[10px] bg-blue px-[15px] text-base font-normal leading-4">
+          <span className="min-w-0 truncate">{item.code}</span>
+        </span>
+      </div>
 
       {/* 沒照片：inner 直接顯示撐滿的 Logo（不顯示描述） */}
       <DetailImage src={item.img} mt={20} />
