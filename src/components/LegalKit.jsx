@@ -1,6 +1,7 @@
-/** 服務條款／隱私權政策頁的共用版型：80px 米色標頭（返回鍵）＋ 一般捲動內文。登入前後都看得到。 */
+/** 服務條款／隱私權政策頁的共用版型：80px 米色標頭（返回鍵）＋ 一般捲動內文 ＋ 回到頂部鈕。登入前後都看得到。 */
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FormHeader } from './FormKit'
+import BackToTopButton from './BackToTopButton'
 
 export function LegalPage({ title, updatedAt, children }) {
   const navigate = useNavigate()
@@ -15,6 +16,8 @@ export function LegalPage({ title, updatedAt, children }) {
         {children}
         {updatedAt && <p className="mt-8 text-xs opacity-60">最後更新日期：{updatedAt}</p>}
       </article>
+      {/* 底部沒有其他按鈕，位置同 Threads 尋找遺失物頁 */}
+      <BackToTopButton bottomClass="bottom-[calc(20px+env(safe-area-inset-bottom))]" />
     </div>
   )
 }
@@ -45,4 +48,32 @@ export function Items({ children }) {
 
 export function Para({ children }) {
   return <p className="mb-2">{children}</p>
+}
+
+export function Bullets({ children }) {
+  return <ul className="list-disc space-y-1 pl-5">{children}</ul>
+}
+
+/**
+ * 原文的表格（如「蒐集之個人資料類別」）：手機寬度放不下多欄，改成一列一張卡片，
+ * 第一欄當卡片標題，其餘欄位「欄名：內容」上下排。rows 每列是字串陣列，順序同 columns。
+ */
+export function InfoCards({ columns, rows }) {
+  return (
+    <div className="my-3 space-y-[10px]">
+      {rows.map((row) => (
+        <div key={row[0]} className="rounded-[10px] border border-black px-[15px] py-[10px]">
+          <div className="mb-1 font-bold text-brown">{row[0]}</div>
+          <dl className="space-y-1">
+            {columns.slice(1).map((col, i) => (
+              <div key={col}>
+                <dt className="inline font-medium text-brown">{col}：</dt>
+                <dd className="inline">{row[i + 1]}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      ))}
+    </div>
+  )
 }

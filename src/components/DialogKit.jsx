@@ -66,14 +66,19 @@ export function DialogTitle({ top, width, lineHeight = 20, children }) {
   )
 }
 
-/** 彈窗內按鈕：絕對位置、border 1px、圓角 50、文字 20/500。tone：white／blue。 */
-export function DialogButton({ left, top, width, height = 60, tone = 'white', onClick, children, disabled }) {
+/**
+ * 彈窗內按鈕：絕對位置、border 1px、圓角 50、文字 20/500。tone：white／blue。
+ * size="md"：文字 16/500（design.md 主要按鈕）、左右 padding 20（design.md 次要卡片 10px 20px），
+ * 給字數多、20px 會塞滿按鈕的情況（如條款彈窗「同意並登入」）。
+ */
+export function DialogButton({ left, top, width, height = 60, tone = 'white', size = 'lg', onClick, children, disabled }) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`absolute box-border flex items-center justify-center rounded-[50px] border border-black text-xl font-medium text-brown disabled:opacity-60
+      className={`absolute box-border flex items-center justify-center rounded-[50px] border border-black font-medium text-brown disabled:opacity-60
+                  ${size === 'md' ? 'whitespace-nowrap px-5 text-base' : 'text-xl'}
                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
                   ${tone === 'blue' ? 'bg-blue' : 'bg-white'}`}
       style={{ left, top, width, height }}
