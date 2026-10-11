@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { ChevronDownIcon, ChevronLeftIcon, HouseIcon } from '../components/icons'
+import { ChevronLeftIcon, HouseIcon } from '../components/icons'
+import BackToTopButton from '../components/BackToTopButton'
 import { Overlay, WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import { XmarkIcon } from '../components/icons'
 import { itemTitle } from '../lib/text'
@@ -78,21 +79,6 @@ export default function ResultsPage() {
       window.removeEventListener('resize', check)
     }
   }, [source, list.length])
-
-  // 「回到頂部」圓鈕：往下滑超過一個螢幕高才出現，回到一個螢幕高以內就收起
-  const [showToTop, setShowToTop] = useState(false)
-  useEffect(() => {
-    function check() {
-      setShowToTop(window.scrollY > window.innerHeight)
-    }
-    check()
-    window.addEventListener('scroll', check, { passive: true })
-    window.addEventListener('resize', check)
-    return () => {
-      window.removeEventListener('scroll', check)
-      window.removeEventListener('resize', check)
-    }
-  }, [])
 
   const emptyBox =
     'box-border w-full rounded-[10px] border border-black bg-input px-5 py-[30px] text-center text-sm font-medium leading-normal opacity-70'
@@ -197,21 +183,8 @@ export default function ResultsPage() {
         })}
       </div>
 
-      {/* 回到頂部：白底圓鈕 50×50、黑框、陰影，右緣對齊卡片欄，在「都沒有我的物品」膠囊上方 15px */}
-      <div className="pointer-events-none fixed bottom-[calc(95px+env(safe-area-inset-bottom))] left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[340px] -translate-x-1/2 justify-end">
-        <button
-          type="button"
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          aria-label="回到頂部"
-          aria-hidden={!showToTop}
-          tabIndex={showToTop ? 0 : -1}
-          className={`box-border flex h-[50px] w-[50px] items-center justify-center rounded-full border border-black bg-white shadow-[0_4px_4px_rgba(0,0,0,0.25)]
-                      transition duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
-                      ${showToTop ? 'pointer-events-auto translate-y-0 opacity-100' : 'translate-y-[10px] opacity-0'}`}
-        >
-          <ChevronDownIcon className="h-6 w-6 rotate-180" />
-        </button>
-      </div>
+      {/* 回到頂部：在「都沒有我的物品」膠囊上方 15px */}
+      <BackToTopButton bottomClass="bottom-[calc(95px+env(safe-area-inset-bottom))]" />
 
       {/* 都沒有我的物品：藍底膠囊 350×60（同其他主要膠囊）、陰影，浮在離視窗底部 20px（＋iOS 底部橫條安全區）。
           隱藏時淡出並往下 10px、不能點也不能用 Tab 選到；頁面底部留 100px，滑到底最後一張卡片不會被蓋住 */}
