@@ -55,6 +55,16 @@ function getDeepLinkRoute() {
 
 // GitHub Pages 沒有伺服器路由，重整/直連深層網址會 404 → 用 HashRouter（網址帶 #）。
 liffReady.then(() => {
+  // 電腦用 liff.login() 網頁登入，LINE 導回來時會在 ? 後面帶 code、state 等參數；
+  // liff.init() 換完 token 後 SDK 不會清掉，這裡自己拿掉，網址才會乾淨。
+  const params = new URLSearchParams(window.location.search)
+  const LOGIN_PARAMS = ['code', 'state', 'liffClientId', 'liffRedirectUri']
+  if (LOGIN_PARAMS.some((key) => params.has(key))) {
+    LOGIN_PARAMS.forEach((key) => params.delete(key))
+    const search = params.toString() ? `?${params}` : ''
+    window.history.replaceState(null, '', `${window.location.pathname}${search}${window.location.hash}`)
+  }
+
   const deepLinkRoute = getDeepLinkRoute()
   if (deepLinkRoute) {
     // 換成 HashRouter 的路由，順便清掉 ?page= / ?liff.state=，重整時才不會又被帶回這頁。
