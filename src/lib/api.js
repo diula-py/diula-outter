@@ -26,6 +26,18 @@ export function wakeAi() {
   fetch(aiApi('/'), { method: 'GET' }).catch(() => {})
 }
 
+// 喚醒 Render 的 Spring 服務（diula-api）：LINE 登入要跟它換 Firebase custom token。
+// 免費方案閒置 15 分鐘休眠，Docker 的 Spring Boot 冷啟動可能超過 60 秒——比 Safari 的
+// fetch 預設逾時還久，於是「叫醒它的那一次請求」自己先被瀏覽器砍掉（登入因此失敗）。
+// 所以在登入頁一進來就先戳，讓開機跟使用者按登入、跳去 LINE 再跳回來的時間重疊。
+// fire-and-forget、回什麼都無所謂，只要讓它開始開機。
+let lastSpringWake = 0
+export function wakeSpring() {
+  if (!navigator.onLine || Date.now() - lastSpringWake < 5 * 60 * 1000) return
+  lastSpringWake = Date.now()
+  fetch(spring('/index.html'), { method: 'GET', cache: 'no-store' }).catch(() => {})
+}
+
 // AI 圖片辨識：逾時就放棄，避免 Render 或 Gemini 卡住時畫面停在進度條。
 // 90 秒 = 冷啟動 ~60 秒 + Gemini 辨識的餘裕。
 const AI_TIMEOUT_MS = 90 * 1000

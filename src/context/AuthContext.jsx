@@ -2,13 +2,12 @@ import { createContext, useContext, useEffect, useState, useCallback } from 'rea
 import {
   GoogleAuthProvider,
   signInWithPopup,
-  signInWithCustomToken,
   onAuthStateChanged,
   signOut as firebaseSignOut,
 } from 'firebase/auth'
 import { auth, clearLocalUserData } from '../lib/firebase'
 import { getOrCreateUserId } from '../lib/userId'
-import { fetchLineCustomToken, trackOwnerSignIn, LINE_UID_PREFIX } from '../lib/authToken'
+import { signInAsLineOwner, LINE_UID_PREFIX } from '../lib/authToken'
 import {
   initLiff,
   isLiffLoggedIn,
@@ -71,12 +70,9 @@ export function AuthProvider({ children }) {
     // uid，規則只能寫 request.auth != null，而匿名帳號誰都能開 → 等於沒鎖（firestore.rules 現在直接不認匿名帳號）。
     const expectedUid = LINE_UID_PREFIX + profile.userId
     if (auth.currentUser?.uid !== expectedUid) {
-      const tokenSignIn = fetchLineCustomToken().then((customToken) => {
-        if (!customToken) throw new Error('後端沒有回傳 custom token')
-        return signInWithCustomToken(auth, customToken)
-      })
-      // items.js 讀寫 Firestore 前會等這個跑完（getOwnerUid）
-      trackOwnerSignIn(tokenSignIn)
+      // 換 token 並登入。內含逾時與重試（Render 冷啟動可能超過瀏覽器的 fetch 預設逾時，
+      // 見 authToken.js）。items.js 讀寫 Firestore 前也會等這一輪（getOwnerUid）。
+      const tokenSignIn = signInAsLineOwner()
       try {
         // 後端在 Render 免費方案，睡著時冷啟動要 50 秒以上；整段期間畫面都卡在「載入中…」。
         // 所以最多只等 CUSTOM_TOKEN_WAIT_MS，逾時就先往下走，token 晚點回來再在背景換上正確身分。

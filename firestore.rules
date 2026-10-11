@@ -36,8 +36,14 @@ service cloud.firestore {
     }
 
     // 文件 id 是 `${provider}_${4 碼雜湊}`，內容只有 user_id、登入方式、註冊年月。
+    //
+    // get 與 list 要分開寫：`read` 同時涵蓋兩者，等於任何登入者都能把整張表列出來，
+    // 洩漏「系統有哪些使用者編號、各自用什麼方式登入」。前端 getOrCreateUserId() 只會
+    // 用文件 id 讀自己那一筆（getDoc），從不做查詢，所以關掉 list 不影響任何功能。
     match /user_registry/{id} {
-      allow read, create: if signedIn();
+      allow get: if signedIn();
+      allow list: if false;
+      allow create: if signedIn();
       allow update, delete: if false;
     }
 

@@ -7,7 +7,7 @@ import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import './lib/debugItems.js'
 import { registerSW } from 'virtual:pwa-register'
-import { prefetchThreadsSnapshot } from './lib/api'
+import { prefetchThreadsSnapshot, wakeSpring } from './lib/api'
 import { initLiff } from './lib/liff'
 
 // PWA Service Worker（設定在 vite.config.js）。autoUpdate：有新版就自動換上並重新整理頁面。
@@ -28,6 +28,10 @@ registerSW({
 
 // 背景先抓一次 Threads 快照存起來，離線時 Threads 頁才有東西看（見 lib/api.js）。
 prefetchThreadsSnapshot()
+
+// 一開站就先叫醒 Spring（diula-api）。LINE 登入回來時要立刻跟它換 Firebase custom token，
+// 等那時候才叫醒就來不及了——冷啟動比瀏覽器的 fetch 逾時還久。見 lib/api.js。
+wakeSpring()
 
 // 在 LINE 裡開 LIFF 時，LINE 會把 access_token 等參數塞在網址 # 後面，等 liff.init() 讀完才清掉。
 // HashRouter 也是讀 #，如果先 render，會把「#access_token=...」當成路由 → 沒有路由符合 → 白畫面；
