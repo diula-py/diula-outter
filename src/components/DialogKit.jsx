@@ -5,9 +5,12 @@
  */
 import { XmarkIcon } from './icons'
 
+// 遮罩往下多延伸一個狀態列高度、底部再補同樣的內距（彈窗置中位置不變）：
+// iPhone 主畫面 App（black-translucent）的 fixed 視窗高度少一個狀態列，inset-0 底部會露出一截頁面底色。
+// 一般瀏覽器、電腦的 safe-area 是 0，不受影響。其他全螢幕遮罩（標籤彈窗、打碼視窗）同樣處理。
 export function Overlay({ children, onClose }) {
   return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50" onClick={onClose}>
+    <div className="fixed inset-x-0 top-0 bottom-[calc(-1*env(safe-area-inset-top,0px))] z-[999] flex items-center justify-center bg-black/50 pb-[env(safe-area-inset-top,0px)]" onClick={onClose}>
       <div onClick={(e) => e.stopPropagation()}>{children}</div>
     </div>
   )

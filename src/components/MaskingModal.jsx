@@ -205,7 +205,7 @@ export default function MaskingModal({ file, docType, onCancel, onConfirm }) {
     : `這類證件建議遮蔽：${(SUGGESTED_MASKS[docType] || SUGGESTED_MASKS.other).join('、')}（沒有的項目可略過）`
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+    <div className="fixed inset-x-0 top-0 bottom-[calc(-1*env(safe-area-inset-top,0px))] z-50 flex items-center justify-center bg-black/70 px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-top,0px))]">
       <div className="flex max-h-full w-full max-w-[393px] flex-col overflow-hidden rounded-2xl bg-paper">
         <div className="flex items-center justify-between border-b border-black/10 px-4 py-3">
           <button type="button" onClick={onCancel} className="text-sm text-brown">取消</button>
