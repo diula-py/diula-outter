@@ -32,8 +32,9 @@ export default function TermsConsentModal({ onCancel, onAgree, onOpenTerms, onOp
         />
         我已閱讀並同意
       </label>
-      <DialogButton left={30} top={222} width={115} onClick={onCancel}>取消</DialogButton>
-      <DialogButton left={155} top={222} width={115} tone="blue" onClick={onAgree} disabled={!checked}>同意並登入</DialogButton>
+      {/* 文字 16、左右 padding 20（design.md）：寬 122 ＝ 5 字 80 ＋ padding 40 ＋ 邊框 2；間距 20、左右各留 18 */}
+      <DialogButton left={18} top={222} width={122} size="md" onClick={onCancel}>取消</DialogButton>
+      <DialogButton left={160} top={222} width={122} size="md" tone="blue" onClick={onAgree} disabled={!checked}>同意並登入</DialogButton>
     </WireDialog>
   )
 }
