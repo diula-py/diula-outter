@@ -107,7 +107,7 @@
 ## 4. 整合機制建議
 
 1. **共用契約單一真相**：taxonomy、色票、API 欄位抽成共用檔/常數，一方改、另一方跟。
-2. **CORS / 網域**（B 模式）：所有後端目前只放行 `https://diula-py.github.io`。
+2. **CORS / 網域**（B 模式）：前端網址是 `https://diula.co`（舊網址 `https://diula-py.github.io` 會被 GitHub 轉址過去），後端都要放行 `https://diula.co`。
    - 組員若部署在別網址，需在下列各處加上他的 origin：
      - Flask `ALLOWED_ORIGINS`（`diula` 服務）
      - Spring Boot `@CrossOrigin`（`diula-api`，尤其 `/api/id-cards`）
@@ -202,6 +202,6 @@
 | Spring Boot | Render `diula-api` | `https://diula-api.onrender.com` | 主站頁面 + `/api/*`（id-cards、posts、image） |
 | Flask | Render `diula` | `https://diula.onrender.com` | `/match`、`/categories`、`/threads/*`、`/subscriptions/*` |
 | Render AI | Render | `https://diula-backend-api.onrender.com/api` | `/analyze-item`（AI 產標籤/顏色） |
-| 前端（本專案） | GitHub Pages | `https://diula-py.github.io/diula-outter/` | React app |
+| 前端（本專案） | GitHub Pages（自訂網域） | `https://diula.co/` | React app |
 
 > Render 免費方案閒置 15 分鐘休眠，冷啟動要等；Demo 前先各開一次叫醒。

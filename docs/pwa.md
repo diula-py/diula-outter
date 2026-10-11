@@ -31,6 +31,6 @@ Render 上所有後端（Flask / Spring Boot / AI，含 `/api/posts`、`/api/ima
 
 ### 單一裝置
 - **電腦 Chrome**：DevTools → Application → Service Workers → Unregister；再到 Storage → Clear site data
-- **iPhone / iPad**：設定 → Safari → 進階 → 網站資料 → 刪除 `diula-py.github.io`
+- **iPhone / iPad**：設定 → Safari → 進階 → 網站資料 → 刪除 `diula.co`
   （加到主畫面的 PWA：直接刪掉主畫面圖示再重新加入）
 - **Android Chrome**：網址列左邊的圖示 → 網站設定 → 清除資料
