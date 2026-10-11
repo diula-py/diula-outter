@@ -47,6 +47,15 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // 條款同意紀錄（lib/termsConsent.js）：文件 id 是 Firebase uid，只能讀寫自己的，不能刪。
+    match /terms_consents/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['terms_version', 'agreed_at_client', 'accepted_at', 'provider', 'user_id'])
+        && request.resource.data.accepted_at == request.time;
+      allow delete: if false;
+    }
+
     // 證件登錄只走後端（Admin SDK），前端完全不碰。
     match /diula_id_card/{id} {
       allow read, write: if false;
