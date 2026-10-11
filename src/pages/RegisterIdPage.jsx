@@ -4,7 +4,7 @@ import { CalendarIcon, LocationIcon, PersonChalkboardIcon } from '../components/
 import MaskingModal from '../components/MaskingModal'
 import { FormHeader, FormPage, UploadBox, FormCard, FormRow, RegionField, SubmitButton, pillInput } from '../components/FormKit'
 import TagPickerModal from '../components/TagPickerModal'
-import { spring, wakeAi } from '../lib/api'
+import { spring } from '../lib/api'
 import { getAuthHeaders } from '../lib/authToken'
 import { todayStr } from '../lib/date'
 import { downscale } from '../lib/image'
@@ -54,9 +54,9 @@ export default function RegisterIdPage() {
   // 若等到按送出才醒，Safari 的 fetch 會先逾時（顯示 "Load failed"）。
   // 使用者填表的空檔先喚醒，送出時多半已就緒。fire-and-forget、失敗無所謂。
   // 這支 GET 現在會回 401（沒帶憑證），但喚醒的效果一樣，不必為它附 token。
+  // 證件類不跑 AI 辨識（標籤就是選的證件別），所以不用再喚醒 AI 服務。
   useEffect(() => {
     fetch(SUBMIT_ENDPOINT, { method: 'GET' }).catch(() => {})
-    wakeAi() // 送出後還要跑 AI 辨識，一起喚醒
   }, [])
 
   function handlePhoto(e) {
@@ -126,8 +126,8 @@ export default function RegisterIdPage() {
       setError('')
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new HttpError(res.status, data.error)
-      // 這筆拾獲物的本機紀錄（kind: 'found'）。先不 addItem——交給 AI 過場頁，
-      // 讓它補上 AI 自動標籤後再一次存進「我的拾獲物」，避免存兩次。
+      // 這筆拾獲物的本機紀錄（kind: 'found'）。先不 addItem——交給確認頁，
+      // 使用者確認後再一次存進「我的拾獲物」，避免存兩次。
       const item = {
         id: 'found_' + Date.now(),
         kind: 'found',
@@ -137,16 +137,15 @@ export default function RegisterIdPage() {
         place: foundAt,                // 拾獲地點
         dropLocation: sendTo,          // 送往地點
         remark: note.trim(),
-        tags: [docLabel],             // 基本標籤（證件別）；AI 會再補
+        tags: [docLabel],             // 證件別就是唯一標籤（確認頁不可增刪）
         image: uploadImage,
         docType: DOCTYPE_MAP[type],
         status: FOUND_STATUS.KEEPING,
         created_at: new Date().toISOString(),
       }
-      // 送出成功 → AI 辨識過場頁：自動補標籤後存進「我的拾獲物」。
-      navigate('/register/analyzing', {
-        state: { item, base64Image: uploadImage, desc: docLabel },
-      })
+      // 送出成功 → 直接進確認頁。證件類不跑 AI 辨識過場：證件別是使用者自己選的，
+      // 標籤已經確定，沒有要 AI 猜的東西（非證件類才走 /register/analyzing）。
+      navigate('/register/confirm', { state: { item } })
     } catch (e) {
       setStatus('error')
       setError(`送出失敗：${friendlyError(e)}`)
@@ -224,7 +223,7 @@ export default function RegisterIdPage() {
 
       {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error">{error}</p>}
       <SubmitButton onClick={handleSubmit} disabled={status === 'submitting'}>
-        {status === 'submitting' ? '送出中…' : '填寫完成，為該筆資料新增標籤'}
+        {status === 'submitting' ? '送出中…' : '填寫完成，確認標籤'}
       </SubmitButton>
 
       {/* 打碼視窗 */}

@@ -9,8 +9,9 @@ import { todayStr } from '../lib/date'
 import { friendlyError } from '../lib/errors'
 
 /**
- * 登錄拾獲物的「確認標籤」頁（inner page-11）：AI 過場後進來，可改日期／拾獲地點／備註、
- * 增刪 AI 標籤，按「確認標籤，完成登錄」才寫進「我的拾獲物」，再到登錄成功頁。
+ * 登錄拾獲物的「確認標籤」頁（inner page-11）：可改日期／拾獲地點／備註，按
+ * 「確認標籤，完成登錄」才寫進「我的拾獲物」，再到登錄成功頁。
+ * 證件類（RegisterIdPage）直接進來、標籤固定成選好的證件別；非證件類先過 AI 辨識頁、標籤可增刪。
  * 版面同搜尋流程的確認標籤頁（ConfirmTagsPage），送往地點沿用登錄頁填的值（inner 這頁也沒有這欄）。
  */
 export default function RegisterConfirmPage() {
@@ -28,9 +29,9 @@ export default function RegisterConfirmPage() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
-  // 身分證／健保卡／學生證：證件別已由分頁明確指定，只鎖住「證件別」那一個標籤；
-  // AI 補上的其他標籤（顏色、皮夾等）照常可刪、可新增（AI 辨識頁也提示「下一步可以修正」）
-  const lockedTag = ['national_id', 'health_card', 'student_id'].includes(item?.docType) ? item?.name : null
+  // 證件類登錄（有 docType）：前一頁選了什麼證件就是什麼標籤，整組鎖住——不能刪、不能新增，
+  // 也不跑 AI 辨識。非證件類（RegisterOtherPage，沒有 docType）才保留 AI 標籤的增刪。
+  const fixedTags = Boolean(item?.docType)
 
   // 直接開這個網址、沒有帶資料 → 回首頁。
   useEffect(() => {
@@ -80,26 +81,29 @@ export default function RegisterConfirmPage() {
         </FormRow>
       </FormCard>
 
-      {/* AI 標籤（可增刪）：340 寬、padding 20、標題 16/600、chip 高 30 */}
+      {/* 標籤：340 寬、padding 20、標題 16/600、chip 高 30。
+          證件類只顯示選好的證件別（不可增刪）；非證件類是 AI 標籤、可增刪 */}
       <div className="mt-5 box-border min-h-[98px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card p-5">
-        <div className="mb-[10px] text-base font-semibold text-brown">AI 標籤</div>
+        <div className="mb-[10px] text-base font-semibold text-brown">{fixedTags ? '標籤' : 'AI 標籤'}</div>
         <div className="flex flex-wrap gap-[10px]">
           {tags.map((tag) => (
             <div key={tag} className="box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border border-black bg-blue px-5 py-[10px] text-xs font-normal text-brown">
               {tag}
-              {tag !== lockedTag && (
+              {!fixedTags && (
                 <button type="button" onClick={() => setTags((prev) => prev.filter((x) => x !== tag))} aria-label={`移除 ${tag}`} className="ml-[6px] text-sm font-bold">×</button>
               )}
             </div>
           ))}
-          <button
-            type="button"
-            onClick={() => setPickerOpen(true)}
-            className="box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border border-black bg-white px-5 py-[10px] text-xs font-normal text-brown"
-          >
-            <PlusIcon className="h-3 w-3 shrink-0" />
-            新增
-          </button>
+          {!fixedTags && (
+            <button
+              type="button"
+              onClick={() => setPickerOpen(true)}
+              className="box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border border-black bg-white px-5 py-[10px] text-xs font-normal text-brown"
+            >
+              <PlusIcon className="h-3 w-3 shrink-0" />
+              新增
+            </button>
+          )}
         </div>
       </div>
 
@@ -109,13 +113,15 @@ export default function RegisterConfirmPage() {
         {busy ? '正在寫入中...' : '確認標籤，完成登錄'}
       </SubmitButton>
 
-      {/* 彈窗裡取消勾選證件別也不會拿掉它（鎖住的標籤一律保留在第一個） */}
-      <TagPickerModal
-        open={pickerOpen}
-        value={tags}
-        onClose={() => setPickerOpen(false)}
-        onConfirm={(next) => setTags(lockedTag && !next.includes(lockedTag) ? [lockedTag, ...next] : next)}
-      />
+      {/* 非證件類才會開到（證件類沒有新增鈕） */}
+      {!fixedTags && (
+        <TagPickerModal
+          open={pickerOpen}
+          value={tags}
+          onClose={() => setPickerOpen(false)}
+          onConfirm={setTags}
+        />
+      )}
     </FormPage>
   )
 }
