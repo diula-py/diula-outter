@@ -1,6 +1,6 @@
 import { LegalPage, Article, SubSection, Items, Para } from '../components/LegalKit'
 
-// 條款內容改版時，記得一起改 lib/termsConsent.js 的 TERMS_VERSION，使用者下次登入才會再跳同意彈窗。
+// 條款內容改版時，記得一起改 lib/termsConsent.js 的 TERMS_VERSION，Firestore 的同意紀錄才分得出是哪一版。
 export default function TermsPage() {
   return (
     <LegalPage title="使用者服務條款" updatedAt="2026 年 10 月 12 日">

@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import { wakeSpring } from '../lib/api'
 import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import TermsConsentModal from '../components/TermsConsentModal'
-import { hasConsented, markConsented } from '../lib/termsConsent'
+import { markConsented } from '../lib/termsConsent'
 
 const SUPPORT_EMAIL = 'diula.112ics@gmail.com'
 
@@ -62,6 +62,7 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [helpOpen, setHelpOpen] = useState(false)
   const [copied, setCopied] = useState(false)
+  // 每次按登入都先跳同意彈窗（同意記在人身上，見 lib/termsConsent.js）。
   // 等待同意條款的登入方式（'line' | 'google'）；有值時顯示同意彈窗
   const [pendingProvider, setPendingProvider] = useState(takeReopenConsent)
 
@@ -100,16 +101,6 @@ export default function LoginPage() {
     }
   }
 
-  // 這台裝置同意過目前版本的條款就直接登入，否則先跳同意彈窗
-  function requestLogin(provider) {
-    if (!hasConsented()) {
-      setPendingProvider(provider)
-      return
-    }
-    if (provider === 'line') loginWithLine()
-    else handleGoogleLogin()
-  }
-
   // 必須同步呼叫登入（見 TermsConsentModal 的說明），同意紀錄寫 Firestore 留到登入完成後
   function handleAgree() {
     const provider = pendingProvider
@@ -144,7 +135,7 @@ export default function LoginPage() {
 
       <button
         type="button"
-        onClick={() => requestLogin('line')}
+        onClick={() => setPendingProvider('line')}
         className="mt-[53px] flex h-[62px] w-[290px] max-w-[calc(100%-40px)] shrink-0 items-center justify-center gap-3 rounded-[50px] bg-[#06C755] text-lg font-bold text-white transition hover:brightness-95 active:scale-[.99]"
       >
         <img src={asset('/icons/line-login.png')} alt="" className="h-7 w-7 shrink-0" />
@@ -155,7 +146,7 @@ export default function LoginPage() {
       <div className="relative mt-10 flex w-full justify-center">
         <button
           type="button"
-          onClick={() => requestLogin('google')}
+          onClick={() => setPendingProvider('google')}
           className="flex h-[62px] w-[290px] max-w-[calc(100%-40px)] shrink-0 items-center justify-center gap-3 rounded-[50px] border border-[#747775] bg-white text-lg font-bold text-[#3C4043] transition hover:bg-[#f8f8f8] active:scale-[.99]"
         >
           <GoogleGIcon className="h-6 w-6 shrink-0" />

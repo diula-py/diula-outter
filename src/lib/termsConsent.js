@@ -1,15 +1,14 @@
-// 使用者服務條款與隱私權政策的同意紀錄。
-// - 本機：同意過一次就記在這台裝置（localStorage），登出不清；條款改版時改 TERMS_VERSION，大家下次登入會再跳一次。
-// - 後端：登入成功後寫一筆到 Firestore terms_consents/{Firebase uid}。
-//   Google 登入是 popup，必須在點擊當下就叫出來（iPhone 會擋非同步開的視窗），
-//   所以不能先寫 Firestore 再登入；改成按同意時先記一筆「待寫入」，登入完成後再補寫。
+// 使用者服務條款與隱私權政策的同意紀錄：記在人身上，不記在裝置上。
+// 按登入前還不知道是誰，所以每次按登入都要先同意（展覽共用手機時，每個人都會看到條款），
+// 登入成功後再寫一筆到 Firestore terms_consents/{Firebase uid}，記下同意的版本 TERMS_VERSION。
+// Google 登入是 popup，必須在點擊當下就叫出來（iPhone 會擋非同步開的視窗），
+// 所以不能先寫 Firestore 再登入；改成按同意時先記一筆「待寫入」，登入完成後再補寫。
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from './firebase'
 import { getOwnerUid } from './authToken'
 
 export const TERMS_VERSION = '2026-10-12'
 
-const CONSENT_KEY = 'diula_terms_consent'
 const PENDING_KEY = 'diula_terms_consent_pending'
 
 // 按同意後多久內完成登入才算「這次同意的人」。展覽共用手機時，
@@ -29,19 +28,13 @@ function writeJson(key, value) {
     if (value == null) localStorage.removeItem(key)
     else localStorage.setItem(key, JSON.stringify(value))
   } catch {
-    /* 無痕模式等存不了：每次登入都會再跳彈窗，不影響登入 */
+    /* 無痕模式等存不了：只是 Firestore 少一筆紀錄，不影響登入 */
   }
-}
-
-export function hasConsented() {
-  return readJson(CONSENT_KEY)?.version === TERMS_VERSION
 }
 
 /** 使用者在彈窗按下「同意並登入」時呼叫（同步、不碰網路，不會耽誤 Google popup） */
 export function markConsented() {
-  const agreedAt = new Date().toISOString()
-  writeJson(CONSENT_KEY, { version: TERMS_VERSION, agreed_at: agreedAt })
-  writeJson(PENDING_KEY, { version: TERMS_VERSION, agreed_at: agreedAt, uid: null })
+  writeJson(PENDING_KEY, { version: TERMS_VERSION, agreed_at: new Date().toISOString(), uid: null })
 }
 
 let syncing = false

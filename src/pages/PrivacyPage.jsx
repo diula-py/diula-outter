@@ -1,6 +1,6 @@
 import { LegalPage, Para } from '../components/LegalKit'
 
-// TODO: 隱私權政策全文待團隊提供（2026-10-12），補上後記得一起改 lib/termsConsent.js 的 TERMS_VERSION
+// TODO: 隱私權政策全文待團隊提供（2026-10-12），補上後記得一起改 lib/termsConsent.js 的 TERMS_VERSION（同意紀錄記的版本）
 export default function PrivacyPage() {
   return (
     <LegalPage title="隱私權政策">
