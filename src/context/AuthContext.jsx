@@ -27,6 +27,9 @@ const LAST_LINE_USER_KEY = 'diula_last_line_user'
 // LINE 登入時跟後端換 Firebase custom token 最多等多久（見 resolveFromLine）。
 const CUSTOM_TOKEN_WAIT_MS = 8000
 
+// liff.init() 最多等多久（見 bootstrap）。跟 main.jsx 掛 Router 前的等待一樣 5 秒。
+const LIFF_INIT_WAIT_MS = 5000
+
 function saveLastLineUser(u) {
   try {
     localStorage.setItem(LAST_LINE_USER_KEY, JSON.stringify(u))
@@ -124,20 +127,40 @@ export function AuthProvider({ children }) {
 
     let cancelled = false
 
+    async function applyLineUser() {
+      const lineUser = await resolveFromLine().catch(() => null)
+      if (cancelled || !lineUser) return lineUser
+      saveLastLineUser(lineUser)
+      setUser(lineUser)
+      setLoading(false)
+      return lineUser
+    }
+
     async function bootstrap() {
-      try {
-        await initLiff()
-      } catch (e) {
-        // LIFF 初始化失敗不擋 Google 登入流程（例如不是在 LINE 環境開啟）。
+      // liff.init() 可能永遠不回來：網址帶 liff.state 時 SDK 會轉址並故意卡住等新頁面，
+      // 轉址沒成功或 LINE 內建瀏覽器網路太慢也會卡。沒設逾時的話這裡一直等，
+      // 下面 onAuthStateChanged 看到 LINE 已登入又直接 return → 永遠卡在「載入中…」。
+      const initResult = await Promise.race([
+        initLiff().then(
+          () => 'ok',
+          // LIFF 初始化失敗不擋 Google 登入流程（例如不是在 LINE 環境開啟）。
+          () => 'failed',
+        ),
+        new Promise((resolve) => setTimeout(() => resolve('timeout'), LIFF_INIT_WAIT_MS)),
+      ])
+      if (cancelled) return
+
+      if (initResult === 'timeout') {
+        // 先放行畫面（沒登入就會導去 /login）；init 晚點跑完再補上 LINE 身分，LoginPage 會自己跳回原本的頁面。
+        console.warn('liff.init() 逾時，先放行畫面')
+        setLoading(false)
+        initLiff().then(applyLineUser, () => {})
+        return
       }
 
-      const lineUser = await resolveFromLine().catch(() => null)
+      const lineUser = await applyLineUser()
       if (cancelled) return
-      if (lineUser) {
-        saveLastLineUser(lineUser)
-        setUser(lineUser)
-        setLoading(false)
-      } else if (isLiffLoggedIn()) {
+      if (!lineUser && isLiffLoggedIn()) {
         // LINE 已登入但抓個人資料失敗：onAuthStateChanged 看到 LINE 已登入會直接 return，
         // 沒人把 loading 收尾 → 永遠卡在「載入中…」。這裡自己收尾，讓使用者回登入頁重試。
         setUser(null)
