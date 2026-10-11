@@ -27,6 +27,15 @@ export function getLiffProfile() {
   return liff.getProfile()
 }
 
+// LINE Login channel 綁定的官方帳號（推播也是從這個帳號發）。
+export const LINE_OA_ADD_FRIEND_URL = 'https://line.me/R/ti/p/@937mjrfd'
+
+// 是否已加上面那個官方帳號好友。要先 liff.init() 完成且已登入。
+export async function isLineOaFriend() {
+  const { friendFlag } = await liff.getFriendship()
+  return friendFlag
+}
+
 // 手機：Deep Link 喚醒 LINE App 並以 LIFF 開啟；電腦：未登入先呼叫 liff.login() 網頁登入。
 // 邏輯照搬 index.html 的 handleLineLogin()。
 export function loginWithLine() {
