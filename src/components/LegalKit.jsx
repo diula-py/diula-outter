@@ -1,6 +1,7 @@
-/** 服務條款／隱私權政策頁的共用版型：80px 米色標頭（返回鍵）＋ 一般捲動內文。登入前後都看得到。 */
+/** 服務條款／隱私權政策頁的共用版型：80px 米色標頭（返回鍵）＋ 一般捲動內文 ＋ 回到頂部鈕。登入前後都看得到。 */
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FormHeader } from './FormKit'
+import BackToTopButton from './BackToTopButton'
 
 export function LegalPage({ title, updatedAt, children }) {
   const navigate = useNavigate()
@@ -15,6 +16,8 @@ export function LegalPage({ title, updatedAt, children }) {
         {children}
         {updatedAt && <p className="mt-8 text-xs opacity-60">最後更新日期：{updatedAt}</p>}
       </article>
+      {/* 底部沒有其他按鈕，位置同 Threads 尋找遺失物頁 */}
+      <BackToTopButton bottomClass="bottom-[calc(20px+env(safe-area-inset-bottom))]" />
     </div>
   )
 }
