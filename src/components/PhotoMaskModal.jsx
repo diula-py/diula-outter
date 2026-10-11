@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Backdrop } from './DialogKit'
 
 // 通用相片打碼：在圖上自由拖曳黑框遮住個資／路人臉，再輸出打碼後的 JPEG。
 // 與 MaskingModal（證件專用、強制裁切＋依版型自動打碼）不同，這支給一般照片用，
@@ -93,8 +94,9 @@ export default function PhotoMaskModal({ src, onCancel, onConfirm }) {
   }
 
   return (
-    <div className="fixed inset-x-0 top-0 bottom-[calc(-1*env(safe-area-inset-top,0px))] z-50 flex flex-col bg-black/70 px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-top,0px))]">
-      <div className="mx-auto flex max-h-full w-full max-w-[393px] flex-col overflow-hidden rounded-2xl bg-paper">
+    <div className="fixed inset-0 z-50 flex flex-col p-4">
+      <Backdrop className="bg-black/70" />
+      <div className="relative mx-auto flex max-h-full w-full max-w-[393px] flex-col overflow-hidden rounded-2xl bg-paper">
         <div className="flex items-center justify-between border-b border-black/10 px-4 py-3">
           <button type="button" onClick={onCancel} className="text-sm text-brown">取消</button>
           <span className="text-base font-bold text-brown">為圖片打碼</span>

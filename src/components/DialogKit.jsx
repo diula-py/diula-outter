@@ -5,13 +5,23 @@
  */
 import { XmarkIcon } from './icons'
 
-// 遮罩往下多延伸一個狀態列高度、底部再補同樣的內距（彈窗置中位置不變）：
-// iPhone 主畫面 App（black-translucent）的 fixed 視窗高度少一個狀態列，inset-0 底部會露出一截頁面底色。
-// 一般瀏覽器、電腦的 safe-area 是 0，不受影響。其他全螢幕遮罩（標籤彈窗、打碼視窗）同樣處理。
+/**
+ * 全螢幕遮罩的半透明底色。iPhone 主畫面 App（black-translucent）的 fixed 視窗比螢幕矮，
+ * inset-0 的遮罩底部會露出一截頁面底色。原本只往下補一個狀態列高度（env(safe-area-inset-top)），
+ * iPhone 14 Pro／iOS 26.5 還是露出約 60pt，缺口不只一個狀態列。
+ * 改成底色往下多畫一整個螢幕高，超出螢幕的部分看不到，不管少算多少都蓋得住。
+ * 放在 fixed inset-0 的容器裡當第一個子元素；容器裡的內容要加 relative 才會疊在底色上面。
+ * 容器本身維持 inset-0，彈窗置中位置不變。標籤彈窗、打碼視窗也用這個。
+ */
+export function Backdrop({ className = 'bg-black/50' }) {
+  return <div aria-hidden="true" className={`absolute inset-x-0 top-0 -bottom-[100lvh] ${className}`} />
+}
+
 export function Overlay({ children, onClose }) {
   return (
-    <div className="fixed inset-x-0 top-0 bottom-[calc(-1*env(safe-area-inset-top,0px))] z-[999] flex items-center justify-center bg-black/50 pb-[env(safe-area-inset-top,0px)]" onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()}>{children}</div>
+    <div className="fixed inset-0 z-[999] flex items-center justify-center" onClick={onClose}>
+      <Backdrop />
+      <div className="relative" onClick={(e) => e.stopPropagation()}>{children}</div>
     </div>
   )
 }
