@@ -69,7 +69,7 @@ export default function ProfilePage() {
         />
       </div>
 
-      {/* 登出：110×40，y=601；關於：12/500 底線，y=671 */}
+      {/* 登出：110×40，y=601；關於／服務條款／隱私權政策：12/500 底線，y=671 */}
       <button
         type="button"
         onClick={() => setConfirmLogout(true)}
@@ -78,14 +78,13 @@ export default function ProfilePage() {
       >
         登出
       </button>
-      <a
-        href="https://about.diula.co"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-[30px] ml-[3px] text-xs font-medium text-black underline"
-      >
-        關於DiuLa!
-      </a>
+      <div className="mt-[30px] ml-[3px] flex gap-5 text-xs font-medium text-black">
+        <a href="https://about.diula.co" target="_blank" rel="noopener noreferrer" className="underline">
+          關於DiuLa!
+        </a>
+        <button type="button" onClick={() => navigate('/terms')} className="underline">服務條款</button>
+        <button type="button" onClick={() => navigate('/privacy')} className="underline">隱私權政策</button>
+      </div>
 
       {/* 登出確認彈窗（inner logout-modal：300×251） */}
       {confirmLogout && (

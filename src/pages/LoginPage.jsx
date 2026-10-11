@@ -4,8 +4,23 @@ import { asset } from '../lib/asset'
 import { useAuth } from '../context/AuthContext'
 import { wakeSpring } from '../lib/api'
 import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
+import TermsConsentModal from '../components/TermsConsentModal'
+import { markConsented } from '../lib/termsConsent'
 
 const SUPPORT_EMAIL = 'diula.112ics@gmail.com'
+
+// 從同意彈窗點進條款頁、再按返回時，要重新打開彈窗並記得剛才按的是哪種登入
+const REOPEN_CONSENT_KEY = 'diula_reopen_consent'
+
+function takeReopenConsent() {
+  try {
+    const p = sessionStorage.getItem(REOPEN_CONSENT_KEY)
+    sessionStorage.removeItem(REOPEN_CONSENT_KEY)
+    return p === 'line' || p === 'google' ? p : null
+  } catch {
+    return null
+  }
+}
 
 // 複製文字：先用 Clipboard API，不支援（舊瀏覽器、非 https）時退回 execCommand
 async function copyText(text) {
@@ -47,6 +62,9 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [helpOpen, setHelpOpen] = useState(false)
   const [copied, setCopied] = useState(false)
+  // 每次按登入都先跳同意彈窗（同意記在人身上，見 lib/termsConsent.js）。
+  // 等待同意條款的登入方式（'line' | 'google'）；有值時顯示同意彈窗
+  const [pendingProvider, setPendingProvider] = useState(takeReopenConsent)
 
   async function copyEmail() {
     if (await copyText(SUPPORT_EMAIL)) {
@@ -83,6 +101,22 @@ export default function LoginPage() {
     }
   }
 
+  // 必須同步呼叫登入（見 TermsConsentModal 的說明），同意紀錄寫 Firestore 留到登入完成後
+  function handleAgree() {
+    const provider = pendingProvider
+    markConsented()
+    setPendingProvider(null)
+    if (provider === 'line') loginWithLine()
+    else handleGoogleLogin()
+  }
+
+  function openLegal(path) {
+    try {
+      sessionStorage.setItem(REOPEN_CONSENT_KEY, pendingProvider)
+    } catch { /* 存不了就回來時不重開彈窗 */ }
+    navigate(path)
+  }
+
   return (
     // 版面比照 inner page-01：393×852 時各元素位置與 inner 相同（logo 189、標語 372、LINE 449、Google 551、
     // 遇到問題 683、條款 723）。改成由上往下排，只有最上方留白會隨螢幕高度縮放：
@@ -101,7 +135,7 @@ export default function LoginPage() {
 
       <button
         type="button"
-        onClick={loginWithLine}
+        onClick={() => setPendingProvider('line')}
         className="mt-[53px] flex h-[62px] w-[290px] max-w-[calc(100%-40px)] shrink-0 items-center justify-center gap-3 rounded-[50px] bg-[#06C755] text-lg font-bold text-white transition hover:brightness-95 active:scale-[.99]"
       >
         <img src={asset('/icons/line-login.png')} alt="" className="h-7 w-7 shrink-0" />
@@ -112,7 +146,7 @@ export default function LoginPage() {
       <div className="relative mt-10 flex w-full justify-center">
         <button
           type="button"
-          onClick={handleGoogleLogin}
+          onClick={() => setPendingProvider('google')}
           className="flex h-[62px] w-[290px] max-w-[calc(100%-40px)] shrink-0 items-center justify-center gap-3 rounded-[50px] border border-[#747775] bg-white text-lg font-bold text-[#3C4043] transition hover:bg-[#f8f8f8] active:scale-[.99]"
         >
           <GoogleGIcon className="h-6 w-6 shrink-0" />
@@ -133,8 +167,20 @@ export default function LoginPage() {
         遇到問題嗎？
       </button>
       <p className="mt-[22px] w-[264px] max-w-[calc(100%-40px)] translate-x-[0.5px] text-center text-xs leading-[13px] text-black opacity-50">
-        登入即代表您同意本平台的服務條款與隱私權政策
+        登入即代表您同意本平台的
+        <button type="button" onClick={() => navigate('/terms')} className="underline">服務條款</button>
+        與
+        <button type="button" onClick={() => navigate('/privacy')} className="underline">隱私權政策</button>
       </p>
+
+      {pendingProvider && (
+        <TermsConsentModal
+          onCancel={() => setPendingProvider(null)}
+          onAgree={handleAgree}
+          onOpenTerms={() => openLegal('/terms')}
+          onOpenPrivacy={() => openLegal('/privacy')}
+        />
+      )}
 
       {helpOpen && (
         <WireDialog height={251} onClose={() => setHelpOpen(false)} label="遇到問題嗎">

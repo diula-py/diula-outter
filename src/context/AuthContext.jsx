@@ -7,6 +7,7 @@ import {
 } from 'firebase/auth'
 import { auth, clearLocalUserData } from '../lib/firebase'
 import { getOrCreateUserId } from '../lib/userId'
+import { syncConsentRecord } from '../lib/termsConsent'
 import { signInAsLineOwner, LINE_UID_PREFIX } from '../lib/authToken'
 import {
   initLiff,
@@ -199,6 +200,11 @@ export function AuthProvider({ children }) {
       unsubscribe()
     }
   }, [resolveFromLine])
+
+  // 登入完成（含 LINE 跳轉回來）後補寫條款同意紀錄，見 lib/termsConsent.js
+  useEffect(() => {
+    if (user) syncConsentRecord(user)
+  }, [user])
 
   const loginWithGoogle = useCallback(async () => {
     const provider = new GoogleAuthProvider()
