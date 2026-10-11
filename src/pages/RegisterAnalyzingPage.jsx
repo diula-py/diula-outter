@@ -5,10 +5,11 @@ import { analyzeItem } from '../lib/api'
 import { normalizeIdWording } from '../lib/text'
 import { cleanAiTags } from '../data/tagTaxonomy'
 
-// 登錄拾獲物的 AI 辨識過場（證件類／非證件類共用）：拿圖去 AI 服務要標籤，
+// 登錄非證件類拾獲物的 AI 辨識過場：拿圖去 AI 服務要標籤，
 // 補進這筆拾獲物後交給「確認標籤」頁（/register/confirm），使用者確認後才寫進「我的拾獲物」（同 inner page-11）。
 // 跟搜尋流程的 AiAnalyzingPage 不同——不比對、不去搜尋結果。
-// AI 失敗也不擋登錄：只帶原本的基本標籤（證件別）進確認頁，讓使用者自己補。
+// AI 失敗也不擋登錄：只帶原本的基本標籤進確認頁，讓使用者自己補。
+// （證件類登錄不走這頁：證件別是使用者自己選的，RegisterIdPage 直接進確認頁。）
 export default function RegisterAnalyzingPage() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -18,7 +19,7 @@ export default function RegisterAnalyzingPage() {
 
   useEffect(() => {
     // 直接開這個網址、沒有帶資料就退回登錄頁。
-    if (!item) { navigate('/register/id', { replace: true }); return }
+    if (!item) { navigate('/register/other', { replace: true }); return }
 
     let alive = true
     const grow = setInterval(() => setPct((p) => Math.min(90, p + (90 - p) * 0.08 + 0.3)), 200)
