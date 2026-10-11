@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { asset } from '../lib/asset'
 import { useAuth } from '../context/AuthContext'
+import { wakeSpring } from '../lib/api'
 import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 
 const SUPPORT_EMAIL = 'diula.112ics@gmail.com'
@@ -53,6 +54,10 @@ export default function LoginPage() {
       setTimeout(() => setCopied(false), 2000)
     }
   }
+
+  // 一進登入頁就先叫醒 Spring（diula-api）：LINE 登入跳去 LINE 再跳回來的這段時間，
+  // 正好讓它把機開完。等回來才叫醒的話，換 custom token 那次請求會卡在冷啟動被瀏覽器砍掉。
+  useEffect(() => { wakeSpring() }, [])
 
   // 已經是登入狀態（例如重新整理後恢復 session）就直接跳回原本要去的頁面。
   useEffect(() => {
