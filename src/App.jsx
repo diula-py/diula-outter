@@ -22,7 +22,6 @@ import MyLostPage from './pages/MyLostPage'
 import MyLostDetailPage from './pages/MyLostDetailPage'
 import MyFoundPage from './pages/MyFoundPage'
 import MyFoundDetailPage from './pages/MyFoundDetailPage'
-import PlaceholderPage from './pages/PlaceholderPage'
 import OfflineBanner from './components/OfflineBanner'
 import StatusBarColor from './components/StatusBarColor'
 import ScrollToTop from './components/ScrollToTop'
@@ -65,7 +64,6 @@ export default function App() {
           <Route path="/my/lost/:id" element={<MyLostDetailPage />} />
           <Route path="/my/found" element={<MyFoundPage />} />
           <Route path="/my/found/:id" element={<MyFoundDetailPage />} />
-          <Route path="/about" element={<PlaceholderPage title="關於 DiuLa!" />} />
           <Route path="/register/id" element={<RegisterIdPage />} />
           <Route path="/register/analyzing" element={<RegisterAnalyzingPage />} />
           <Route path="/register/confirm" element={<RegisterConfirmPage />} />
