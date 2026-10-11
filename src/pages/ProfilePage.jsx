@@ -78,13 +78,14 @@ export default function ProfilePage() {
       >
         登出
       </button>
-      <button
-        type="button"
-        onClick={() => navigate('/about')}
+      <a
+        href="https://about.diula.co"
+        target="_blank"
+        rel="noopener noreferrer"
         className="mt-[30px] ml-[3px] text-xs font-medium text-black underline"
       >
         關於DiuLa!
-      </button>
+      </a>
 
       {/* 登出確認彈窗（inner logout-modal：300×251） */}
       {confirmLogout && (

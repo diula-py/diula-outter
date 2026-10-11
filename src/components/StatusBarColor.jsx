@@ -21,7 +21,6 @@ const COLOR_BY_PATH = {
   '/search/analyzing': '#CDDCF0', // AnalyzingScreen 底色
   '/register/analyzing': '#CDDCF0',
   '/register/success': '#ffffff', // 沒有 header，頂端是白底
-  '/about': '#ffffff',
 }
 const DEFAULT_COLOR = '#f3f0e1'
 
