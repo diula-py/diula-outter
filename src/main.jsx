@@ -37,11 +37,31 @@ const liffReady = navigator.onLine
   ? Promise.race([initLiff().catch(() => {}), new Promise((resolve) => setTimeout(resolve, 5000))])
   : Promise.resolve()
 
+// LINE 圖文選單要直接開到某一頁，但 LIFF 的 Endpoint URL 不能帶 #，所以改用 https://liff.line.me/{LIFF_ID}?page=profile。
+// LINE 先開 https://diula.co/?liff.state=%3Fpage%3Dprofile，liff.init() 再轉到 https://diula.co/?page=profile。
+// init 失敗或逾時就不會轉，這時改從 liff.state 讀。只認白名單裡的 page。
+const DEEP_LINK_ROUTES = { profile: '/profile' }
+
+function getDeepLinkRoute() {
+  const params = new URLSearchParams(window.location.search)
+  let page = params.get('page')
+  const liffState = params.get('liff.state')
+  if (!page && liffState) {
+    const query = liffState.split('#')[0].split('?')[1] || ''
+    page = new URLSearchParams(query).get('page')
+  }
+  return Object.hasOwn(DEEP_LINK_ROUTES, page) ? DEEP_LINK_ROUTES[page] : null
+}
+
 // GitHub Pages 沒有伺服器路由，重整/直連深層網址會 404 → 用 HashRouter（網址帶 #）。
 liffReady.then(() => {
-  // 保險：liff.init() 失敗或逾時，網址 # 後面可能還留著 LINE 的參數（不是「#/」開頭的路由）→ 一樣會白畫面。
-  // 這種情況直接把 hash 換成首頁，讓 RequireAuth 照常判斷要不要導去 /login。
-  if (window.location.hash && !window.location.hash.startsWith('#/')) {
+  const deepLinkRoute = getDeepLinkRoute()
+  if (deepLinkRoute) {
+    // 換成 HashRouter 的路由，順便清掉 ?page= / ?liff.state=，重整時才不會又被帶回這頁。
+    window.history.replaceState(null, '', `${window.location.pathname}#${deepLinkRoute}`)
+  } else if (window.location.hash && !window.location.hash.startsWith('#/')) {
+    // 保險：liff.init() 失敗或逾時，網址 # 後面可能還留著 LINE 的參數（不是「#/」開頭的路由）→ 一樣會白畫面。
+    // 這種情況直接把 hash 換成首頁，讓 RequireAuth 照常判斷要不要導去 /login。
     window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#/`)
   }
   createRoot(document.getElementById('root')).render(
