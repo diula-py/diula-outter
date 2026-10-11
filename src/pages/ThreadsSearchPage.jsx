@@ -12,8 +12,8 @@ import { asset } from '../lib/asset'
  * 貼文縮圖：載快照給的網址，不繞 Spring Boot /api/image 代理——那台在 Render 免費方案會休眠，
  * 冷啟動 ~50 秒，圖要等很久。
  * 2026-10-11 起圖是自家的：後端每天把貼文圖鏡像成 webp 縮圖放到 diula-web（GitHub Pages），
- * 快照的 image 直接指那裡，一張約 20KB、不會過期。原本直連 Instagram CDN 的簽章網址抓完
- * 約一個月就回 403，舊貼文的照片必然消失。
+ * 快照的 image 直接指那裡，一張約 20KB、不會過期。原本直連 Instagram CDN 的簽章網址只活
+ * 4 天多就回 403（實測 47 筆：4.3～4.5 天），舊貼文的照片必然消失。
  * 捲到才載（lazy）。沒有圖、或連自家圖也掛了 → 藍底驚嘆號 logo（同比對結果頁的預設圖）。
  */
 function Thumb({ url }) {
