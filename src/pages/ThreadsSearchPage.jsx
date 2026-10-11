@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { MagnifyingGlassIcon } from '../components/icons'
 import { FormHeader } from '../components/FormKit'
+import BackToTopButton from '../components/BackToTopButton'
 
 import { fetchThreadsPosts, getCachedThreadsPosts } from '../lib/api'
 import { normalizeIdWording } from '../lib/text'
@@ -63,8 +64,9 @@ export default function ThreadsSearchPage() {
   }, [posts, query])
 
   return (
-    // 沒有 AppLayout（無 TabBar），外框與底部留白（含 iOS safe-area）自己處理
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(40px+env(safe-area-inset-bottom))]">
+    // 沒有 AppLayout（無 TabBar），外框與底部留白（含 iOS safe-area）自己處理；
+    // 底部留 90px：滑到底時最後一張卡片不會被「回到頂部」圓鈕（離底 20、高 50）蓋住
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(90px+env(safe-area-inset-bottom))]">
       <FormHeader title="Threads尋找遺失物" onBack={() => navigate(-1)} />
 
       {/* 搜尋列（inner）：寬 calc(100% - 44px)、最大 340、高 46、圓角 10、padding 10 20、間距 10、icon 20×20 */}
@@ -100,6 +102,9 @@ export default function ThreadsSearchPage() {
             </Link>
           ))}
       </div>
+
+      {/* 回到頂部：右下角、離底部 20px（這頁沒有底部膠囊） */}
+      <BackToTopButton bottomClass="bottom-[calc(20px+env(safe-area-inset-bottom))]" />
     </div>
   )
 }
