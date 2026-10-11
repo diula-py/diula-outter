@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { TAG_TAXONOMY } from '../data/tagTaxonomy'
+import { Backdrop } from './DialogKit'
 
 // inner tag-modal 的關閉（X）與確認（打勾）：20×20 inline SVG，實心路徑（Material 風格）
 function XIcon(props) {
@@ -44,7 +45,8 @@ export default function TagPickerModal({ open, value, onClose, onConfirm, taxono
     `box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border border-black px-5 py-[10px] text-xs font-normal leading-3 text-brown ${on ? 'bg-blue' : 'bg-white'}`
 
   return (
-    <div className="fixed inset-x-0 top-0 bottom-[calc(-1*env(safe-area-inset-top,0px))] z-[1000] flex items-center justify-center bg-black/50 pb-[env(safe-area-inset-top,0px)]" onClick={onClose}>
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center" onClick={onClose}>
+      <Backdrop />
       <div
         className="relative flex max-h-[80vh] w-[calc(100vw-20px)] max-w-[300px] flex-col overflow-hidden rounded-[10px] bg-card shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
         onClick={(e) => e.stopPropagation()}
