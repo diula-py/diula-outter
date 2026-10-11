@@ -4,15 +4,15 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => ({
-  // GitHub Pages 放在 diula-py.github.io/diula-outter/ → prod build 要加 base；dev 維持根路徑。
-  // ⚠️ base 必須等於 GitHub repo 名。repo 改名時這裡要一起改。
-  base: mode === 'production' ? '/diula-outter/' : '/',
+export default defineConfig({
+  // GitHub Pages 接自訂網域 diula.co（網域在 repo Settings → Pages → Custom domain 設定），網站在根路徑。
+  // ⚠️ 如果拿掉自訂網域、改回 diula-py.github.io/diula-outter/，prod 的 base 要改回 '/diula-outter/'。
+  base: '/',
   plugins: [
     react(),
     tailwindcss(),
     // PWA：Service Worker 快取網頁外殼，離線也能打開網站（企劃書「查看快取之協尋資訊」）。
-    // SW 檔案、scope、precache 路徑都跟著上面的 base 走（prod = /diula-outter/）。
+    // SW 檔案、scope、precache 路徑都跟著上面的 base 走。
     // 註冊寫在 src/main.jsx；緊急停用 SW 的步驟見 docs/pwa.md。
     VitePWA({
       registerType: 'autoUpdate',
@@ -95,4 +95,4 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
-}))
+})
