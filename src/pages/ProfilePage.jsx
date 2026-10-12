@@ -83,7 +83,7 @@ export default function ProfilePage() {
       >
         登出
       </button>
-      <div className="mt-[30px] ml-[3px] flex gap-5 text-xs font-medium text-black land:col-start-1 land:row-start-4 land:mt-1 land:justify-self-center">
+      <div className="mt-[30px] ml-[3px] flex gap-5 text-xs font-medium text-brown land:col-start-1 land:row-start-4 land:mt-1 land:justify-self-center">
         <a href="https://about.diula.co" target="_blank" rel="noopener noreferrer" className="underline">
           關於DiuLa!
         </a>
