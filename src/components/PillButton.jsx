@@ -8,7 +8,7 @@
  * props: icon, label, onClick?, href?, external?
  */
 const BASE_CLASS =
-  'flex h-[100px] w-full items-center gap-5 rounded-[50px] px-5 py-[30px] min-[380px]:gap-10 min-[380px]:px-10 ' +
+  'flex h-[100px] w-full items-center gap-5 rounded-[50px] px-5 py-[30px] min-[380px]:gap-10 min-[380px]:px-10 land:h-[88px] land:py-5 ' +
   'border border-brown bg-card text-base font-medium text-brown no-underline ' +
   'transition hover:bg-[#eee8d7] active:scale-[.985] ' +
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown'

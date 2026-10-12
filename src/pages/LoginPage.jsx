@@ -122,28 +122,30 @@ export default function LoginPage() {
     // 遇到問題 683、條款 723）。改成由上往下排，只有最上方留白會隨螢幕高度縮放：
     // 內容本身高 547（logo 頂端到條款底端），852 高時留白 = (852 - 547) × 0.6197 ≈ 189；
     // 矮螢幕自動縮小、最少 40，再矮就整頁往下捲，不會再有按鈕被切掉按不到。
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center overflow-x-hidden bg-blue pb-10">
-      <div className="h-[clamp(40px,calc((100dvh-var(--top-inset)-547px)*0.6197),189px)] shrink-0" />
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center overflow-x-hidden bg-blue pb-10
+                    land:grid land:max-w-none land:grid-cols-[repeat(2,minmax(0,320px))] land:content-center land:items-center land:justify-center land:gap-x-8 land:gap-y-4 land:pb-4">
+      <div className="h-[clamp(40px,calc((100dvh-var(--top-inset)-547px)*0.6197),189px)] shrink-0 land:hidden" />
 
-      <div className="flex h-[128px] w-full shrink-0 items-center justify-center overflow-hidden">
+      <div className="flex h-[128px] w-full shrink-0 items-center justify-center overflow-hidden land:col-start-1 land:h-[96px]">
         <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="w-full max-w-[393px]" />
       </div>
 
-      <p className="mt-[55px] h-6 w-[264px] translate-x-[0.5px] text-center text-2xl font-medium text-brown">
+      <p className="mt-[55px] h-6 w-[264px] translate-x-[0.5px] text-center text-2xl font-medium text-brown land:col-start-1 land:mt-0 land:w-full land:justify-self-center">
         與失物重逢的捷徑
       </p>
 
       <button
         type="button"
         onClick={() => setPendingProvider('line')}
-        className="mt-[53px] flex h-[62px] w-[290px] max-w-[calc(100%-40px)] shrink-0 items-center justify-center gap-3 rounded-[50px] bg-[#06C755] text-lg font-bold text-white transition hover:brightness-95 active:scale-[.99]"
+        className="mt-[53px] flex h-[62px] w-[290px] max-w-[calc(100%-40px)] shrink-0 items-center justify-center gap-3 rounded-[50px] bg-[#06C755] text-lg font-bold text-white transition hover:brightness-95 active:scale-[.99]
+                   land:col-start-2 land:mt-0 land:justify-self-center"
       >
         <img src={asset('/icons/line-login.png')} alt="" className="h-7 w-7 shrink-0" />
         <span>使用 LINE 登入</span>
       </button>
 
       {/* 錯誤訊息疊在 Google 鈕下方（inner 位置 top 622），不推動下面的元素 */}
-      <div className="relative mt-10 flex w-full justify-center">
+      <div className="relative mt-10 flex w-full justify-center land:col-start-2 land:mt-0">
         <button
           type="button"
           onClick={() => setPendingProvider('google')}
@@ -162,11 +164,11 @@ export default function LoginPage() {
       <button
         type="button"
         onClick={() => setHelpOpen(true)}
-        className="mt-[70px] h-[18px] w-24 translate-x-[0.5px] text-center text-base leading-[18px] text-black opacity-50"
+        className="mt-[70px] h-[18px] w-24 translate-x-[0.5px] text-center text-base leading-[18px] text-black opacity-50 land:col-start-2 land:mt-4 land:justify-self-center"
       >
         遇到問題嗎？
       </button>
-      <p className="mt-[22px] w-[264px] max-w-[calc(100%-40px)] translate-x-[0.5px] text-center text-xs leading-[13px] text-black opacity-50">
+      <p className="mt-[22px] w-[264px] max-w-[calc(100%-40px)] translate-x-[0.5px] text-center text-xs leading-[13px] text-black opacity-50 land:col-start-2 land:mt-0 land:justify-self-center">
         登入即代表您同意本平台的
         <button type="button" onClick={() => navigate('/terms')} className="underline">服務條款</button>
         與

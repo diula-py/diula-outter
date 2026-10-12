@@ -106,7 +106,7 @@ export default function SubscribePage() {
   // 訂閱成功頁：版面照登錄成功頁（RegisterSuccessPage），沒有 header／返回鍵
   if (status === 'success') {
     return (
-      <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper px-[22px] pb-[40px] text-brown">
+      <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper px-[22px] pb-[40px] text-brown land:max-w-[560px]">
         <div className="flex w-full flex-1 flex-col items-center justify-center text-center">
           <CircleCheckIcon className="mb-6 h-[120px] w-[120px]" />
           <h1 className="mb-4 text-xl font-bold leading-5">訂閱成功！</h1>
@@ -142,8 +142,8 @@ export default function SubscribePage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col bg-paper pb-10">
-      <header className="safe-header relative rounded-b-[20px] bg-card [--header-h:80px]">
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col bg-paper pb-10 land:max-w-none">
+      <header className="safe-header relative rounded-b-[20px] bg-card [--header-h:80px] land:[--header-h:64px]">
         <div className="relative flex h-full items-center justify-center">
           <button type="button" onClick={() => navigate(-1)} aria-label="返回"
             className="back-hit absolute left-[22px] top-1/2 -translate-y-1/2 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown">
@@ -153,13 +153,13 @@ export default function SubscribePage() {
         </div>
       </header>
 
-      <div className="flex flex-col gap-5 px-[26px] pt-5">
-        <p className="text-xs leading-normal text-brown/70">
+      <div className="flex flex-col gap-5 px-[26px] pt-5 land:grid land:grid-cols-[repeat(2,minmax(0,340px))] land:content-start land:justify-center land:gap-x-7 land:gap-y-3 land:[grid-auto-flow:row_dense] land:px-5 land:pt-3 land:pb-6">
+        <p className="text-xs leading-normal text-brown/70 land:col-span-full">
           這次沒找到沒關係！<br />訂閱後，<b className="text-brown">五日內</b>有新符合條件的失物進來，我們就主動通知你。
         </p>
 
         {/* 比對條件摘要 */}
-        <div className="flex flex-col gap-1.5 rounded-[10px] bg-card p-4 text-sm text-brown">
+        <div className="flex flex-col gap-1.5 rounded-[10px] bg-card p-4 text-sm text-brown land:col-start-1">
           <p><span className="text-brown/60">類別：</span>{resolved.category_name || '（未知）'}</p>
           <p><span className="text-brown/60">遺失日：</span>{(q.date || '').replaceAll('-', '/') || '—'}</p>
           <p><span className="text-brown/60">地點：</span>{q.place || '—'}</p>
@@ -167,7 +167,7 @@ export default function SubscribePage() {
         </div>
 
         {/* 通知方式：依登入方式自動決定，不給手動選 */}
-        <div>
+        <div className="land:col-start-2">
           <p className="mb-2 text-sm font-medium text-brown">通知方式</p>
           <div className="flex h-11 items-center justify-center rounded-[50px] border-[1.5px] border-black bg-card text-base font-medium text-brown">
             {channel === 'line' ? 'LINE 推播' : 'Email'}
@@ -186,7 +186,7 @@ export default function SubscribePage() {
         {error && <p className="text-sm leading-normal text-error">{error}</p>}
 
         <button type="button" onClick={submit} disabled={status === 'submitting'}
-          className="mt-1 flex h-[60px] w-full items-center justify-center gap-3 rounded-[50px] border border-black bg-blue
+          className="mt-1 flex h-[60px] w-full items-center justify-center gap-3 rounded-[50px] border border-black bg-blue land:col-span-full land:max-w-[350px] land:justify-self-center
                      text-base font-medium text-brown transition hover:brightness-[.98] disabled:opacity-60
                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown">
           <CircleCheckIcon className="h-9 w-9 shrink-0 text-brown" />

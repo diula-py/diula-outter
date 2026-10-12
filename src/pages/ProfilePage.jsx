@@ -10,7 +10,7 @@ function MenuButton({ icon, label, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="flex h-[100px] w-full max-w-[350px] items-center justify-center gap-10 rounded-[50px] border border-black bg-card px-10 py-[30px]
+      className="flex h-[100px] w-full max-w-[350px] items-center justify-center gap-10 rounded-[50px] border border-black bg-card px-10 py-[30px] land:h-[72px] land:py-3
                  text-base font-medium text-brown transition hover:bg-[#eee8d7] active:scale-[.99]
                  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
     >
@@ -38,16 +38,19 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center
+                    land:grid land:grid-cols-[repeat(2,minmax(0,340px))] land:content-start land:items-start land:justify-center land:gap-x-7">
       {/* 藍色 header 109px + logo 106×35（比照 inner page-14） */}
-      <header className="safe-header flex w-full items-end justify-center rounded-b-[20px] bg-blue pb-[10px] [--header-h:109px]">
+      <header className="safe-header flex w-full items-end justify-center rounded-b-[20px] bg-blue pb-[10px] [--header-h:109px]
+                         land:col-span-full land:mx-[calc(50%-50vw)] land:w-screen land:[--header-h:76px]">
         <div className="flex h-[35px] w-[106px] items-center justify-center overflow-hidden">
           <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="w-full" />
         </div>
       </header>
 
       {/* 使用者卡：360×200、x=18、y=129（窄螢幕右側留 15、跟著縮短）；頭像 72、間距 20、名稱 16/500、編號 12/500 */}
-      <div className="mt-5 flex h-[200px] w-[calc(100%-33px)] max-w-[360px] flex-col items-center justify-center gap-5 self-start rounded-[20px] bg-card/50 px-5 py-[30px] ml-[18px]">
+      <div className="mt-5 flex h-[200px] w-[calc(100%-33px)] max-w-[360px] flex-col items-center justify-center gap-5 self-start rounded-[20px] bg-card/50 px-5 py-[30px] ml-[18px]
+                      land:col-start-1 land:row-span-2 land:mt-[18px] land:ml-0 land:h-auto land:w-full land:max-w-none land:gap-3 land:py-5 land:self-auto">
         <div className="flex h-[72px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-full border border-black bg-white">
           <img src={avatarSrc} alt="大頭貼" onError={() => setAvatarBroken(true)} className="h-full w-full object-cover" />
         </div>
@@ -56,7 +59,8 @@ export default function ProfilePage() {
       </div>
 
       {/* 我的遺失物 / 我的拾獲物：350×100、x=22、y=351／471（窄螢幕右側留 21、跟著縮短） */}
-      <div className="mt-[22px] flex w-full flex-col gap-5 self-start pl-[22px] pr-[21px]">
+      <div className="mt-[22px] flex w-full flex-col gap-5 self-start pl-[22px] pr-[21px]
+                      land:col-start-2 land:mt-[18px] land:gap-[10px] land:px-0 land:self-auto">
         <MenuButton
           icon={<CubesIcon className="h-10 w-10 shrink-0" />}
           label="我的遺失物"
@@ -74,11 +78,12 @@ export default function ProfilePage() {
         type="button"
         onClick={() => setConfirmLogout(true)}
         className="mt-[30px] ml-px h-10 w-[110px] rounded-[50px] border border-black bg-input text-base font-medium text-brown
+                   land:col-start-2 land:mt-1 land:justify-self-center
                    transition hover:bg-[#ececec] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
       >
         登出
       </button>
-      <div className="mt-[30px] ml-[3px] flex gap-5 text-xs font-medium text-black">
+      <div className="mt-[30px] ml-[3px] flex gap-5 text-xs font-medium text-black land:col-start-1 land:row-start-4 land:mt-1 land:justify-self-center">
         <a href="https://about.diula.co" target="_blank" rel="noopener noreferrer" className="underline">
           關於DiuLa!
         </a>

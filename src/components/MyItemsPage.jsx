@@ -68,24 +68,24 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
   const note = 'p-5 text-center text-base leading-normal'
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[120px]">
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[120px] land:max-w-none land:pb-[80px]">
       {/* inner 的數值含狀態列（約 59px）。iPhone PWA（狀態列 59）跟原本一樣；
           LINE App／瀏覽器裡沒有狀態列（safe-area＝0），整組上移、不留狀態列的空白（返回鍵離頂端 30px）。 */}
       <header
-        className="safe-header-bleed relative w-full shrink-0 rounded-b-[20px] bg-card"
+        className="safe-header-bleed relative w-full shrink-0 rounded-b-[20px] bg-card land:h-[calc(140px+var(--hshift))]!"
         style={{ '--hshift': 'calc(max(env(safe-area-inset-top, 0px), 20px) - 59px)', height: 'calc(174px + var(--hshift))' }}
       >
         <button
           type="button"
           onClick={() => navigate(-1)}
           aria-label="返回"
-          className="back-hit absolute left-[21px] top-[calc(69px+var(--hshift))] h-[30px] w-[30px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+          className="back-hit absolute left-[21px] top-[calc(69px+var(--hshift))] h-[30px] w-[30px] land:top-[calc(49px+var(--hshift))] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >
           <ChevronLeftIcon className="h-[30px] w-[30px]" />
         </button>
-        <h1 className="pointer-events-none absolute left-0 top-[calc(74px+var(--hshift))] w-full text-center text-xl font-bold leading-5 text-brown">{title}</h1>
+        <h1 className="pointer-events-none absolute left-0 top-[calc(74px+var(--hshift))] w-full text-center text-xl font-bold leading-5 text-brown land:top-[calc(54px+var(--hshift))]">{title}</h1>
 
-        <div className="absolute left-1/2 top-[calc(109px+var(--hshift))] flex w-[calc(100%-40px)] max-w-[340px] -translate-x-1/2 gap-[10px]">
+        <div className="absolute left-1/2 top-[calc(109px+var(--hshift))] flex w-[calc(100%-40px)] max-w-[340px] -translate-x-1/2 gap-[10px] land:top-[calc(89px+var(--hshift))] land:max-w-[708px]">
           <label className="relative flex h-[47px] w-[97px] shrink-0 items-center justify-center rounded-[50px] border border-black bg-card">
             <CalendarIcon className="pointer-events-none h-5 w-5" />
             {dateFilter && <span className="pointer-events-none absolute right-[14px] top-2 h-2 w-2 rounded-full bg-error" />}
@@ -110,9 +110,10 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
         </div>
       </header>
 
-      <div className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-[15px]">
-        {loading && <p className={`${note} text-brown`}>載入中...</p>}
-        {!loading && filtered.length === 0 && <p className={`${note} text-[#888]`}>{emptyText}</p>}
+      <div className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-[15px]
+                      land:mt-3 land:grid land:max-w-[708px] land:grid-cols-2 land:items-start land:gap-[14px]">
+        {loading && <p className={`${note} text-brown land:col-span-full`}>載入中...</p>}
+        {!loading && filtered.length === 0 && <p className={`${note} text-[#888] land:col-span-full`}>{emptyText}</p>}
 
         {filtered.map((it) => (
           <button

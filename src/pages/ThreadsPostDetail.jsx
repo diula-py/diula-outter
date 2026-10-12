@@ -43,9 +43,9 @@ export default function ThreadsPostDetail() {
 
   return (
     // 沒有 AppLayout（無 TabBar），外框與底部留白（含 iOS safe-area）自己處理
-    <div className="mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] bg-paper pb-[calc(40px+env(safe-area-inset-bottom))]">
+    <div className="mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] bg-paper pb-[calc(40px+env(safe-area-inset-bottom))] land:max-w-none">
       {/* Header */}
-      <header className="safe-header relative rounded-b-[20px] bg-card [--header-h:80px]">
+      <header className="safe-header relative rounded-b-[20px] bg-card [--header-h:80px] land:[--header-h:64px]">
         <div className="relative flex h-full items-center justify-center">
           <button
             type="button"
@@ -63,9 +63,9 @@ export default function ThreadsPostDetail() {
       {state === 'error' && <p className="py-10 text-center text-sm leading-normal text-error">找不到這則貼文</p>}
 
       {state === 'ready' && post && (
-        <div className="flex flex-col gap-5 px-[22px] pt-5">
+        <div className="flex flex-col gap-5 px-[22px] pt-5 land:grid land:grid-cols-[repeat(2,minmax(0,340px))] land:content-start land:justify-center land:gap-x-7 land:gap-y-3 land:[grid-auto-flow:row_dense] land:px-5 land:pt-3 land:pb-6">
           {/* 圖片 */}
-          <div className="flex w-full items-center justify-center overflow-hidden rounded-[10px] bg-[#e7e3d5]">
+          <div className="flex w-full items-center justify-center overflow-hidden rounded-[10px] bg-[#e7e3d5] land:col-start-1">
             {showImg ? (
               // 載快照給的網址（同列表頁，不繞會休眠的 Spring Boot 代理）。
               // 圖是自家鏡像在 diula-web 的 webp，不會像 Instagram CDN 的簽章網址那樣過期。

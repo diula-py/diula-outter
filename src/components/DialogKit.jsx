@@ -19,9 +19,10 @@ export function Backdrop({ className = 'bg-black/50' }) {
 
 export function Overlay({ children, onClose }) {
   return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center" onClick={onClose}>
+    // 手機橫放只有約 390 高，彈窗（最高 380）幾乎塞滿；橫式允許捲動並留一點上下邊，才不會被切掉
+    <div className="fixed inset-0 z-[999] flex items-center justify-center land:items-start land:overflow-y-auto land:py-2" onClick={onClose}>
       <Backdrop />
-      <div className="relative" onClick={(e) => e.stopPropagation()}>{children}</div>
+      <div className="relative shrink-0" onClick={(e) => e.stopPropagation()}>{children}</div>
     </div>
   )
 }

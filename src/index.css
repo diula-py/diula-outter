@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* 手機橫放（橫向且視窗高 ≤ 540px）：單欄 393 會變成「中間一條窄柱、要捲好幾屏」，
+   用 land: 這個 variant 把主要頁面改成兩欄。平板／桌機（高度 > 540px）不受影響。
+   例：land:grid land:col-start-2 */
+@custom-variant land (@media (orientation: landscape) and (max-height: 540px));
+
 /* ============================================================
    DiuLa! Design Tokens  (from design.md)
    These become Tailwind utilities automatically, e.g.

@@ -32,9 +32,11 @@ export default function HomePage() {
   )
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center
+                    land:grid land:grid-cols-[repeat(2,minmax(0,340px))] land:content-start land:items-start land:justify-center land:gap-x-7">
       {/* 頂部 banner：淺藍、下圓角、109px 高，logo 106×35 在 top:64（比照 inner） */}
-      <header className="safe-header flex w-full items-end justify-center rounded-b-[20px] bg-blue pb-[10px] [--header-h:109px]">
+      <header className="safe-header flex w-full items-end justify-center rounded-b-[20px] bg-blue pb-[10px] [--header-h:109px]
+                         land:col-span-full land:mx-[calc(50%-50vw)] land:w-screen land:[--header-h:76px]">
         <div className="flex h-[35px] w-[106px] items-center justify-center overflow-hidden">
           <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="w-full" />
         </div>
@@ -44,12 +46,12 @@ export default function HomePage() {
       <AddFriendBanner />
 
       {/* 內容欄 350 寬（x=21.5；窄螢幕左右各留 20）：標題文字 y=134、第一顆膠囊 y=169、兩顆間距 20、第二區標題 y=414 */}
-      <section className="mt-[25px] w-[calc(100%-40px)] max-w-[350px]">
+      <section className="mt-[25px] w-[calc(100%-40px)] max-w-[350px] land:col-start-1 land:mt-[18px] land:w-full land:max-w-none">
         <SectionTitle>尋找遺失物</SectionTitle>
         <div className="mt-[15px] flex flex-col gap-5">{FIND_ITEMS.map(renderItem)}</div>
       </section>
 
-      <section className="mt-[25px] w-[calc(100%-40px)] max-w-[350px]">
+      <section className="mt-[25px] w-[calc(100%-40px)] max-w-[350px] land:col-start-2 land:mt-[18px] land:w-full land:max-w-none">
         <SectionTitle>登錄拾獲物</SectionTitle>
         <div className="mt-[15px] flex flex-col gap-5">{REGISTER_ITEMS.map(renderItem)}</div>
       </section>

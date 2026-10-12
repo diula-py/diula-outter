@@ -64,7 +64,7 @@ export default function CrossSearchPage() {
       <FormHeader title="跨平台尋找遺失物" onBack={() => navigate(-1)} />
 
       {/* 圖片 / 文字 切換：168×46 米色膠囊，選中態是 76×40、圓角 42（inner Frame 48） */}
-      <div className="relative mt-[25px] flex h-[46px] w-[168px] shrink-0 items-center rounded-[50px] bg-card">
+      <div className="relative mt-[25px] flex h-[46px] w-[168px] shrink-0 items-center rounded-[50px] bg-card land:col-span-full land:mt-0 land:justify-self-center">
         <div
           aria-hidden="true"
           className={`absolute top-[3px] box-border h-[40px] w-[76px] rounded-[42px] border border-black bg-input transition-[left] duration-300
@@ -101,7 +101,8 @@ export default function CrossSearchPage() {
           />
         </>
       ) : (
-        <div className="mt-[25px] box-border flex h-[200px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] border border-black bg-input p-5">
+        <div className="mt-[25px] box-border flex h-[200px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] border border-black bg-input p-5
+                        land:col-start-1 land:mt-0 land:h-[150px] land:w-full land:max-w-none">
           <textarea
             value={desc}
             onChange={(e) => setDesc(e.target.value)}
@@ -123,7 +124,7 @@ export default function CrossSearchPage() {
         />
       </FormCard>
 
-      {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error">{error}</p>}
+      {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error land:col-start-2 land:mt-0 land:w-full land:max-w-none">{error}</p>}
       <SubmitButton onClick={handleSubmit}>填寫完成，AI 辨識產生標籤</SubmitButton>
     </FormPage>
   )

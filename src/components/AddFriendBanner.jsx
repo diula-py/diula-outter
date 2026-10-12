@@ -48,7 +48,8 @@ export default function AddFriendBanner() {
   if (!show) return null
 
   return (
-    <section className="relative mt-[25px] flex w-[calc(100%-40px)] max-w-[350px] flex-col items-center gap-[10px] rounded-[20px] border border-black bg-card px-5 py-[15px] text-center text-brown">
+    <section className="relative mt-[25px] flex w-[calc(100%-40px)] max-w-[350px] flex-col items-center gap-[10px] rounded-[20px] border border-black bg-card px-5 py-[15px] text-center text-brown
+                        land:col-span-full land:mt-3 land:max-w-[708px] land:flex-row land:justify-center land:gap-5 land:py-[10px] land:text-left">
       <button
         type="button"
         onClick={dismiss}

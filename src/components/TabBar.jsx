@@ -13,7 +13,7 @@ const TABS = [
  */
 export default function TabBar() {
   return (
-    <nav aria-label="主導覽" className="flex h-[65px] w-[calc(100vw-40px)] max-w-[340px] justify-between rounded-[50px] bg-blue px-[11px] pt-[10px]">
+    <nav aria-label="主導覽" className="flex h-[65px] w-[calc(100vw-40px)] max-w-[340px] justify-between rounded-[50px] bg-blue px-[11px] pt-[10px] land:h-[52px] land:pt-[6px]">
       {TABS.map((tab) => (
         <NavLink
           key={tab.to}
@@ -21,12 +21,12 @@ export default function TabBar() {
           end={tab.end}
           aria-label={tab.label}
           className={({ isActive }) =>
-            `flex h-[46px] w-[calc(50%-14px)] max-w-[145px] items-center justify-center rounded-[42px] transition-colors duration-300 ${
+            `flex h-[46px] w-[calc(50%-14px)] max-w-[145px] items-center justify-center rounded-[42px] transition-colors duration-300 land:h-10 ${
               isActive ? 'bg-paper' : ''
             }`
           }
         >
-          <img src={tab.icon} alt="" aria-hidden="true" className="h-[35px] w-[35px] object-contain" />
+          <img src={tab.icon} alt="" aria-hidden="true" className="h-[35px] w-[35px] object-contain land:h-7 land:w-7" />
         </NavLink>
       ))}
     </nav>

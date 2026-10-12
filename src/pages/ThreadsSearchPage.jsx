@@ -66,11 +66,11 @@ export default function ThreadsSearchPage() {
   return (
     // 沒有 AppLayout（無 TabBar），外框與底部留白（含 iOS safe-area）自己處理；
     // 底部留 90px：滑到底時最後一張卡片不會被「回到頂部」圓鈕（離底 20、高 50）蓋住
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(90px+env(safe-area-inset-bottom))]">
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(90px+env(safe-area-inset-bottom))] land:max-w-none">
       <FormHeader title="Threads尋找遺失物" onBack={() => navigate(-1)} />
 
       {/* 搜尋列（inner）：寬 calc(100% - 44px)、最大 340、高 46、圓角 10、padding 10 20、間距 10、icon 20×20 */}
-      <div className="mt-5 box-border flex h-[46px] w-[calc(100%-44px)] max-w-[340px] shrink-0 items-center gap-[10px] rounded-[10px] border border-black bg-input px-5 py-[10px]">
+      <div className="mt-5 box-border flex h-[46px] w-[calc(100%-44px)] max-w-[340px] shrink-0 items-center gap-[10px] rounded-[10px] border border-black bg-input px-5 py-[10px] land:mt-3 land:max-w-[708px]">
         <MagnifyingGlassIcon className="h-5 w-5 shrink-0" />
         <input
           type="text"
@@ -82,11 +82,12 @@ export default function ThreadsSearchPage() {
       </div>
 
       {/* 貼文清單：340 寬、卡片間距 15；卡片 padding 20、間距 15、文字 16/500 最多 3 行 */}
-      <div className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-[15px]">
-        {state === 'loading' && <div className="py-5 text-center text-base opacity-60">載入中...</div>}
-        {state === 'error' && <div className="py-5 text-center text-sm leading-normal text-error">載入失敗，請檢查網路後再試一次</div>}
-        {state === 'offline' && <div className="py-5 text-center text-sm leading-normal text-error">目前離線，尚未儲存 Threads 貼文，請連上網路後再試一次</div>}
-        {state === 'ready' && filtered.length === 0 && <div className="py-5 text-center text-base opacity-60">目前尚無 Threads 協尋文</div>}
+      <div className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-[15px]
+                      land:mt-3 land:grid land:max-w-[708px] land:grid-cols-2 land:items-start land:gap-[14px]">
+        {state === 'loading' && <div className="py-5 text-center land:col-span-full text-base opacity-60">載入中...</div>}
+        {state === 'error' && <div className="py-5 text-center land:col-span-full text-sm leading-normal text-error">載入失敗，請檢查網路後再試一次</div>}
+        {state === 'offline' && <div className="py-5 text-center land:col-span-full text-sm leading-normal text-error">目前離線，尚未儲存 Threads 貼文，請連上網路後再試一次</div>}
+        {state === 'ready' && filtered.length === 0 && <div className="py-5 text-center land:col-span-full text-base opacity-60">目前尚無 Threads 協尋文</div>}
 
         {state === 'ready' &&
           filtered.map((p) => (
