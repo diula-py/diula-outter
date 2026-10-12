@@ -178,7 +178,7 @@ export default function TermsPage() {
               <li>此開放資料依政府資料開放授權條款 (Open Government Data License) 進行公眾釋出，使用者於遵守本條款各項規定之前提下，得利用之。</li>
               <li>
                 政府資料開放授權條款：
-                <a href="https://data.gov.tw/license" target="_blank" rel="noopener noreferrer" className="break-all text-brown underline">
+                <a href="https://data.gov.tw/license" target="_blank" rel="noopener noreferrer" className="break-words text-brown underline">
                   https://data.gov.tw/license
                 </a>
               </li>
