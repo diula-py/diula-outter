@@ -1,4 +1,4 @@
-import { Routes, Route, Outlet } from 'react-router-dom'
+import { Routes, Route, Outlet, Navigate } from 'react-router-dom'
 import AppLayout from './layouts/AppLayout'
 import RequireAuth from './components/RequireAuth'
 import LoginPage from './pages/LoginPage'
@@ -75,6 +75,9 @@ export default function App() {
           <Route path="/register/success" element={<RegisterSuccessPage />} />
           <Route path="/register/other" element={<RegisterOtherPage />} />
         </Route>
+
+        {/* 打錯或已不存在的網址：導回首頁（未登入會再被 RequireAuth 導去登入頁），不要整片空白 */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   )
