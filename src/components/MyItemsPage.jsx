@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { asset } from '../lib/asset'
 import { LOST_STATUS } from '../data/itemStatus'
 import { normalizeIdWording } from '../lib/text'
+import { friendlyError } from '../lib/errors'
 
 /**
  * 「我的遺失物／我的拾獲物」清單頁（inner page-15／page-18）。
@@ -40,11 +41,16 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
   const cached = getCachedMyItems(kind, userId)
   const [items, setItems] = useState(cached || [])
   const [loading, setLoading] = useState(!cached)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     let alive = true
     listMyItems(kind, userId).then((list) => {
-      if (alive) { setItems(list); setLoading(false) }
+      if (alive) { setItems(list); setError(''); setLoading(false) }
+    }).catch((e) => {
+      // 讀取失敗（後端冷啟動換 token 失敗、網路斷線…）不能停在「載入中...」：改顯示錯誤；有快取就照舊顯示快取
+      console.warn('讀取我的物品失敗：', e)
+      if (alive) { setError(friendlyError(e)); setLoading(false) }
     })
     return () => { alive = false }
   }, [kind, userId])
@@ -113,7 +119,8 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
       <div className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-[15px]
                       land:mt-3 land:grid land:max-w-[708px] land:grid-cols-2 land:items-start land:gap-[14px]">
         {loading && <p className={`${note} text-brown land:col-span-full`}>載入中...</p>}
-        {!loading && filtered.length === 0 && <p className={`${note} text-[#888] land:col-span-full`}>{emptyText}</p>}
+        {!loading && error && items.length === 0 && <p className={`${note} text-error land:col-span-full`}>{error}</p>}
+        {!loading && !(error && items.length === 0) && filtered.length === 0 && <p className={`${note} text-[#888] land:col-span-full`}>{emptyText}</p>}
 
         {filtered.map((it) => (
           <button
