@@ -73,17 +73,19 @@ export default function ProfilePage() {
         />
       </div>
 
-      {/* 登出：110×40，y=601；關於／服務條款／隱私權政策：12/500 底線，y=671 */}
+      {/* 登出：110×40；關於／服務條款／隱私權政策：12/500 底線。
+          上方間距原本照 inner 各 30，iPhone 14 Pro 主畫面 App 內容超出一點，黏在底部的 TabBar 會壓到連結（只剩 7px）；
+          改成各 20（design.md 元件間距），整頁一個畫面放得下，連結距 TabBar 27px。 */}
       <button
         type="button"
         onClick={() => setConfirmLogout(true)}
-        className="mt-[30px] ml-px h-10 w-[110px] rounded-[50px] border border-black bg-input text-base font-medium text-brown
+        className="mt-5 ml-px h-10 w-[110px] rounded-[50px] border border-black bg-input text-base font-medium text-brown
                    land:col-start-2 land:mt-1 land:justify-self-center
                    transition hover:bg-[#ececec] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
       >
         登出
       </button>
-      <div className="mt-[30px] ml-[3px] flex gap-5 text-xs font-medium text-brown land:col-start-1 land:row-start-4 land:mt-1 land:justify-self-center">
+      <div className="mt-5 ml-[3px] flex gap-5 text-xs font-medium text-brown land:col-start-1 land:row-start-4 land:mt-1 land:justify-self-center">
         <a href="https://about.diula.co" target="_blank" rel="noopener noreferrer" className="underline">
           關於DiuLa!
         </a>
