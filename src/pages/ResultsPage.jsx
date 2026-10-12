@@ -193,7 +193,7 @@ export default function ResultsPage() {
           className="mt-5 text-xs font-medium text-brown underline land:mt-3
                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >
-          臺北捷運資料顯名聲明
+          資料來源：臺北大眾捷運股份有限公司
         </button>
       )}
 
