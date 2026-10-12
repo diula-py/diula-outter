@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { CalendarIcon, LocationIcon } from '../components/icons'
 import { FormHeader, FormPage, UploadBox, FormCard, FormRow, RegionField, SubmitButton, pillInput } from '../components/FormKit'
 import { todayStr } from '../lib/date'
-import { wakeAi } from '../lib/api'
+import { wakeAi, wakeFlask } from '../lib/api'
 import { downscale } from '../lib/image'
 
 export default function CrossSearchPage() {
@@ -22,7 +22,7 @@ export default function CrossSearchPage() {
   const place = [placeCity, placeDistrict].filter(Boolean).join(' ') // 遺失地點合併字串
 
   // 進頁就先喚醒 Render AI 服務（冷啟動 ~60 秒），送出時多半已就緒。
-  useEffect(() => { wakeAi() }, [])
+  useEffect(() => { wakeAi(); wakeFlask() }, [])
 
   function handlePhoto(e) {
     const file = e.target.files?.[0]

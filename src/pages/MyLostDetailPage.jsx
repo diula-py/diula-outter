@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { CalendarIcon, LocationIcon } from '../components/icons'
 import { ConfirmFoundModal, DeleteConfirmModal, DeleteSuccessModal, DeleteThreadConfirmModal } from '../components/DialogKit'
 import { DetailHeader, DetailImage, InfoBox, InfoRow, TagsBox, ActionButton, DeleteButton } from '../components/DetailKit'
 import { updateMyItem, removeMyItem } from '../lib/items'
-import { flask } from '../lib/api'
+import { flask, wakeFlask } from '../lib/api'
 import { getAuthHeaders } from '../lib/authToken'
 import { asset } from '../lib/asset'
 import { LOST_STATUS } from '../data/itemStatus'
@@ -27,6 +27,8 @@ export default function MyLostDetailPage() {
   const [status, setStatus] = useState(passed?.status || LOST_STATUS.BROADCASTING)
   const [dialog, setDialog] = useState(null) // null | 'confirm' | 'delete' | 'deleted'
   const [busy, setBusy] = useState(false)
+  // 刪除、我找到了都會先打 Flask，一進頁面就先叫醒它
+  useEffect(() => { wakeFlask() }, [])
   // Threads 自動發文的貼文連結；非 Threads 的協尋物沒有這欄 → 不顯示連結列。
   const [threadUrl, setThreadUrl] = useState(passed?.thread_post_url || '')
   const [deletingThread, setDeletingThread] = useState(false)

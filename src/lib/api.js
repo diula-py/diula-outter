@@ -26,6 +26,16 @@ export function wakeAi() {
   fetch(aiApi('/'), { method: 'GET' }).catch(() => {})
 }
 
+// 喚醒 Render 的 Flask 服務（智慧比對 /match、協尋發文、訂閱推播都在它上面）。
+// 冷啟動實測約 30 秒，沒先叫醒的話第一次比對會卡在「比對中…」、刪除物品時按鈕也會灰著不動。
+// 跟 wakeAi 一樣在協尋填表頁、遺失物詳情頁一進來就戳；no-cors 只為了叫醒，不讀回應。
+let lastFlaskWake = 0
+export function wakeFlask() {
+  if (!navigator.onLine || Date.now() - lastFlaskWake < 5 * 60 * 1000) return
+  lastFlaskWake = Date.now()
+  fetch(flask('/'), { method: 'GET', mode: 'no-cors', cache: 'no-store' }).catch(() => {})
+}
+
 // 喚醒 Render 的 Spring 服務（diula-api）：LINE 登入要跟它換 Firebase custom token。
 // 免費方案閒置 15 分鐘休眠，Docker 的 Spring Boot 冷啟動可能超過 60 秒——比 Safari 的
 // fetch 預設逾時還久，於是「叫醒它的那一次請求」自己先被瀏覽器砍掉（登入因此失敗）。
