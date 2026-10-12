@@ -7,12 +7,13 @@ import TabBar from '../components/TabBar'
  */
 export default function AppLayout() {
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col bg-paper">
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col bg-paper land:max-w-none">
       <main className="flex-1">
         <Outlet />
       </main>
 
-      <div className="pointer-events-none sticky bottom-[calc(40px+env(safe-area-inset-bottom))] mb-[calc(40px+env(safe-area-inset-bottom))] mt-5 flex justify-center">
+      <div className="pointer-events-none sticky bottom-[calc(40px+env(safe-area-inset-bottom))] mb-[calc(40px+env(safe-area-inset-bottom))] mt-5 flex justify-center
+                      land:bottom-[calc(10px+env(safe-area-inset-bottom))] land:mb-[calc(10px+env(safe-area-inset-bottom))] land:mt-2">
         <div className="pointer-events-auto">
           <TabBar />
         </div>

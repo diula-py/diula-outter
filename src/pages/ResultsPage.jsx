@@ -88,9 +88,9 @@ export default function ResultsPage() {
   if (!location.state) return <Navigate to="/" replace />
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(100px+env(safe-area-inset-bottom))]">
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(100px+env(safe-area-inset-bottom))] land:max-w-none">
       {/* Header 80px：標題＋右上角「回首頁」（先跳確認彈窗）；沒有返回鍵（inner page-06） */}
-      <header className="safe-header relative z-10 w-full shrink-0 rounded-b-[20px] bg-card [--header-h:80px]">
+      <header className="safe-header relative z-10 w-full shrink-0 rounded-b-[20px] bg-card [--header-h:80px] land:[--header-h:64px]">
         <div className="relative flex h-full items-center justify-center">
           <h1 className="text-xl font-bold text-brown">比對結果</h1>
           <button
@@ -106,7 +106,7 @@ export default function ResultsPage() {
 
       {/* 來源分頁：4 顆 80×45、間距 10、置中；DiuLa! 那顆用最大 54×24 的 logo 圖。
           窄螢幕（放不下 350）4 顆平均縮小，文字仍置中 */}
-      <div className="mt-5 flex w-[calc(100%-40px)] max-w-[350px] shrink-0 justify-center gap-[10px]">
+      <div className="mt-5 flex w-[calc(100%-40px)] max-w-[350px] shrink-0 justify-center gap-[10px] land:mt-3">
         {SOURCES.map((s) => {
           const active = source === s.key
           const isDiula = s.key === 'diula'
@@ -133,7 +133,8 @@ export default function ResultsPage() {
       </div>
 
       {/* 結果清單：340 寬、卡片間距 20 */}
-      <div ref={listRef} className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-5">
+      <div ref={listRef} className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-5
+                                    land:mt-3 land:grid land:max-w-[708px] land:grid-cols-2 land:items-start land:gap-[14px]">
         {list.length === 0 && (
           <div className={emptyBox}>
             {source === 'diula' ? (
@@ -188,7 +189,7 @@ export default function ResultsPage() {
 
       {/* 都沒有我的物品：藍底膠囊 350×60（同其他主要膠囊）、陰影，浮在離視窗底部 20px（＋iOS 底部橫條安全區）。
           隱藏時淡出並往下 10px、不能點也不能用 Tab 選到；頁面底部留 100px，滑到底最後一張卡片不會被蓋住 */}
-      <div className="pointer-events-none fixed bottom-[calc(20px+env(safe-area-inset-bottom))] left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[350px] -translate-x-1/2 justify-center">
+      <div className="pointer-events-none fixed bottom-[calc(20px+env(safe-area-inset-bottom))] left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[350px] -translate-x-1/2 justify-center land:bottom-[calc(10px+env(safe-area-inset-bottom))] land:max-w-[708px]">
         <button
           type="button"
           onClick={() => setSosOpen(true)}
@@ -206,7 +207,7 @@ export default function ResultsPage() {
           標題 24/700 離頂端 49、按鈕 254×70 間距 20、第一顆離頂端 105、底部留 25） */}
       {sosOpen && (
         <Overlay onClose={() => setSosOpen(false)}>
-          <div role="dialog" aria-modal="true" aria-label="都沒有我的物品" className="relative box-border flex h-[380px] w-[calc(100vw-20px)] max-w-[305px] flex-col items-center rounded-[10px] bg-card pt-[49px] shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
+          <div role="dialog" aria-modal="true" aria-label="都沒有我的物品" className="relative box-border flex h-[380px] w-[calc(100vw-20px)] max-w-[305px] shrink-0 flex-col items-center rounded-[10px] bg-card pt-[49px] shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
             <button
               type="button"
               onClick={() => setSosOpen(false)}
