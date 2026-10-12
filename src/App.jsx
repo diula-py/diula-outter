@@ -24,6 +24,7 @@ import MyFoundPage from './pages/MyFoundPage'
 import MyFoundDetailPage from './pages/MyFoundDetailPage'
 import TermsPage from './pages/TermsPage'
 import PrivacyPage from './pages/PrivacyPage'
+import MetroAttributionPage from './pages/MetroAttributionPage'
 import OfflineBanner from './components/OfflineBanner'
 import StatusBarColor from './components/StatusBarColor'
 import ScrollToTop from './components/ScrollToTop'
@@ -40,6 +41,7 @@ export default function App() {
         {/* 條款要在登入前就看得到（登入時的同意彈窗會連過來） */}
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/attribution/metro" element={<MetroAttributionPage />} />
 
         {/* 2026-09-04 定案：一打開網頁就強制登入，未登入一律導去 /login，
             所以下面全部包在 RequireAuth 底下，不是只有寫入動作的地方才判斷。 */}

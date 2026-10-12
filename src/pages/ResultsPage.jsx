@@ -184,6 +184,19 @@ export default function ResultsPage() {
         })}
       </div>
 
+      {/* 北捷分頁最底部：臺北捷運開放資料的顯名聲明（政府資料開放授權條款要求標示出處），
+          樣式同登入頁、「我的」頁的條款連結（12/500 底線） */}
+      {source === 'metro' && (
+        <button
+          type="button"
+          onClick={() => navigate('/attribution/metro')}
+          className="mt-5 text-xs font-medium text-brown underline land:mt-3
+                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+        >
+          臺北捷運資料顯名聲明
+        </button>
+      )}
+
       {/* 回到頂部：在「都沒有我的物品」膠囊上方 15px */}
       <BackToTopButton bottomClass="bottom-[calc(95px+env(safe-area-inset-bottom))]" />
 
