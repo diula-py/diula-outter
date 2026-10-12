@@ -208,6 +208,9 @@ export function AuthProvider({ children }) {
 
   const loginWithGoogle = useCallback(async () => {
     const provider = new GoogleAuthProvider()
+    // 展場共用手機：登出只登出 DiuLa，瀏覽器的 Google 帳號還在，
+    // 不強制選帳號的話下一位可能直接登入成上一位的 Google 帳號
+    provider.setCustomParameters({ prompt: 'select_account' })
     const result = await signInWithPopup(auth, provider)
     const fbUser = result.user
     const userId = await getOrCreateUserId('G', fbUser.uid)
