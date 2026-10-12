@@ -18,6 +18,9 @@ export default function CrossSearchPage() {
   const [placeCity, setPlaceCity] = useState('')
   const [placeDistrict, setPlaceDistrict] = useState('')
   const [error, setError] = useState('')
+  // 送出中：縮圖要幾百毫秒，連點會推兩次過場頁、建出兩筆遺失物。ref 擋同一瞬間的第二下，state 讓按鈕變灰
+  const submittingRef = useRef(false)
+  const [submitting, setSubmitting] = useState(false)
 
   const place = [placeCity, placeDistrict].filter(Boolean).join(' ') // 遺失地點合併字串
 
@@ -52,8 +55,20 @@ export default function CrossSearchPage() {
     // 手機實拍照片常達數 MB，先縮圖再送，避免上傳過大失敗（Load failed）並加快上傳。
     // 只送目前模式的資料：圖片模式送照片、文字模式送描述。
     // 否則在圖片模式上傳過照片再切到文字模式，那張照片仍會被存檔、帶進 Threads 協尋文
+    if (submittingRef.current) return
+    submittingRef.current = true
+    setSubmitting(true)
     const isImage = mode === 'image'
-    const base64Image = isImage && photo ? await downscale(await fileToDataUrl(photo)) : null
+    let base64Image = null
+    try {
+      base64Image = isImage && photo ? await downscale(await fileToDataUrl(photo)) : null
+    } catch (e) {
+      console.warn('讀取照片失敗：', e)
+      setError('照片讀取失敗，請重新上傳')
+      submittingRef.current = false
+      setSubmitting(false)
+      return
+    }
     navigate('/search/analyzing', {
       state: { mode, date, place, photoUrl: isImage ? photoUrl : '', base64Image, desc: isImage ? '' : desc.trim() },
     })
@@ -125,7 +140,9 @@ export default function CrossSearchPage() {
       </FormCard>
 
       {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error land:col-start-2 land:mt-0 land:w-full land:max-w-none">{error}</p>}
-      <SubmitButton onClick={handleSubmit}>填寫完成，AI 辨識產生標籤</SubmitButton>
+      <SubmitButton onClick={handleSubmit} disabled={submitting}>
+        {submitting ? '送出中…' : '填寫完成，AI 辨識產生標籤'}
+      </SubmitButton>
     </FormPage>
   )
 }
