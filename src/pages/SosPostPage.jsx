@@ -8,7 +8,7 @@ import { addMyItem, getMyItem, updateMyItem } from '../lib/items'
 import { markLostHandled } from '../lib/handledLost'
 import { HttpError, friendlyError } from '../lib/errors'
 import { useAuth } from '../context/AuthContext'
-import { flask } from '../lib/api'
+import { flask, apiFetch } from '../lib/api'
 import { getAuthHeaders } from '../lib/authToken'
 import { LOST_STATUS } from '../data/itemStatus'
 import { titleFromTags } from '../data/tagTaxonomy'
@@ -94,7 +94,7 @@ export default function SosPostPage() {
         // 用官方帳號發文，後端要求登入憑證（見 diula-outter 的 auth_token.py）。
         const authHeaders = await getAuthHeaders()
         if (!authHeaders) throw new Error('登入狀態已失效，請重新登入')
-        const res = await fetch(flask('/threads/submit'), {
+        const res = await apiFetch(flask('/threads/submit'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', ...authHeaders },
           body: JSON.stringify({ text, image: threadsImage, name, lost_date: date, location: fullPlace }),

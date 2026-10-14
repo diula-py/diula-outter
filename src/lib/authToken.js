@@ -1,7 +1,7 @@
 import { signInWithCustomToken } from 'firebase/auth'
 import liff, { isLiffLoggedIn } from './liff'
 import { auth } from './firebase'
-import { spring } from './api'
+import { spring, apiFetch } from './api'
 import { HttpError } from './errors'
 
 // 打後端寫入／讀取個資的 API 時要附上的登入憑證。
@@ -136,7 +136,7 @@ export async function fetchLineCustomToken(timeoutMs) {
   const ctrl = new AbortController()
   const timer = timeoutMs ? setTimeout(() => ctrl.abort(), timeoutMs) : null
   try {
-    const res = await fetch(spring('/api/auth/firebase-token'), {
+    const res = await apiFetch(spring('/api/auth/firebase-token'), {
       method: 'POST',
       headers,
       signal: ctrl.signal,

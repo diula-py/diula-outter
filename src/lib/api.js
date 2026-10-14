@@ -48,6 +48,43 @@ export function wakeSpring() {
   fetch(spring('/index.html'), { method: 'GET', cache: 'no-store' }).catch(() => {})
 }
 
+// 自動重試「伺服器還在開機」的請求。
+//
+// 三個後端都在 Render 免費方案上，閒置 15 分鐘就休眠。下一個使用者按下去時服務正在開機，
+// Render 的代理層會直接回 502/503/504——那不是我們的程式回的，請求根本還沒進到程式裡。
+// 使用者看到的是「伺服器忙碌中」，但其實再等幾秒就好了，所以這裡自己等一下再送一次。
+//
+// ⚠ 只重試 502/503/504，絕不重試 500：
+//   502/503/504 代表請求沒被處理過，重送一定安全；
+//   500 是程式自己炸了，可能已經寫了一半資料，重送會變成重複發文／重複訂閱。
+const WAKE_STATUSES = [502, 503, 504]
+const WAKE_RETRY_DELAYS = [2000, 5000, 10000]   // 累計 17 秒，再加上每次請求本身的等待
+
+// 可中斷的等待：呼叫端有給 AbortSignal（例如 AI 辨識的 90 秒逾時）時，
+// 逾時要能把「正在等重試」的這段也一起取消，不然逾時形同虛設。
+function sleep(ms, signal) {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) return reject(new DOMException('Aborted', 'AbortError'))
+    const timer = setTimeout(resolve, ms)
+    signal?.addEventListener('abort', () => {
+      clearTimeout(timer)
+      reject(new DOMException('Aborted', 'AbortError'))
+    }, { once: true })
+  })
+}
+
+// 用法同 fetch（回傳的也是 Response），差別只在遇到「開機中」會自己重試。
+// body 必須是可重送的（字串或 FormData）——我們的請求都是 JSON 字串，沒問題。
+export async function apiFetch(url, init = {}) {
+  let res = await fetch(url, init)
+  for (const delay of WAKE_RETRY_DELAYS) {
+    if (!WAKE_STATUSES.includes(res.status)) return res
+    await sleep(delay, init.signal)
+    res = await fetch(url, init)
+  }
+  return res
+}
+
 // AI 圖片辨識：逾時就放棄，避免 Render 或 Gemini 卡住時畫面停在進度條。
 // 90 秒 = 冷啟動 ~60 秒 + Gemini 辨識的餘裕。
 const AI_TIMEOUT_MS = 90 * 1000
@@ -55,7 +92,7 @@ export async function analyzeItem({ text, base64Image }) {
   const ctrl = new AbortController()
   const timer = setTimeout(() => ctrl.abort(), AI_TIMEOUT_MS)
   try {
-    const res = await fetch(aiApi('/analyze-item'), {
+    const res = await apiFetch(aiApi('/analyze-item'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text, base64Image }),
