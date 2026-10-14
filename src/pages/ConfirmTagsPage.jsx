@@ -4,7 +4,7 @@ import { CalendarIcon, LocationIcon, PlusIcon } from '../components/icons'
 import { FormHeader, FormPage, FormCard, FormRow, RegionField, SubmitButton, pillInput } from '../components/FormKit'
 import { asset } from '../lib/asset'
 import TagPickerModal from '../components/TagPickerModal'
-import { flask } from '../lib/api'
+import { flask, apiFetch } from '../lib/api'
 import { todayStr } from '../lib/date'
 import { downscale } from '../lib/image'
 import { addMyItem, updateMyItem } from '../lib/items'
@@ -62,7 +62,7 @@ export default function ConfirmTagsPage() {
       return
     }
     try {
-      const res = await fetch(flask('/match'), {
+      const res = await apiFetch(flask('/match'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

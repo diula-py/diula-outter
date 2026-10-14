@@ -20,7 +20,11 @@ export function friendlyError(e) {
   if (e.name === 'HttpError') {
     if (e.status === 401 || e.status === 403) return '登入已過期，請重新登入'
     if (e.status === 413) return '照片太大，請換一張或重新裁切'
-    if (e.status >= 500) return '伺服器忙碌中，請稍後再試'
+    // 502/503/504 是 Render 代理層在服務開機時回的，不是程式出錯。api.js 的 apiFetch
+    // 已經自動重試過幾次了，還是這個狀態代表開機特別久——告訴使用者實情比「忙碌中」有用，
+    // 他才知道「再等一下就好」而不是以為壞了。
+    if (e.status === 502 || e.status === 503 || e.status === 504) return '伺服器正在喚醒中，請稍候約 30 秒再試一次'
+    if (e.status >= 500) return '伺服器發生錯誤，請稍後再試'
     // 其他 4xx：後端訊息是中文（例如限流說明）就照用，否則給通用說法
     return hasChinese(e.serverMessage) ? e.serverMessage : '送出的資料有誤，請檢查後再試一次'
   }

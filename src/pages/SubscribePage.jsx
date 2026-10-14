@@ -4,7 +4,7 @@ import { ChevronLeftIcon, CircleCheckIcon } from '../components/icons'
 import { addMyItem, updateMyItem } from '../lib/items'
 import { markLostHandled } from '../lib/handledLost'
 import { useAuth } from '../context/AuthContext'
-import { flask } from '../lib/api'
+import { flask, apiFetch } from '../lib/api'
 import { getAuthHeaders } from '../lib/authToken'
 import { LOST_STATUS } from '../data/itemStatus'
 import { downscale } from '../lib/image'
@@ -51,7 +51,7 @@ export default function SubscribePage() {
     if (!sub) try {
       const authHeaders = await getAuthHeaders()
       if (!authHeaders) throw new Error('登入狀態已失效，請重新登入')
-      const res = await fetch(flask('/subscriptions'), {
+      const res = await apiFetch(flask('/subscriptions'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders },
         body: JSON.stringify({

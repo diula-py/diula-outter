@@ -4,7 +4,7 @@ import { CalendarIcon, LocationIcon, PersonChalkboardIcon } from '../components/
 import MaskingModal from '../components/MaskingModal'
 import { FormHeader, FormPage, UploadBox, FormCard, FormRow, RegionField, SubmitButton, pillInput } from '../components/FormKit'
 import TagPickerModal from '../components/TagPickerModal'
-import { spring } from '../lib/api'
+import { spring, apiFetch } from '../lib/api'
 import { getAuthHeaders } from '../lib/authToken'
 import { todayStr } from '../lib/date'
 import { downscale } from '../lib/image'
@@ -109,7 +109,7 @@ export default function RegisterIdPage() {
       // 這時後端多半已醒。非網路錯誤（如 413）不重試，直接往下拋。
       let res
       try {
-        res = await fetch(SUBMIT_ENDPOINT, {
+        res = await apiFetch(SUBMIT_ENDPOINT, {
           method: 'POST',
           headers,
           body: JSON.stringify(payload),
@@ -117,7 +117,7 @@ export default function RegisterIdPage() {
       } catch {
         setError('伺服器喚醒中，請稍候…')
         await new Promise((r) => setTimeout(r, 3000))
-        res = await fetch(SUBMIT_ENDPOINT, {
+        res = await apiFetch(SUBMIT_ENDPOINT, {
           method: 'POST',
           headers,
           body: JSON.stringify(payload),
