@@ -124,7 +124,7 @@ export default function ConfirmTagsPage() {
           改一邊要同步改另一邊。放在日期卡正下方、橫式同在右欄。 */}
       <p className="mt-1 w-[calc(100%-40px)] max-w-[340px] text-xs leading-normal text-brown/70
                     land:col-start-2 land:mt-0 land:w-full land:max-w-none">
-        ℹ️ 系統會比對<b className="text-brown">遺失日前 5 天～後 30 天</b>內拾獲的失物
+        系統會比對<b className="text-brown">遺失日前 5 天～後 30 天</b>內拾獲的失物
       </p>
 
       {/* AI 標籤（可增刪）：340 寬、padding 20、標題 16/600（同 inner）、chip 高 30 */}
