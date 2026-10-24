@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { CalendarIcon, LocationIcon, PlusIcon } from '../components/icons'
+import { CalendarIcon, LocationIcon, PersonChalkboardIcon, PlusIcon } from '../components/icons'
 import { FormHeader, FormPage, FormCard, FormRow, RegionField, SubmitButton, pillInput } from '../components/FormKit'
 import TagPickerModal from '../components/TagPickerModal'
 import { addMyItem } from '../lib/items'
@@ -12,7 +12,7 @@ import { friendlyError } from '../lib/errors'
  * 登錄拾獲物的「確認標籤」頁（inner page-11）：可改日期／拾獲地點／備註，按
  * 「確認標籤，完成登錄」才寫進「我的拾獲物」，再到登錄成功頁。
  * 證件類（RegisterIdPage）直接進來、標籤固定成選好的證件別；非證件類先過 AI 辨識頁、標籤可增刪。
- * 版面同搜尋流程的確認標籤頁（ConfirmTagsPage），送往地點沿用登錄頁填的值（inner 這頁也沒有這欄）。
+ * 版面同搜尋流程的確認標籤頁（ConfirmTagsPage）；拾獲／送往的詳細地點也能在這裡再改（inner 這頁沒有送往欄）。
  */
 export default function RegisterConfirmPage() {
   const navigate = useNavigate()
@@ -23,6 +23,9 @@ export default function RegisterConfirmPage() {
   const [date, setDate] = useState(item?.date || todayStr())
   const [city, setCity] = useState((item?.place || '').split(' ')[0] || '')
   const [district, setDistrict] = useState((item?.place || '').split(' ')[1] || '')
+  const [foundDetail, setFoundDetail] = useState(item?.location_detail || '')
+  const [sendTo, setSendTo] = useState(item?.dropLocation || '')
+  const [sendToDetail, setSendToDetail] = useState(item?.dropLocation_detail || '')
   const [remark, setRemark] = useState(item?.remark || '')
   const [tags, setTags] = useState(item?.tags || [])
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -43,11 +46,16 @@ export default function RegisterConfirmPage() {
     setError('')
     if (!date) { setError('請選擇拾獲日期'); return }
     if (!city || !district) { setError('請選擇拾獲的縣市與地區'); return }
+    if (!sendTo.trim()) { setError('請填寫送往的地點'); return }
+    if (!sendToDetail.trim()) { setError('請填寫送往的詳細地點'); return }
     if (tags.length === 0) { setError('請至少選擇一個標籤！'); return }
     setBusy(true)
     try {
       const place = [city, district].filter(Boolean).join(' ') || item.place
-      const saved = await addMyItem('found', userId, { ...item, date: date || item.date, place, remark: remark.trim(), tags })
+      const saved = await addMyItem('found', userId, {
+        ...item, date: date || item.date, place, remark: remark.trim(), tags,
+        location_detail: foundDetail.trim(), dropLocation: sendTo.trim(), dropLocation_detail: sendToDetail.trim(),
+      })
       navigate('/register/success', { replace: true, state: { id: saved.id } })
     } catch (e) {
       console.error('存進「我的拾獲物」失敗:', e)
@@ -66,7 +74,7 @@ export default function RegisterConfirmPage() {
         {item.image && <img src={item.image} alt="" className="h-full w-full bg-input object-contain" />}
       </div>
 
-      {/* 日期 / 拾獲地點 / 備註 */}
+      {/* 日期 / 拾獲地點＋詳細 / 送往＋詳細 / 備註 */}
       <FormCard mt={20}>
         <FormRow icon={<CalendarIcon className="h-[35px] w-[35px]" />}>
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="拾獲日期" className={pillInput} />
@@ -77,6 +85,15 @@ export default function RegisterConfirmPage() {
           city={city} setCity={setCity}
           district={district} setDistrict={setDistrict}
         />
+        <FormRow typing>
+          <input type="text" value={foundDetail} onChange={(e) => setFoundDetail(e.target.value)} placeholder="拾獲的詳細地點（選填）" aria-label="拾獲的詳細地點" className={pillInput} />
+        </FormRow>
+        <FormRow icon={<PersonChalkboardIcon className="h-[35px] w-[35px]" />} typing>
+          <input type="text" value={sendTo} onChange={(e) => setSendTo(e.target.value)} placeholder="送往的地點" aria-label="送往的地點" className={pillInput} />
+        </FormRow>
+        <FormRow typing>
+          <input type="text" value={sendToDetail} onChange={(e) => setSendToDetail(e.target.value)} placeholder="送往的詳細地點" aria-label="送往的詳細地點" className={pillInput} />
+        </FormRow>
         <FormRow text="備註" typing>
           <input type="text" value={remark} onChange={(e) => setRemark(e.target.value)} className={pillInput} />
         </FormRow>

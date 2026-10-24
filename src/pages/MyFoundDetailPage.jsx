@@ -15,8 +15,9 @@ export default function MyFoundDetailPage() {
     code: passed?.id ? `＃${String(passed.id).toUpperCase()}` : '--', // 同遺失物詳情：＃文件 ID（大寫）
     date: (passed?.date || '').replaceAll('-', '/') || '—',
     // inner：「拾獲地點：…」「送往：…」，空值顯示「未知地點」；備註沒填改顯示描述
-    place: `拾獲地點：${passed?.place || '未知地點'}`,
-    dropLocation: `送往：${passed?.dropLocation || '未知地點'}`,
+    // 詳細地點接在後面（舊資料沒有這兩欄就不接）
+    place: `拾獲地點：${[passed?.place || '未知地點', passed?.location_detail].filter(Boolean).join(' ')}`,
+    dropLocation: `送往：${[passed?.dropLocation || '未知地點', passed?.dropLocation_detail].filter(Boolean).join(' ')}`,
     remark: passed?.remark || passed?.desc || '--',
     tags: passed?.tags && passed.tags.length ? passed.tags : [],
     img: passed?.image || passed?.img || null,
