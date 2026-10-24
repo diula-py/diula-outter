@@ -26,13 +26,15 @@ export default function RegisterOtherPage() {
   const [foundCity, setFoundCity] = useState('')       // 拾獲地點：縣市
   const [foundDistrict, setFoundDistrict] = useState('') // 拾獲地點：地區
   const [foundDetail, setFoundDetail] = useState('') // 拾獲的詳細地點（選填）
-  const [sendTo, setSendTo] = useState('')
+  const [dropCity, setDropCity] = useState('')         // 送往地點：縣市
+  const [dropDistrict, setDropDistrict] = useState('') // 送往地點：地區
   const [sendToDetail, setSendToDetail] = useState('') // 送往的詳細地點（必填）
   const [note, setNote] = useState('')
   const [status, setStatus] = useState('idle') // idle | submitting
   const [error, setError] = useState('')
 
   const foundAt = [foundCity, foundDistrict].filter(Boolean).join(' ') // 拾獲地點合併字串
+  const sendTo = [dropCity, dropDistrict].filter(Boolean).join(' ')    // 送往地點合併字串
 
   // 進頁就先喚醒 Render AI 服務（冷啟動 ~60 秒），送出時多半已就緒。
   useEffect(() => { wakeAi() }, [])
@@ -51,7 +53,7 @@ export default function RegisterOtherPage() {
     if (!photo) { setError('請上傳拾獲物圖片'); return }
     if (!date) { setError('請選擇拾獲日期'); return }
     if (!foundCity || !foundDistrict) { setError('請選擇拾獲的縣市與地區'); return }
-    if (!sendTo.trim()) { setError('請填寫送往的地點'); return }
+    if (!dropCity || !dropDistrict) { setError('請選擇送往的縣市與地區'); return }
     if (!sendToDetail.trim()) { setError('請填寫送往的詳細地點'); return }
 
     setStatus('submitting')
@@ -106,9 +108,12 @@ export default function RegisterOtherPage() {
         <FormRow typing>
           <input type="text" value={foundDetail} onChange={(e) => setFoundDetail(e.target.value)} placeholder="拾獲的詳細地點（選填）" aria-label="拾獲的詳細地點" className={pillInput} />
         </FormRow>
-        <FormRow icon={<PersonChalkboardIcon className="h-[35px] w-[35px]" />} typing>
-          <input type="text" value={sendTo} onChange={(e) => setSendTo(e.target.value)} placeholder="送往的地點" className={pillInput} />
-        </FormRow>
+        <RegionField
+          icon={<PersonChalkboardIcon className="h-[35px] w-[35px]" />}
+          prefix="送往的"
+          city={dropCity} setCity={setDropCity}
+          district={dropDistrict} setDistrict={setDropDistrict}
+        />
         <FormRow typing>
           <input type="text" value={sendToDetail} onChange={(e) => setSendToDetail(e.target.value)} placeholder="送往的詳細地點" aria-label="送往的詳細地點" className={pillInput} />
         </FormRow>
