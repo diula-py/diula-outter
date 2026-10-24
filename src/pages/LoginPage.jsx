@@ -130,8 +130,8 @@ export default function LoginPage() {
         <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="w-full max-w-[393px]" />
       </div>
 
-      <p className="mt-[55px] h-6 w-[264px] translate-x-[0.5px] text-center text-2xl font-medium text-brown land:col-start-1 land:mt-0 land:w-full land:justify-self-center">
-        與失物重逢的捷徑
+      <p className="mt-[55px] h-6 whitespace-nowrap text-center text-2xl font-medium text-brown land:col-start-1 land:mt-0 land:w-full land:justify-self-center">
+        一站式AI遺失物協尋平台
       </p>
 
       <button
