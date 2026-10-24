@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { ChevronLeftIcon, CalendarIcon, LocationIcon, DiulaPinIcon } from '../components/icons'
+import { ChevronLeftIcon, CalendarIcon, LocationIcon, PersonChalkboardIcon, DiulaPinIcon } from '../components/icons'
 import { itemTitle } from '../lib/text'
 import { displayTags } from '../data/tagTaxonomy'
 
@@ -23,6 +23,10 @@ export default function ResultDetailPage() {
   const title = itemTitle(item) || '遺失物'
   const place = [item.city, item.district].filter(Boolean).join('') || item.holding_place || item.station || ''
   const isDiula = item.source === 'diula'
+  // DiuLa! 拾獲物的詳細地點與送往（found_items 的 location_detail／dropLocation／dropLocation_detail，
+  // 要 Flask /match 照原欄位名帶回來才有；舊資料沒有就不顯示）
+  const diulaPlace = [place, item.location_detail].filter(Boolean).join(' ')
+  const dropOff = [item.dropLocation, item.dropLocation_detail].filter(Boolean).join(' ')
   const link = SOURCE_LINK[item.source]
   // 後端 /match 回傳的標籤／顏色可能有簡體，顯示前轉繁體
   const tags = displayTags([...(item.free_tags || []), ...(item.color || [])])
@@ -57,7 +61,7 @@ export default function ResultDetailPage() {
 
         {isDiula ? (
           <>
-            {/* DiuLa! 自家資料：日期 / 地點 / 備註 + AI 標籤 */}
+            {/* DiuLa! 自家資料：日期 / 拾獲地點 / 送往 / 備註 + AI 標籤 */}
             <div className="flex flex-col gap-2.5 rounded-[10px] bg-card p-4 land:col-start-2">
               <div className="flex items-center gap-3">
                 <div className="flex w-[46px] shrink-0 items-center justify-center"><CalendarIcon className="h-[35px] w-[35px] text-navy" /></div>
@@ -65,8 +69,14 @@ export default function ResultDetailPage() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="flex w-[46px] shrink-0 items-center justify-center"><LocationIcon className="h-[35px] w-[35px] text-navy" /></div>
-                <div className="flex h-10 min-w-0 flex-1 items-center rounded-[10px] bg-white px-4 text-xs text-brown">{place || '--'}</div>
+                <div className="flex h-10 min-w-0 flex-1 items-center rounded-[10px] bg-white px-4 text-xs text-brown">{diulaPlace || '--'}</div>
               </div>
+              {dropOff && (
+                <div className="flex items-center gap-3">
+                  <div className="flex w-[46px] shrink-0 items-center justify-center"><PersonChalkboardIcon className="h-[35px] w-[35px] text-navy" /></div>
+                  <div className="flex h-10 min-w-0 flex-1 items-center rounded-[10px] bg-white px-4 text-xs text-brown">送往：{dropOff}</div>
+                </div>
+              )}
               <div className="flex items-center gap-3">
                 <div className="flex w-[46px] shrink-0 items-center justify-center"><span className="text-base text-brown">備註</span></div>
                 <div className="flex h-10 min-w-0 flex-1 items-center rounded-[10px] bg-white px-4 text-xs text-brown">{item.holding_place || '--'}</div>

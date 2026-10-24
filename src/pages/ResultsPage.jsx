@@ -158,8 +158,10 @@ export default function ResultsPage() {
           const lines = [
             // 品名（粗體首行）：警政署去掉「拾得人拾獲：…請失主」樣板；北捷 description 為 null 時退回 free_tags[0]
             itemTitle(it),
-            [it.city, it.district].filter(Boolean).join(''),
+            [[it.city, it.district].filter(Boolean).join(''), it.location_detail].filter(Boolean).join(' '),
             it.holding_place || it.station,
+            // DiuLa! 拾獲物：送往哪裡（含詳細地點），要後端 /match 帶回 dropLocation 才有
+            it.dropLocation && `送往：${[it.dropLocation, it.dropLocation_detail].filter(Boolean).join(' ')}`,
             fmtDate(it.found_date),
           ].filter(Boolean)
           return (
