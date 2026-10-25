@@ -5,14 +5,14 @@ import { FormHeader, FormPage, UploadBox, FormCard, FormRow, RegionField, Submit
 import { todayStr } from '../lib/date'
 import { wakeAi, wakeFlask } from '../lib/api'
 import { downscale } from '../lib/image'
+import { useItemPhoto } from '../components/CropModal'
 
 export default function CrossSearchPage() {
   const navigate = useNavigate()
   const fileRef = useRef(null)
 
   const [mode, setMode] = useState('image') // image | text
-  const [photoUrl, setPhotoUrl] = useState('')
-  const [photo, setPhoto] = useState(null)
+  const { photo, previewUrl, cropped, handlePhoto, recrop, modal: cropModal } = useItemPhoto() // 選照片後自動跳出框選
   const [desc, setDesc] = useState('')
   const [date, setDate] = useState(todayStr())
   const [placeCity, setPlaceCity] = useState('')
@@ -26,15 +26,6 @@ export default function CrossSearchPage() {
 
   // 進頁就先喚醒 Render AI 服務（冷啟動 ~60 秒），送出時多半已就緒。
   useEffect(() => { wakeAi(); wakeFlask() }, [])
-
-  function handlePhoto(e) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    if (photoUrl) URL.revokeObjectURL(photoUrl)
-    setPhoto(file)
-    setPhotoUrl(URL.createObjectURL(file))
-    e.target.value = ''
-  }
 
   function fileToDataUrl(file) {
     return new Promise((res, rej) => {
@@ -61,7 +52,8 @@ export default function CrossSearchPage() {
     const isImage = mode === 'image'
     let base64Image = null
     try {
-      base64Image = isImage && photo ? await downscale(await fileToDataUrl(photo)) : null
+      // 有框選就用框內範圍
+      base64Image = isImage && photo ? await downscale(cropped || await fileToDataUrl(photo)) : null
     } catch (e) {
       console.warn('讀取照片失敗：', e)
       setError('照片讀取失敗，請重新上傳')
@@ -70,7 +62,7 @@ export default function CrossSearchPage() {
       return
     }
     navigate('/search/analyzing', {
-      state: { mode, date, place, photoUrl: isImage ? photoUrl : '', base64Image, desc: isImage ? '' : desc.trim() },
+      state: { mode, date, place, base64Image, desc: isImage ? '' : desc.trim() },
     })
   }
 
@@ -109,10 +101,11 @@ export default function CrossSearchPage() {
           <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
           <UploadBox
             mt={25}
-            src={photoUrl}
+            src={previewUrl}
             alt="預覽"
-            ariaLabel={photoUrl ? '更換照片' : '上傳照片'}
+            ariaLabel={previewUrl ? '更換照片' : '上傳照片'}
             onClick={() => fileRef.current?.click()}
+            onRecrop={recrop}
           />
         </>
       ) : (
@@ -143,6 +136,7 @@ export default function CrossSearchPage() {
       <SubmitButton onClick={handleSubmit} disabled={submitting}>
         {submitting ? '送出中…' : '填寫完成，AI 辨識產生標籤'}
       </SubmitButton>
+      {cropModal}
     </FormPage>
   )
 }

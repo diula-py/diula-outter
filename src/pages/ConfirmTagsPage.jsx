@@ -103,7 +103,7 @@ export default function ConfirmTagsPage() {
       ) : (
         <div className="mt-5 h-[200px] w-[calc(100%-40px)] max-w-[340px] shrink-0 overflow-hidden rounded-[10px]
                         land:col-start-1 land:mt-0 land:h-[150px] land:w-full land:max-w-none">
-          {data.photoUrl && <img src={data.photoUrl} alt="" className="h-full w-full bg-input object-contain" />}
+          {data.base64Image && <img src={data.base64Image} alt="" className="h-full w-full bg-input object-contain" />}
         </div>
       )}
 

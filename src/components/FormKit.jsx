@@ -41,23 +41,38 @@ export function FormPage({ children }) {
 }
 
 /** 200px 高的圖片區（340 寬、灰底黑框、圓角 10）。mt：與上一區塊的間距（inner 各頁不同：20／25／40）。 */
-export function UploadBox({ mt = 20, onClick, ariaLabel, src, alt = '', cameraAlt = '上傳照片' }) {
+export function UploadBox({ mt = 20, onClick, ariaLabel, src, alt = '', cameraAlt = '上傳照片', onRecrop }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={ariaLabel}
+    <div
       style={{ marginTop: mt }}
-      className="flex h-[200px] w-[calc(100%-40px)] max-w-[340px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] border border-black bg-input
-                 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
+      className="relative h-[200px] w-[calc(100%-40px)] max-w-[340px] shrink-0
                  land:col-start-1 land:mt-0! land:h-[150px] land:w-full land:max-w-none"
     >
-      {src ? (
-        <img src={src} alt={alt} className="h-full w-full object-contain" />
-      ) : (
-        <img src={asset('/icons/camera.png')} alt={cameraAlt} className="h-10 w-10 object-contain" />
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={ariaLabel}
+        className="flex h-full w-full items-center justify-center overflow-hidden rounded-[10px] border border-black bg-input
+                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+      >
+        {src ? (
+          <img src={src} alt={alt} className="h-full w-full object-contain" />
+        ) : (
+          <img src={asset('/icons/camera.png')} alt={cameraAlt} className="h-10 w-10 object-contain" />
+        )}
+      </button>
+      {/* 有照片才出現：疊在右下角，不用另佔一列 */}
+      {src && onRecrop && (
+        <button
+          type="button"
+          onClick={onRecrop}
+          className="absolute bottom-2 right-2 rounded-full border border-black bg-input px-3 py-1 text-xs font-medium text-brown
+                     transition hover:bg-[#ececec] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+        >
+          重新框選
+        </button>
       )}
-    </button>
+    </div>
   )
 }
 
