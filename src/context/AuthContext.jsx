@@ -8,7 +8,7 @@ import {
 import { auth, clearLocalUserData } from '../lib/firebase'
 import { getOrCreateUserId } from '../lib/userId'
 import { syncConsentRecord } from '../lib/termsConsent'
-import { signInAsLineOwner, LINE_UID_PREFIX } from '../lib/authToken'
+import { signInAsLineOwner, LINE_UID_PREFIX, revokeFirebaseToken } from '../lib/authToken'
 import {
   initLiff,
   isLiffLoggedIn,
@@ -232,6 +232,11 @@ export function AuthProvider({ children }) {
   const logout = useCallback(async () => {
     clearLastLineUser()
     if (user?.provider === 'line') logoutLine()
+    // 撤銷 refresh token 要在 signOut() 之前做：之後 auth.currentUser 會變 null，
+    // 就再也拿不到 idToken 證明是本人了。這一步擋的是「refresh token 已經外洩
+    // （共用裝置、裝置遺失）」時，登出後舊 token 還能一直換新 token 登入的問題
+    // （見 diula-api 的 AuthController./auth/revoke）。
+    await revokeFirebaseToken()
     // 不管哪種登入都登出 Firebase：LINE 也是用 custom token 登入 Firebase（line_xxx），
     // 只登出 LIFF 的話 Firebase 身分還留在裝置上
     await firebaseSignOut(auth).catch((e) => console.warn('Firebase 登出失敗：', e))

@@ -97,7 +97,9 @@ export default function SosPostPage() {
         const res = await apiFetch(flask('/threads/submit'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', ...authHeaders },
-          body: JSON.stringify({ text, image: threadsImage, name, lost_date: date, location: fullPlace }),
+          // lost_id：讓後端能認出「這件已經發過了」（見 diula-outter 的 /threads/submit 冪等檢查），
+          // 開新分頁或網路重試打到同一件時不會在官方帳號上重複發文。
+          body: JSON.stringify({ text, image: threadsImage, name, lost_date: date, location: fullPlace, lost_id: state.lostId || null }),
         })
         const json = await res.json().catch(() => ({}))
         if (!res.ok) throw new HttpError(res.status, json.error)

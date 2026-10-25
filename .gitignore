@@ -22,3 +22,19 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ── 機密：服務帳號私鑰（scripts/backfill-owner-uid.cjs 要讀這個）──
+# 這個 repo 在 GitHub 是 public，之前沒排除過，是不幸中的大幸還沒人把金鑰丟進來。
+.env
+.env.local
+serviceAccountKey*.json
+*_key.json
+*-firebase-adminsdk-*.json
+
+# ── 機密：服務帳號私鑰（scripts/backfill-owner-uid.cjs 要讀這個）──
+# 這個 repo 在 GitHub 是 public，之前沒排除過，是不幸中的大幸還沒人把金鑰丟進來。
+.env
+.env.local
+serviceAccountKey*.json
+*_key.json
+*-firebase-adminsdk-*.json
