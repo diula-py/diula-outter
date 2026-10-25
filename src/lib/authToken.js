@@ -151,3 +151,24 @@ export async function fetchLineCustomToken(timeoutMs) {
     if (timer) clearTimeout(timer)
   }
 }
+
+// 登出時撤銷這個帳號全部的 refresh token（見 diula-api 的 AuthController./auth/revoke）。
+// 不管是 Google 登入還是 LINE（custom token）登入，auth.currentUser 這時候都是真正的
+// Firebase 身分，直接拿它的 idToken 打，不用分流。
+//
+// 為什麼要在清掉本機狀態「之前」呼叫：這支端點要靠當下這個 idToken 才能證明是本人，
+// 一旦 signOut() 跑完、auth.currentUser 變 null，就再也叫不到自己的 token 了。
+// 失敗（網路、後端睡著）不拋出，不該讓使用者卡在登出不了。
+export async function revokeFirebaseToken() {
+  const user = auth.currentUser
+  if (!user || user.isAnonymous) return
+  try {
+    const token = await user.getIdToken()
+    await apiFetch(spring('/api/auth/revoke'), {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'X-Auth-Provider': 'firebase' },
+    })
+  } catch (e) {
+    console.warn('登出時撤銷 token 失敗（不影響登出本身）：', e)
+  }
+}
