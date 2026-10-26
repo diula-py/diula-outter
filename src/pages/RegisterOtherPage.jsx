@@ -21,7 +21,7 @@ export default function RegisterOtherPage() {
   const navigate = useNavigate()
   const fileRef = useRef(null)
 
-  const { photo, previewUrl, cropped, handlePhoto, recrop, modal: cropModal } = useItemPhoto() // 選照片後自動跳出框選
+  const { photo, photoUrl, cropped, handlePhoto, recrop, modal: cropModal } = useItemPhoto() // 選照片後自動跳出框選
   const [date, setDate] = useState(todayStr())
   const [foundCity, setFoundCity] = useState('')       // 拾獲地點：縣市
   const [foundDistrict, setFoundDistrict] = useState('') // 拾獲地點：地區
@@ -47,7 +47,8 @@ export default function RegisterOtherPage() {
     setStatus('submitting')
     // 手機實拍照片常達數 MB，先縮到 1280px / 0.72，base64 通常 <500KB，符合
     // 非證件物品照片「demo 前臨時方案 base64、壓到 ≲700KB」的要求（計畫 3.6 節）。
-    const uploadImage = await downscale(cropped || await fileToDataUrl(photo), 1280, 0.72) // 有框選就用框內範圍
+    const uploadImage = await downscale(await fileToDataUrl(photo), 1280, 0.72) // 存檔用原圖
+    const aiImage = cropped ? await downscale(cropped, 1280, 0.72) : uploadImage // 有框選的話 AI 只看框內範圍
     const item = {
       id: 'found_' + Date.now(),
       kind: 'found',
@@ -64,7 +65,7 @@ export default function RegisterOtherPage() {
     }
     // 送出後 → AI 辨識過場頁：自動補標籤後存進「我的拾獲物」（同證件類登錄，共用同一頁）。
     navigate('/register/analyzing', {
-      state: { item, base64Image: uploadImage, desc: note.trim() },
+      state: { item, base64Image: aiImage, desc: note.trim() },
     })
   }
 
@@ -75,11 +76,12 @@ export default function RegisterOtherPage() {
       <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
       <UploadBox
         mt={40}
-        src={previewUrl}
+        src={photoUrl}
         alt="預覽"
-        ariaLabel={previewUrl ? '更換照片' : '上傳照片'}
+        ariaLabel={photoUrl ? '更換照片' : '上傳照片'}
         onClick={() => fileRef.current?.click()}
         onRecrop={recrop}
+        cropped={!!cropped}
       />
 
       <FormCard mt={40}>

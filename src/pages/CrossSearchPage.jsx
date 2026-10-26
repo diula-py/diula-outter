@@ -12,7 +12,7 @@ export default function CrossSearchPage() {
   const fileRef = useRef(null)
 
   const [mode, setMode] = useState('image') // image | text
-  const { photo, previewUrl, cropped, handlePhoto, recrop, modal: cropModal } = useItemPhoto() // 選照片後自動跳出框選
+  const { photo, photoUrl, cropped, handlePhoto, recrop, modal: cropModal } = useItemPhoto() // 選照片後自動跳出框選
   const [desc, setDesc] = useState('')
   const [date, setDate] = useState(todayStr())
   const [placeCity, setPlaceCity] = useState('')
@@ -51,9 +51,11 @@ export default function CrossSearchPage() {
     setSubmitting(true)
     const isImage = mode === 'image'
     let base64Image = null
+    let aiImage = null
     try {
-      // 有框選就用框內範圍
-      base64Image = isImage && photo ? await downscale(cropped || await fileToDataUrl(photo)) : null
+      // 原圖給存檔與 Threads 協尋文；有框選的話 AI 只看框內範圍
+      base64Image = isImage && photo ? await downscale(await fileToDataUrl(photo)) : null
+      aiImage = isImage && cropped ? await downscale(cropped) : null
     } catch (e) {
       console.warn('讀取照片失敗：', e)
       setError('照片讀取失敗，請重新上傳')
@@ -62,7 +64,7 @@ export default function CrossSearchPage() {
       return
     }
     navigate('/search/analyzing', {
-      state: { mode, date, place, base64Image, desc: isImage ? '' : desc.trim() },
+      state: { mode, date, place, base64Image, aiImage, desc: isImage ? '' : desc.trim() },
     })
   }
 
@@ -101,11 +103,12 @@ export default function CrossSearchPage() {
           <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
           <UploadBox
             mt={25}
-            src={previewUrl}
+            src={photoUrl}
             alt="預覽"
-            ariaLabel={previewUrl ? '更換照片' : '上傳照片'}
+            ariaLabel={photoUrl ? '更換照片' : '上傳照片'}
             onClick={() => fileRef.current?.click()}
             onRecrop={recrop}
+            cropped={!!cropped}
           />
         </>
       ) : (
