@@ -22,7 +22,8 @@ export default function AiAnalyzingPage() {
 
     ;(async () => {
       try {
-        const json = await analyzeItem({ text: normalizeIdWording(data.desc || ''), base64Image: data.base64Image || null })
+        // 有框選就送框內範圍（aiImage），否則送原圖
+        const json = await analyzeItem({ text: normalizeIdWording(data.desc || ''), base64Image: data.aiImage || data.base64Image || null })
 
         const tags = []
         for (const it of json.items || []) {
@@ -41,7 +42,8 @@ export default function AiAnalyzingPage() {
         if (!alive) return
         clearInterval(grow)
         setPct(100)
-        setTimeout(() => navigate('/search/confirm', { replace: true, state: { ...data, name, tags: uniq } }), 350)
+        const { aiImage: _ai, ...rest } = data // 框選圖只給 AI，之後的頁面都用原圖，不必再帶
+        setTimeout(() => navigate('/search/confirm', { replace: true, state: { ...rest, name, tags: uniq } }), 350)
       } catch (e) {
         if (alive) { clearInterval(grow); setError(friendlyError(e)) }
       }

@@ -4,7 +4,6 @@ import { CircleCheckIcon } from '../components/icons'
 import { DetailHeader } from '../components/DetailKit'
 import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import PhotoMaskModal from '../components/PhotoMaskModal'
-import CropModal from '../components/CropModal'
 import { addMyItem, getMyItem, updateMyItem } from '../lib/items'
 import { markLostHandled } from '../lib/handledLost'
 import { HttpError, friendlyError } from '../lib/errors'
@@ -54,12 +53,9 @@ export default function SosPostPage() {
   const q = state.query || {}
   const rawImage = state.base64Image || null // 預覽直接用原圖；送出時才縮圖
 
-  const [croppedImage, setCroppedImage] = useState(null) // 框選後的圖（null＝沿用尋找時那張）
-  const [cropOpen, setCropOpen] = useState(false)
   const [editedImage, setEditedImage] = useState(null) // 打碼後的圖（有的話優先用）
   const [maskOpen, setMaskOpen] = useState(false)
-  const baseImage = croppedImage || rawImage           // 打碼以這張為底
-  const displayImage = editedImage || baseImage        // 預覽／送出都用這張
+  const displayImage = editedImage || rawImage         // 預覽／送出都用這張
 
   const date = q.date || ''    // 鎖死：來自比對條件
   const place = q.place || ''   // 鎖死：來自比對條件
@@ -246,24 +242,14 @@ export default function SosPostPage() {
             <div>
               <div className="mb-1.5 flex items-center justify-between">
                 <p className="text-xs font-medium text-brown">圖片預覽</p>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setCropOpen(true)}
-                    className="rounded-full border border-black bg-input px-3 py-1 text-xs font-medium text-brown
-                               transition hover:bg-[#ececec] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-                  >
-                    {croppedImage ? '重新框選' : '框選物品'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setMaskOpen(true)}
-                    className="rounded-full border border-black bg-input px-3 py-1 text-xs font-medium text-brown
-                               transition hover:bg-[#ececec] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-                  >
-                    {editedImage ? '重新打碼' : '為圖片打碼'}
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setMaskOpen(true)}
+                  className="rounded-full border border-black bg-input px-3 py-1 text-xs font-medium text-brown
+                             transition hover:bg-[#ececec] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+                >
+                  {editedImage ? '重新打碼' : '為圖片打碼'}
+                </button>
               </div>
               <img src={displayImage} alt="協尋照片" className="w-full rounded-[10px] object-cover" />
             </div>
@@ -283,20 +269,10 @@ export default function SosPostPage() {
         </div>
       )}
 
-      {/* 框選視窗：以尋找時上傳的那張為底，「使用整張照片」＝還原。框選後原本的打碼要重打 */}
-      {cropOpen && rawImage && (
-        <CropModal
-          src={rawImage}
-          hint={`拖曳框的四邊或四角，框住要協尋的物品，貼文只會放框內的範圍。${editedImage ? '框選後需重新打碼。' : ''}`}
-          onCancel={() => setCropOpen(false)}
-          onConfirm={(url) => { setCroppedImage(url); setEditedImage(null); setCropOpen(false) }}
-        />
-      )}
-
-      {/* 圖片打碼視窗（一律以框選後的圖為底，重開＝從頭打碼，可還原） */}
-      {maskOpen && baseImage && (
+      {/* 圖片打碼視窗（一律以原圖為底，重開＝從頭打碼，可還原） */}
+      {maskOpen && rawImage && (
         <PhotoMaskModal
-          src={baseImage}
+          src={rawImage}
           onCancel={() => setMaskOpen(false)}
           onConfirm={(url) => { setEditedImage(url); setMaskOpen(false) }}
         />

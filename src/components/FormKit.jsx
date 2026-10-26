@@ -41,7 +41,7 @@ export function FormPage({ children }) {
 }
 
 /** 200px 高的圖片區（340 寬、灰底黑框、圓角 10）。mt：與上一區塊的間距（inner 各頁不同：20／25／40）。 */
-export function UploadBox({ mt = 20, onClick, ariaLabel, src, alt = '', cameraAlt = '上傳照片', onRecrop }) {
+export function UploadBox({ mt = 20, onClick, ariaLabel, src, alt = '', cameraAlt = '上傳照片', onRecrop, cropped = false }) {
   return (
     <div
       style={{ marginTop: mt }}
@@ -61,16 +61,21 @@ export function UploadBox({ mt = 20, onClick, ariaLabel, src, alt = '', cameraAl
           <img src={asset('/icons/camera.png')} alt={cameraAlt} className="h-10 w-10 object-contain" />
         )}
       </button>
-      {/* 有照片才出現：疊在右下角，不用另佔一列 */}
+      {/* 有照片才出現：疊在右下角，不用另佔一列。預覽是原圖，框過的話標「已框選」提醒 AI 只看框內 */}
       {src && onRecrop && (
-        <button
-          type="button"
-          onClick={onRecrop}
-          className="absolute bottom-2 right-2 rounded-full border border-black bg-input px-3 py-1 text-xs font-medium text-brown
-                     transition hover:bg-[#ececec] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-        >
-          重新框選
-        </button>
+        <div className="absolute bottom-2 right-2 flex items-center gap-1.5">
+          {cropped && (
+            <span className="rounded-full bg-card px-2.5 py-1 text-xs font-medium text-brown">已框選</span>
+          )}
+          <button
+            type="button"
+            onClick={onRecrop}
+            className="rounded-full border border-black bg-input px-3 py-1 text-xs font-medium text-brown
+                       transition hover:bg-[#ececec] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+          >
+            {cropped ? '重新框選' : '框選物品'}
+          </button>
+        </div>
       )}
     </div>
   )
