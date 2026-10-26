@@ -25,16 +25,13 @@ export default function RegisterOtherPage() {
   const [date, setDate] = useState(todayStr())
   const [foundCity, setFoundCity] = useState('')       // 拾獲地點：縣市
   const [foundDistrict, setFoundDistrict] = useState('') // 拾獲地點：地區
-  const [foundDetail, setFoundDetail] = useState('') // 拾獲的詳細地點（選填）
-  const [dropCity, setDropCity] = useState('')         // 送往地點：縣市
-  const [dropDistrict, setDropDistrict] = useState('') // 送往地點：地區
-  const [sendToDetail, setSendToDetail] = useState('') // 送往的詳細地點（必填）
+  const [foundDetail, setFoundDetail] = useState('') // 拾獲的詳細地點
+  const [sendTo, setSendTo] = useState('') // 送往的詳細地點（只有這一格，存在 dropLocation）
   const [note, setNote] = useState('')
   const [status, setStatus] = useState('idle') // idle | submitting
   const [error, setError] = useState('')
 
   const foundAt = [foundCity, foundDistrict].filter(Boolean).join(' ') // 拾獲地點合併字串
-  const sendTo = [dropCity, dropDistrict].filter(Boolean).join(' ')    // 送往地點合併字串
 
   // 進頁就先喚醒 Render AI 服務（冷啟動 ~60 秒），送出時多半已就緒。
   useEffect(() => { wakeAi() }, [])
@@ -44,8 +41,8 @@ export default function RegisterOtherPage() {
     if (!photo) { setError('請上傳拾獲物圖片'); return }
     if (!date) { setError('請選擇拾獲日期'); return }
     if (!foundCity || !foundDistrict) { setError('請選擇拾獲的縣市與地區'); return }
-    if (!dropCity || !dropDistrict) { setError('請選擇送往的縣市與地區'); return }
-    if (!sendToDetail.trim()) { setError('請填寫送往的詳細地點'); return }
+    if (!foundDetail.trim()) { setError('請填寫拾獲的詳細地點'); return }
+    if (!sendTo.trim()) { setError('請填寫送往的詳細地點'); return }
 
     setStatus('submitting')
     // 手機實拍照片常達數 MB，先縮到 1280px / 0.72，base64 通常 <500KB，符合
@@ -58,8 +55,7 @@ export default function RegisterOtherPage() {
       date,                          // 拾獲日 YYYY-MM-DD
       place: foundAt,                // 拾獲地點
       location_detail: foundDetail.trim(),      // 拾獲的詳細地點
-      dropLocation: sendTo,          // 送往地點
-      dropLocation_detail: sendToDetail.trim(), // 送往的詳細地點
+      dropLocation: sendTo.trim(),   // 送往地點
       remark: note.trim(),
       tags: [],                      // 沒有固定品名／類型，AI 會補標籤
       image: uploadImage,
@@ -96,18 +92,12 @@ export default function RegisterOtherPage() {
           city={foundCity} setCity={setFoundCity}
           district={foundDistrict} setDistrict={setFoundDistrict}
         />
-        {/* 詳細地點列不放圖示，跟上一列的縣市／地區、送往排在一起 */}
+        {/* 詳細地點列不放圖示，跟上一列的縣市／地區排在一起 */}
         <FormRow typing>
-          <input type="text" value={foundDetail} onChange={(e) => setFoundDetail(e.target.value)} placeholder="拾獲的詳細地點（選填）" aria-label="拾獲的詳細地點" className={pillInput} />
+          <input type="text" value={foundDetail} onChange={(e) => setFoundDetail(e.target.value)} placeholder="拾獲的詳細地點" aria-label="拾獲的詳細地點" className={pillInput} />
         </FormRow>
-        <RegionField
-          icon={<PersonChalkboardIcon className="h-[35px] w-[35px]" />}
-          prefix="送往的"
-          city={dropCity} setCity={setDropCity}
-          district={dropDistrict} setDistrict={setDropDistrict}
-        />
-        <FormRow typing>
-          <input type="text" value={sendToDetail} onChange={(e) => setSendToDetail(e.target.value)} placeholder="送往的詳細地點" aria-label="送往的詳細地點" className={pillInput} />
+        <FormRow icon={<PersonChalkboardIcon className="h-[35px] w-[35px]" />} typing>
+          <input type="text" value={sendTo} onChange={(e) => setSendTo(e.target.value)} placeholder="送往的詳細地點（例如：文山二分局）" aria-label="送往的詳細地點" className={pillInput} />
         </FormRow>
         <FormRow text="備註" typing>
           <input type="text" value={note} onChange={(e) => setNote(e.target.value)} className={pillInput} />

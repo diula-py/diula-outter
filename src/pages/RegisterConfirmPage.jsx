@@ -24,11 +24,7 @@ export default function RegisterConfirmPage() {
   const [city, setCity] = useState((item?.place || '').split(' ')[0] || '')
   const [district, setDistrict] = useState((item?.place || '').split(' ')[1] || '')
   const [foundDetail, setFoundDetail] = useState(item?.location_detail || '')
-  // 送往：縣市／地區兩個下拉（存成「縣市 地區」，同拾獲地點）＋詳細地點
-  const [dropCity, setDropCity] = useState((item?.dropLocation || '').split(' ')[0] || '')
-  const [dropDistrict, setDropDistrict] = useState((item?.dropLocation || '').split(' ')[1] || '')
-  const [sendToDetail, setSendToDetail] = useState(item?.dropLocation_detail || '')
-  const sendTo = [dropCity, dropDistrict].filter(Boolean).join(' ')
+  const [sendTo, setSendTo] = useState(item?.dropLocation || '') // 送往的詳細地點
   const [remark, setRemark] = useState(item?.remark || '')
   const [tags, setTags] = useState(item?.tags || [])
   const [pickerOpen, setPickerOpen] = useState(false)
@@ -49,15 +45,15 @@ export default function RegisterConfirmPage() {
     setError('')
     if (!date) { setError('請選擇拾獲日期'); return }
     if (!city || !district) { setError('請選擇拾獲的縣市與地區'); return }
-    if (!dropCity || !dropDistrict) { setError('請選擇送往的縣市與地區'); return }
-    if (!sendToDetail.trim()) { setError('請填寫送往的詳細地點'); return }
+    if (!foundDetail.trim()) { setError('請填寫拾獲的詳細地點'); return }
+    if (!sendTo.trim()) { setError('請填寫送往的詳細地點'); return }
     if (tags.length === 0) { setError('請至少選擇一個標籤！'); return }
     setBusy(true)
     try {
       const place = [city, district].filter(Boolean).join(' ') || item.place
       const saved = await addMyItem('found', userId, {
         ...item, date: date || item.date, place, remark: remark.trim(), tags,
-        location_detail: foundDetail.trim(), dropLocation: sendTo, dropLocation_detail: sendToDetail.trim(),
+        location_detail: foundDetail.trim(), dropLocation: sendTo.trim(),
       })
       navigate('/register/success', { replace: true, state: { id: saved.id } })
     } catch (e) {
@@ -77,7 +73,7 @@ export default function RegisterConfirmPage() {
         {item.image && <img src={item.image} alt="" className="h-full w-full bg-input object-contain" />}
       </div>
 
-      {/* 日期 / 拾獲地點＋詳細 / 送往＋詳細 / 備註 */}
+      {/* 日期 / 拾獲地點＋詳細 / 送往 / 備註 */}
       <FormCard mt={20}>
         <FormRow icon={<CalendarIcon className="h-[35px] w-[35px]" />}>
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="拾獲日期" className={pillInput} />
@@ -89,16 +85,10 @@ export default function RegisterConfirmPage() {
           district={district} setDistrict={setDistrict}
         />
         <FormRow typing>
-          <input type="text" value={foundDetail} onChange={(e) => setFoundDetail(e.target.value)} placeholder="拾獲的詳細地點（選填）" aria-label="拾獲的詳細地點" className={pillInput} />
+          <input type="text" value={foundDetail} onChange={(e) => setFoundDetail(e.target.value)} placeholder="拾獲的詳細地點" aria-label="拾獲的詳細地點" className={pillInput} />
         </FormRow>
-        <RegionField
-          icon={<PersonChalkboardIcon className="h-[35px] w-[35px]" />}
-          prefix="送往的"
-          city={dropCity} setCity={setDropCity}
-          district={dropDistrict} setDistrict={setDropDistrict}
-        />
-        <FormRow typing>
-          <input type="text" value={sendToDetail} onChange={(e) => setSendToDetail(e.target.value)} placeholder="送往的詳細地點" aria-label="送往的詳細地點" className={pillInput} />
+        <FormRow icon={<PersonChalkboardIcon className="h-[35px] w-[35px]" />} typing>
+          <input type="text" value={sendTo} onChange={(e) => setSendTo(e.target.value)} placeholder="送往的詳細地點（例如：文山二分局）" aria-label="送往的詳細地點" className={pillInput} />
         </FormRow>
         <FormRow text="備註" typing>
           <input type="text" value={remark} onChange={(e) => setRemark(e.target.value)} className={pillInput} />
