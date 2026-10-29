@@ -51,12 +51,11 @@ export default function SosPostPage() {
   const { userId } = useAuth()
   const state = useLocation().state || {}
   const q = state.query || {}
-  const rawImage = state.base64Image || null          // 原圖：存進「我的遺失物」用
-  const postBase = state.aiImage || rawImage          // 貼文圖：尋找時有框選就用框內範圍；送出時才縮圖
+  const postBase = state.base64Image || null          // 尋找時上傳的圖（有框選就是框內範圍）；送出時才縮圖
 
   const [editedImage, setEditedImage] = useState(null) // 打碼後的圖（有的話優先用）
   const [maskOpen, setMaskOpen] = useState(false)
-  const displayImage = editedImage || postBase         // 預覽／發 Threads 都用這張
+  const displayImage = editedImage || postBase         // 預覽／送出都用這張
 
   const date = q.date || ''    // 鎖死：來自比對條件
   const place = q.place || ''   // 鎖死：來自比對條件
@@ -115,8 +114,8 @@ export default function SosPostPage() {
 
     // 第二步：存進「我的遺失物」。失敗只重試這一步，按鈕改成「重試存檔」
     try {
-      // 存資料庫的圖用原圖（不是框選圖），縮到 800px（同確認標籤／推播頁），避免超過 Firestore 單筆 1MB
-      const image = rawImage ? await downscale(rawImage, 800, 0.8) : null
+      // 存資料庫的圖縮到 800px（同確認標籤／推播頁），避免超過 Firestore 單筆 1MB
+      const image = displayImage ? await downscale(displayImage, 800, 0.8) : null
       // 更新「我的遺失物」裡按下比對時建立的那一筆（沒有的話才新增），讓發出去的協尋出現在清單。
       const fields = {
         kind: 'threads',

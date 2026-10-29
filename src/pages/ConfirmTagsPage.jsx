@@ -76,7 +76,7 @@ export default function ConfirmTagsPage() {
       const json = await res.json().catch(() => ({}))
       // 429 = 被限流（後端 MATCH_PER_IP_HOURLY），後端訊息是中文、會照用
       if (!res.ok) throw new HttpError(res.status, json.error)
-      navigate('/search/results', { state: { query: { date, place, tags }, base64Image: data.base64Image, aiImage: data.aiImage, lostId, ...json } })
+      navigate('/search/results', { state: { query: { date, place, tags }, base64Image: data.base64Image, lostId, ...json } })
     } catch (e) {
       setError(`比對失敗：${friendlyError(e)}`)
     } finally {

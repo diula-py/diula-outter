@@ -22,8 +22,7 @@ export default function AiAnalyzingPage() {
 
     ;(async () => {
       try {
-        // 有框選就送框內範圍（aiImage），否則送原圖
-        const json = await analyzeItem({ text: normalizeIdWording(data.desc || ''), base64Image: data.aiImage || data.base64Image || null })
+        const json = await analyzeItem({ text: normalizeIdWording(data.desc || ''), base64Image: data.base64Image || null })
 
         const tags = []
         for (const it of json.items || []) {
@@ -42,7 +41,6 @@ export default function AiAnalyzingPage() {
         if (!alive) return
         clearInterval(grow)
         setPct(100)
-        // aiImage（框選圖）繼續帶到 Threads 協尋文頁當貼文圖；存檔、預覽仍用 base64Image（原圖）
         setTimeout(() => navigate('/search/confirm', { replace: true, state: { ...data, name, tags: uniq } }), 350)
       } catch (e) {
         if (alive) { clearInterval(grow); setError(friendlyError(e)) }
