@@ -51,11 +51,11 @@ export default function SosPostPage() {
   const { userId } = useAuth()
   const state = useLocation().state || {}
   const q = state.query || {}
-  const rawImage = state.base64Image || null // 預覽直接用原圖；送出時才縮圖
+  const postBase = state.base64Image || null          // 尋找時上傳的圖（有框選就是框內範圍）；送出時才縮圖
 
   const [editedImage, setEditedImage] = useState(null) // 打碼後的圖（有的話優先用）
   const [maskOpen, setMaskOpen] = useState(false)
-  const displayImage = editedImage || rawImage         // 預覽／送出都用這張
+  const displayImage = editedImage || postBase         // 預覽／送出都用這張
 
   const date = q.date || ''    // 鎖死：來自比對條件
   const place = q.place || ''   // 鎖死：來自比對條件
@@ -229,7 +229,7 @@ export default function SosPostPage() {
       {step === 'preview' && (
         <div className="flex flex-col gap-4 px-[26px] pt-5 land:mx-auto land:max-w-[708px] land:pt-3">
           <div className="rounded-[10px] bg-card p-4 text-xs font-medium leading-normal text-brown">
-            由 <b>DiuLa!官方帳號</b> 幫你把協尋資訊發到 Threads，擴大協尋範圍。貼文圖片將沿用比對尋找時上傳的圖片!
+            由 <b>DiuLa!官方帳號</b> 幫你把協尋資訊發到 Threads，擴大協尋範圍。貼文圖片將沿用比對尋找時上傳的圖片（有框選就用框內範圍）!
             <b>會公開發到 Threads，發佈前可框住路人臉、車牌、地址等個資。</b>
           </div>
 
@@ -269,10 +269,10 @@ export default function SosPostPage() {
         </div>
       )}
 
-      {/* 圖片打碼視窗（一律以原圖為底，重開＝從頭打碼，可還原） */}
-      {maskOpen && rawImage && (
+      {/* 圖片打碼視窗（一律以貼文圖為底，重開＝從頭打碼，可還原） */}
+      {maskOpen && postBase && (
         <PhotoMaskModal
-          src={rawImage}
+          src={postBase}
           onCancel={() => setMaskOpen(false)}
           onConfirm={(url) => { setEditedImage(url); setMaskOpen(false) }}
         />
