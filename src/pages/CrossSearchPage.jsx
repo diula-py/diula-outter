@@ -53,7 +53,7 @@ export default function CrossSearchPage() {
     let base64Image = null
     let aiImage = null
     try {
-      // 原圖給存檔與 Threads 協尋文；有框選的話 AI 只看框內範圍
+      // 原圖給存檔；有框選的話 AI 辨識與 Threads 協尋文用框內範圍
       base64Image = isImage && photo ? await downscale(await fileToDataUrl(photo)) : null
       aiImage = isImage && cropped ? await downscale(cropped) : null
     } catch (e) {

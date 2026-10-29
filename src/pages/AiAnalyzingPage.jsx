@@ -42,8 +42,8 @@ export default function AiAnalyzingPage() {
         if (!alive) return
         clearInterval(grow)
         setPct(100)
-        const { aiImage: _ai, ...rest } = data // 框選圖只給 AI，之後的頁面都用原圖，不必再帶
-        setTimeout(() => navigate('/search/confirm', { replace: true, state: { ...rest, name, tags: uniq } }), 350)
+        // aiImage（框選圖）繼續帶到 Threads 協尋文頁當貼文圖；存檔、預覽仍用 base64Image（原圖）
+        setTimeout(() => navigate('/search/confirm', { replace: true, state: { ...data, name, tags: uniq } }), 350)
       } catch (e) {
         if (alive) { clearInterval(grow); setError(friendlyError(e)) }
       }

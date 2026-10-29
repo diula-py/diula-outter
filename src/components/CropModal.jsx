@@ -3,7 +3,7 @@ import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
 import { Backdrop } from './DialogKit'
 
-// 框選物品：拖曳裁切框框住物品，輸出框內範圍的 JPEG，只給 AI 辨識用（貼文、存檔仍用原圖）。
+// 框選物品：拖曳裁切框框住物品，輸出框內範圍的 JPEG，給 AI 辨識與 Threads 協尋文用（存檔仍用原圖）。
 // 與 MaskingModal（證件專用、鎖證件比例）不同，這支比例不鎖；不一定要框，按「使用整張照片」回傳 null。
 const MAX_SIDE = 1600 // 輸出上限邊長，送出前還會再縮
 
@@ -58,7 +58,7 @@ export default function CropModal({ src, onCancel, onConfirm }) {
         <div className="min-h-0 flex-1 overflow-auto p-4">
           <p className="mb-1 text-sm font-medium leading-normal text-brown">若圖中有多項物品可使用框選功能</p>
           <p className="mb-3 text-xs leading-normal text-brown/70">
-            拖曳框的四邊或四角框住要辨識的物品，AI 只會看框內的範圍；貼文與存檔仍用整張原圖。不需要框選就按「使用整張照片」。
+            拖曳框的四邊或四角框住要辨識的物品，AI 辨識與 Threads 協尋文只會用框內的範圍，存檔仍用整張原圖。不需要框選就按「使用整張照片」。
           </p>
           <div className="max-h-[55vh] overflow-hidden rounded-xl bg-black/5">
             <img ref={imgRef} src={src} alt="待框選照片" className="block max-w-full" />
@@ -81,7 +81,7 @@ export default function CropModal({ src, onCancel, onConfirm }) {
 }
 
 // 表單頁共用：選照片 → 自動跳出框選（可略過）。
-// photo／photoUrl 是原圖（預覽、存檔、貼文、重新框選都用它），cropped 是只給 AI 的框選結果（null＝用整張）。
+// photo／photoUrl 是原圖（預覽、存檔、重新框選都用它），cropped 是給 AI 與 Threads 協尋文的框選結果（null＝用整張）。
 export function useItemPhoto() {
   const [photo, setPhoto] = useState(null)
   const [photoUrl, setPhotoUrl] = useState('')
