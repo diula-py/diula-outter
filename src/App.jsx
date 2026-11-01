@@ -25,6 +25,7 @@ import MyFoundDetailPage from './pages/MyFoundDetailPage'
 import TermsPage from './pages/TermsPage'
 import PrivacyPage from './pages/PrivacyPage'
 import MetroAttributionPage from './pages/MetroAttributionPage'
+import AdminSosPage from './pages/AdminSosPage'
 import OfflineBanner from './components/OfflineBanner'
 import StatusBarColor from './components/StatusBarColor'
 import ScrollToTop from './components/ScrollToTop'
@@ -76,6 +77,10 @@ export default function App() {
           <Route path="/register/confirm" element={<RegisterConfirmPage />} />
           <Route path="/register/success" element={<RegisterSuccessPage />} />
           <Route path="/register/other" element={<RegisterOtherPage />} />
+
+          {/* 協尋文人工審核的小後台。權限由後端的 ADMIN_OWNER_IDS 白名單判（非管理者一律 404），
+              這裡只要求登入——前端藏路由擋不住任何人，也沒必要。 */}
+          <Route path="/admin" element={<AdminSosPage />} />
         </Route>
 
         {/* 打錯或已不存在的網址：導回首頁（未登入會再被 RequireAuth 導去登入頁），不要整片空白 */}
