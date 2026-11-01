@@ -188,9 +188,9 @@ export default function RegisterIdPage() {
         <button
           type="button"
           onClick={() => setPickerOpen(true)}
-          className={`mt-[10px] w-fit rounded-[50px] border border-black px-4 py-1.5 text-sm transition land:col-start-1 land:mt-0 land:justify-self-center
+          className={`mt-[10px] w-fit rounded-[50px] px-4 py-1.5 text-xs font-normal transition land:col-start-1 land:mt-0 land:justify-self-center
             focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
-            ${otherType ? 'bg-blue font-medium text-brown' : 'bg-white text-[#888]'}`}
+            ${otherType ? 'border-[1.5px] border-black bg-blue text-brown' : 'border border-black bg-white text-[#888]'}`}
         >
           {otherType || '選擇證件類型'}
         </button>

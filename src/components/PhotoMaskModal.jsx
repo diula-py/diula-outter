@@ -100,8 +100,8 @@ export default function PhotoMaskModal({ src, onCancel, onConfirm }) {
         {/* 不放 header：由上而下是 上一步／清除 → 圖片 → 說明 → 底部 取消／完成 */}
         <div className="min-h-0 flex-1 overflow-auto p-4">
           <div className="mb-3 flex gap-2">
-            <button type="button" onClick={undo} className="rounded-full border border-black bg-input px-4 py-1 text-sm text-brown">上一步</button>
-            <button type="button" onClick={clearAll} className="rounded-full border border-black bg-input px-4 py-1 text-sm text-brown">清除</button>
+            <button type="button" onClick={undo} className="rounded-full border border-black bg-input px-4 py-1 text-xs font-normal text-brown">上一步</button>
+            <button type="button" onClick={clearAll} className="rounded-full border border-black bg-input px-4 py-1 text-xs font-normal text-brown">清除</button>
           </div>
           <div className="relative overflow-hidden rounded-xl bg-black/5">
             <canvas ref={baseRef} className="block w-full" />

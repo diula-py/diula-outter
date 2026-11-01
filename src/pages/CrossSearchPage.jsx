@@ -74,7 +74,7 @@ export default function CrossSearchPage() {
       <div className="relative mt-[25px] flex h-[46px] w-[168px] shrink-0 items-center rounded-[50px] bg-card land:col-span-full land:mt-0 land:justify-self-center">
         <div
           aria-hidden="true"
-          className={`absolute top-[3px] box-border h-[40px] w-[76px] rounded-[42px] border border-black bg-input transition-[left] duration-300
+          className={`absolute top-[3px] box-border h-[40px] w-[76px] rounded-[42px] border-[1.5px] border-black bg-input transition-[left] duration-300
             ${mode === 'image' ? 'left-[6px]' : 'left-[88px]'}`}
         />
         {[

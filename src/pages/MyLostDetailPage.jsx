@@ -175,7 +175,7 @@ export default function MyLostDetailPage() {
             type="button"
             onClick={() => setDialog('deleteThread')}
             disabled={deletingThread}
-            className="box-border h-10 w-[65px] shrink-0 rounded-[50px] border border-black bg-white text-base font-bold text-error disabled:opacity-60
+            className="box-border h-10 w-[65px] shrink-0 rounded-[50px] border border-black bg-white text-base font-medium text-error disabled:opacity-60
                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
           >
             {deletingThread ? '刪除中' : '刪除'}

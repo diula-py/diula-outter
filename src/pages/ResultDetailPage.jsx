@@ -61,7 +61,7 @@ export default function ResultDetailPage() {
 
         {isDiula ? (
           <>
-            {/* DiuLa! 自家資料：日期 / 拾獲地點 / 送往 / 備註 + AI 標籤 */}
+            {/* DiuLa! 自家資料：日期 / 拾獲地點 / 送往 / 備註 + 標籤 */}
             <div className="flex flex-col gap-2.5 rounded-[10px] bg-card p-4 land:col-start-2">
               <div className="flex items-center gap-3">
                 <div className="flex w-[46px] shrink-0 items-center justify-center"><CalendarIcon className="h-[35px] w-[35px] text-navy" /></div>
@@ -85,7 +85,7 @@ export default function ResultDetailPage() {
 
             {tags.length > 0 && (
               <div className="flex flex-col gap-3 rounded-[10px] bg-card p-5 land:col-start-2">
-                <span className="text-base font-bold text-brown">AI 標籤</span>
+                <span className="text-base font-bold text-brown">標籤</span>
                 <div className="flex flex-wrap gap-2.5">
                   {tags.map((t) => (
                     <span key={t} className="rounded-[50px] border border-black bg-blue px-4 py-1.5 text-xs text-brown">{t}</span>

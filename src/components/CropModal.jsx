@@ -62,7 +62,7 @@ export default function CropModal({ src, onCancel, onConfirm }) {
 
         <div className="flex flex-col gap-2 border-t border-black/10 p-4">
           <button type="button" onClick={() => onConfirm(null)}
-            className="h-10 w-full rounded-full border border-black bg-input text-sm font-medium text-brown">
+            className="h-10 w-full rounded-full border border-black bg-input text-base font-medium text-brown">
             使用整張照片
           </button>
           <div className="flex gap-3">
