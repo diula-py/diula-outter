@@ -6,10 +6,9 @@ import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import PhotoMaskModal from '../components/PhotoMaskModal'
 import { addMyItem, getMyItem, updateMyItem } from '../lib/items'
 import { markLostHandled } from '../lib/handledLost'
-import { HttpError, friendlyError } from '../lib/errors'
+import { friendlyError } from '../lib/errors'
 import { useAuth } from '../context/AuthContext'
-import { flask, apiFetch } from '../lib/api'
-import { getAuthHeaders } from '../lib/authToken'
+import { submitSosPost } from '../lib/api'
 import { LOST_STATUS } from '../data/itemStatus'
 import { titleFromTags } from '../data/tagTaxonomy'
 
@@ -84,39 +83,49 @@ export default function SosPostPage() {
     if (!name.trim()) { setError('請填物品名稱'); return }
     setStatus('submitting')
 
-    // 第一步：發 Threads（已經發過就跳過）
+    // 第一步：送審（已經送過就跳過）。後端可能直接發出去，也可能交人工審核。
     let post = posted
     if (!post) {
       try {
         // 送出當下才縮圖，保證不會送到還沒縮的原圖（Threads 抓大圖會逾時 2207003）。
         // 有打碼就送打碼後的圖，原圖不外流。
         const threadsImage = displayImage ? await downscale(displayImage) : null
-        // 用官方帳號發文，後端要求登入憑證（見 diula-outter 的 auth_token.py）。
-        const authHeaders = await getAuthHeaders()
-        if (!authHeaders) throw new Error('登入狀態已失效，請重新登入')
-        const res = await apiFetch(flask('/threads/submit'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...authHeaders },
-          // lost_id：讓後端能認出「這件已經發過了」（見 diula-outter 的 /threads/submit 冪等檢查），
-          // 開新分頁或網路重試打到同一件時不會在官方帳號上重複發文。
-          body: JSON.stringify({ text, image: threadsImage, name, lost_date: date, location: fullPlace, lost_id: state.lostId || null }),
+        // 只送欄位，不送上面那段 text —— 發出去的字由後端自己套模版組
+        // （見 diula-outter 的 _build_sos_text），使用者沒有自由塞內容的縫。
+        // lost_id：讓後端能認出「這件已經發過／正在審了」，開新分頁或網路重試
+        // 打到同一件時不會在官方帳號上重複發文。
+        const json = await submitSosPost({
+          name: name.trim(),
+          lost_date: date,
+          location: fullPlace,
+          note: note.trim(),
+          image: threadsImage,
+          lost_id: state.lostId || null,
         })
-        const json = await res.json().catch(() => ({}))
-        if (!res.ok) throw new HttpError(res.status, json.error)
         post = json
         setPosted(json)
       } catch (e) {
-        setError(`發佈失敗：${friendlyError(e)}`)
+        // 422＝沒通過內容審核，後端會說明為什麼，照實告訴使用者他才知道要改什麼。
+        if (e.status === 422) {
+          const p = e.payload || {}
+          const risks = p.risks?.length ? `（${p.risks.join('、')}）` : ''
+          setError(`這則協尋文沒有通過審核${risks}：${p.reason || '請修改內容後再試'}`)
+        } else {
+          setError(`發佈失敗：${friendlyError(e)}`)
+        }
         setStatus('idle')
         return
       }
     }
 
+    const pending = post.status === 'pending'
+
     // 第二步：存進「我的遺失物」。失敗只重試這一步，按鈕改成「重試存檔」
     try {
       // 存資料庫的圖縮到 800px（同確認標籤／推播頁），避免超過 Firestore 單筆 1MB
       const image = displayImage ? await downscale(displayImage, 800, 0.8) : null
-      // 更新「我的遺失物」裡按下比對時建立的那一筆（沒有的話才新增），讓發出去的協尋出現在清單。
+      // 更新「我的遺失物」裡按下比對時建立的那一筆（沒有的話才新增），讓送出的協尋出現在清單。
+      // 還在審的那筆存 sos_review_id：之後進詳情頁會拿它去問後端審過了沒（見 lib/sosReview.js）。
       const fields = {
         kind: 'threads',
         code: '#' + (post.post_id ? String(post.post_id).slice(-6) : Date.now().toString().slice(-6)),
@@ -126,9 +135,10 @@ export default function SosPostPage() {
         remark: note.trim(),
         tags: q.tags || [],
         image,
-        status: LOST_STATUS.POSTED,
-        thread_post_id: post.post_id,
-        thread_post_url: post.permalink,
+        status: pending ? LOST_STATUS.REVIEWING : LOST_STATUS.POSTED,
+        sos_review_id: pending ? post.review_id : null,
+        thread_post_id: post.post_id || null,
+        thread_post_url: post.permalink || null,
       }
       let savedId = state.lostId
       if (savedId) await updateMyItem('lost', savedId, fields)
@@ -137,9 +147,10 @@ export default function SosPostPage() {
       // 詳情頁的資料是從上一頁帶過去的（location.state.item），所以讀回完整的一筆；讀不到就用剛寫入的欄位
       const fresh = await getMyItem('lost', savedId).catch(() => null)
       setSavedItem(fresh || { id: savedId, ...fields })
-      setStatus('success')
+      setStatus(pending ? 'pending' : 'success')
     } catch (e) {
-      setError(`協尋文已發佈，但存到「我的遺失物」時失敗（${friendlyError(e)}），請按「重試存檔」`)
+      const what = pending ? '協尋文已送審' : '協尋文已發佈'
+      setError(`${what}，但存到「我的遺失物」時失敗（${friendlyError(e)}），請按「重試存檔」`)
       setStatus('idle')
     }
   }
@@ -231,6 +242,7 @@ export default function SosPostPage() {
           <div className="rounded-[10px] bg-card p-4 text-xs font-medium leading-normal text-brown">
             由 <b>DiuLa!官方帳號</b> 幫你把協尋資訊發到 Threads，擴大協尋範圍。貼文圖片將沿用比對尋找時上傳的圖片（有框選就用框內範圍）!
             <b>會公開發到 Threads，發佈前可框住路人臉、車牌、地址等個資。</b>
+            送出後會先經過內容審核，通過才會發出（少數情況需要人工確認，會再通知你）。
           </div>
 
           <div>
@@ -263,7 +275,7 @@ export default function SosPostPage() {
                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown">
             <CircleCheckIcon className="h-9 w-9 shrink-0 text-brown" />
             {status === 'submitting'
-              ? (posted ? '存檔中…' : '發佈中…')
+              ? (posted ? '存檔中…' : '審核中…')
               : (posted ? '重試存檔' : '確認!發佈此則Threads文')}
           </button>
         </div>
@@ -282,6 +294,17 @@ export default function SosPostPage() {
       {status === 'success' && (
         <WireDialog height={251} onClose={goToDetail} label="Threads串文已發佈">
           <DialogTitle top={87} width={246} lineHeight={22}>Threads串文已發佈!</DialogTitle>
+          <DialogButton left={41} top={146} width={214} tone="blue" onClick={goToDetail}>查看我的遺失物</DialogButton>
+        </WireDialog>
+      )}
+
+      {/* 送審中彈窗：AI 沒把握時改由人工確認，這時還沒發出去，別說「已發佈」誤導使用者 */}
+      {status === 'pending' && (
+        <WireDialog height={251} onClose={goToDetail} label="協尋文已送出審核">
+          <DialogTitle top={72} width={246} lineHeight={22}>協尋文已送出審核</DialogTitle>
+          <p className="absolute left-[27px] top-[112px] w-[246px] text-center text-xs leading-normal text-brown">
+            通過後會由官方帳號發佈，並通知你。
+          </p>
           <DialogButton left={41} top={146} width={214} tone="blue" onClick={goToDetail}>查看我的遺失物</DialogButton>
         </WireDialog>
       )}

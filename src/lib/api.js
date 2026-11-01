@@ -117,6 +117,49 @@ export async function analyzeItem({ text, base64Image }) {
   }
 }
 
+// ── 要登入的 Flask 端點共用的小工具 ───────────────────────────────────
+// 每支都是「帶 token → apiFetch（會自動重試冷啟動）→ 非 2xx 丟 HttpError」，
+// 各頁各寫一次只會寫出不一致的錯誤處理。
+export async function flaskJson(path, { method = 'GET', body } = {}) {
+  const authHeaders = await getAuthHeaders()
+  if (!authHeaders) throw new Error('登入狀態已失效，請重新登入')
+  const init = { method, headers: { ...authHeaders } }
+  if (body !== undefined) {
+    init.headers['Content-Type'] = 'application/json'
+    init.body = JSON.stringify(body)
+  }
+  const res = await apiFetch(flask(path), init)
+  const json = await res.json().catch(() => ({}))
+  if (!res.ok) {
+    const err = new HttpError(res.status, json.error)
+    err.payload = json          // 審核退件的 reason／risks 要原樣給頁面用
+    throw err
+  }
+  return json
+}
+
+// 協尋發文：送欄位，**不送組好的文字**——發出去的字由後端自己套模版
+// （見 diula-outter 的 _build_sos_text）。回 {status:'posted'|'pending', ...}。
+// 審核沒過時後端回 422，payload 帶 reason／risks。
+export const submitSosPost = (body) => flaskJson('/threads/submit', { method: 'POST', body })
+
+// 查自己那筆協尋文審到哪了（審核通過是在小後台按的，前端要自己回來問）。
+// 一般用 lostId；送出當下還沒有「我的遺失物」那筆時後端發的是隨機 review_id，用那個查。
+export const fetchSosStatus = ({ lostId, reviewId }) =>
+  flaskJson(reviewId
+    ? `/threads/sos/status?review_id=${encodeURIComponent(reviewId)}`
+    : `/threads/sos/status?lost_id=${encodeURIComponent(lostId)}`)
+
+// 小後台（/admin）。非管理者後端一律回 404，前端不另外藏。
+export const adminSosQueue = (status = 'pending') =>
+  flaskJson(`/admin/sos/queue?status=${encodeURIComponent(status)}`)
+export const adminSosApprove = (id) =>
+  flaskJson(`/admin/sos/${encodeURIComponent(id)}/approve`, { method: 'POST' })
+export const adminSosReject = (id, reason) =>
+  flaskJson(`/admin/sos/${encodeURIComponent(id)}/reject`, { method: 'POST', body: { reason } })
+export const adminSosTakedown = (id) =>
+  flaskJson(`/admin/sos/${encodeURIComponent(id)}/takedown`, { method: 'POST' })
+
 // Threads 貼文：優先讀每日靜態快照（diula-web GitHub Pages，永遠醒著、CDN、秒開），
 // 讀不到才退回會睡的 Spring Boot /api/posts（Render 冷啟動要 ~50 秒）。
 // 資料一天才更新一次（scraper 每天跑），快照由每日同步的 export_threads_snapshot.py 產生並推上 Pages。

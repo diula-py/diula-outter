@@ -5,6 +5,7 @@ import { ConfirmFoundModal, DeleteConfirmModal, DeleteSuccessModal, DeleteThread
 import { DetailHeader, DetailImage, InfoBox, InfoRow, TagsBox, ActionButton, DeleteButton } from '../components/DetailKit'
 import { updateMyItem, removeMyItem } from '../lib/items'
 import { flask, wakeFlask } from '../lib/api'
+import { syncSosReview } from '../lib/sosReview'
 import { getAuthHeaders } from '../lib/authToken'
 import { asset } from '../lib/asset'
 import { LOST_STATUS } from '../data/itemStatus'
@@ -33,6 +34,20 @@ export default function MyLostDetailPage() {
   const [threadUrl, setThreadUrl] = useState(passed?.thread_post_url || '')
   const [deletingThread, setDeletingThread] = useState(false)
   const found = status === LOST_STATUS.FOUND
+
+  // 還在審核中的協尋文：問後端審過了沒，審完就把狀態補上（見 lib/sosReview.js，
+  // 那邊有解釋為什麼這件事得由前端做）。查不到就什麼都不變。
+  const [reviewReason, setReviewReason] = useState(passed?.sos_review_reason || '')
+  useEffect(() => {
+    let alive = true
+    syncSosReview(passed).then((patch) => {
+      if (!alive || !patch) return
+      setStatus(patch.status)
+      if (patch.thread_post_url) setThreadUrl(patch.thread_post_url)
+      if (patch.sos_review_reason !== undefined) setReviewReason(patch.sos_review_reason)
+    })
+    return () => { alive = false }
+  }, [passed])
 
   // 刪除 Threads 協尋文：呼官方 API 刪文 → 清掉本機貼文欄位 → 連結列消失。
   async function deleteThreadPost() {
@@ -134,6 +149,15 @@ export default function MyLostDetailPage() {
       </InfoBox>
 
       {item.tags.length > 0 && <TagsBox tags={item.tags} />}
+
+      {/* 審核中／被退件的說明。審核中時還沒有貼文連結，不說一聲使用者會以為發文壞了。 */}
+      {(status === LOST_STATUS.REVIEWING || reviewReason) && (
+        <div className="mt-5 box-border w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card p-[15px] text-xs font-medium leading-normal text-brown land:col-start-2 land:mt-0 land:w-full land:max-w-none">
+          {status === LOST_STATUS.REVIEWING
+            ? '協尋文審核中，通過後會由 DiuLa! 官方帳號發佈並通知你。'
+            : `協尋文沒有通過審核${reviewReason ? `：${reviewReason}` : ''}，修改內容後可以再送一次。`}
+        </div>
+      )}
 
       {/* Threads 協尋文連結（僅 Threads 自動發文的項目有；非 Threads 不顯示） */}
       {threadUrl && (

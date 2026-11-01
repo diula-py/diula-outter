@@ -1,10 +1,13 @@
 // 遺失／拾獲物件狀態列舉（全站共用，不要各頁面各自手打字串）。
 // 遺失：尋找中（建立）→ 自動推播中（開訂閱）／已發文（送 Threads）→ 已找到
 // 自動推播中滿五天 → 結束自動推播（由 Cloud Function expireAutoPush 每小時檢查並停訂閱）
+// 審核中：送出協尋文後 AI 沒把握，等小後台人工核准（見 lib/sosReview.js）；
+//         核准後前端自己把它改成已發文——Flask 改不到 diula--test 的資料。
 export const LOST_STATUS = {
   SEARCHING: '尋找中',
   BROADCASTING: '自動推播中',
   BROADCAST_ENDED: '結束自動推播',
+  REVIEWING: '審核中',
   POSTED: '已發文',
   FOUND: '已找到',
 }
