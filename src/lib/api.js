@@ -2,6 +2,7 @@
 //   dev（localhost）→ 回傳相對路徑，走 Vite dev proxy。
 //   prod（部署後）  → 回傳各後端的絕對網址（Render 服務）。
 import { HttpError } from './errors'
+import { getAuthHeaders } from './authToken'
 
 const isLocal = ['localhost', '127.0.0.1', ''].includes(window.location.hostname)
 
@@ -85,16 +86,23 @@ export async function apiFetch(url, init = {}) {
   return res
 }
 
-// AI 圖片辨識：逾時就放棄，避免 Render 或 Gemini 卡住時畫面停在進度條。
-// 90 秒 = 冷啟動 ~60 秒 + Gemini 辨識的餘裕。
+// AI 圖片辨識：改走我們自己 Flask 的代理（/ai/analyze-item），不再直打
+// diula-backend-api。那支服務是組員維護的、沒有登入驗證也沒有輸入長度上限
+// （實測送超長文字會把全站共用的 Gemini 免費額度燒到打不了），代理層補上
+// 登入要求、按人限流、text／圖片大小上限，通過才轉發。見 flask_app.py。
+// 逾時就放棄，避免 Render 或 Gemini 卡住時畫面停在進度條。
+// 90 秒 = 冷啟動 ~60 秒 + Gemini 辨識的餘裕（代理那層會在 85 秒先逾時，
+// 讓使用者看到「AI 回應逾時」而不是連線被硬斷的網路錯誤）。
 const AI_TIMEOUT_MS = 90 * 1000
 export async function analyzeItem({ text, base64Image }) {
+  const authHeaders = await getAuthHeaders()
+  if (!authHeaders) throw new Error('登入狀態已失效，請重新登入')
   const ctrl = new AbortController()
   const timer = setTimeout(() => ctrl.abort(), AI_TIMEOUT_MS)
   try {
-    const res = await apiFetch(aiApi('/analyze-item'), {
+    const res = await apiFetch(flask('/ai/analyze-item'), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...authHeaders },
       body: JSON.stringify({ text, base64Image }),
       signal: ctrl.signal,
     })
