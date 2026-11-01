@@ -49,12 +49,7 @@ export default function CropModal({ src, onCancel, onConfirm }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <Backdrop className="bg-black/70" />
       <div className="relative flex max-h-full w-full max-w-[393px] flex-col overflow-hidden rounded-2xl bg-paper">
-        <div className="flex items-center justify-between border-b border-black/10 px-4 py-3">
-          <button type="button" onClick={onCancel} className="text-sm text-brown">取消</button>
-          <span className="text-base font-bold text-brown">框選物品</span>
-          <button type="button" onClick={done} disabled={!ready} className="text-sm font-bold text-brown disabled:opacity-50">完成</button>
-        </div>
-
+        {/* 不放 header，取消／完成都在底部（同打碼視窗） */}
         <div className="min-h-0 flex-1 overflow-auto p-4">
           <p className="mb-1 text-sm font-medium leading-normal text-brown">若圖中有多項物品可使用框選功能</p>
           <p className="mb-3 text-xs leading-normal text-brown/70">
@@ -66,14 +61,20 @@ export default function CropModal({ src, onCancel, onConfirm }) {
         </div>
 
         <div className="flex flex-col gap-2 border-t border-black/10 p-4">
-          <button type="button" onClick={done} disabled={!ready}
-            className="h-12 w-full rounded-full border border-black bg-blue text-base font-medium text-brown disabled:opacity-60">
-            完成框選
-          </button>
           <button type="button" onClick={() => onConfirm(null)}
             className="h-10 w-full rounded-full border border-black bg-input text-sm font-medium text-brown">
             使用整張照片
           </button>
+          <div className="flex gap-3">
+            <button type="button" onClick={onCancel}
+              className="h-12 flex-1 rounded-full border border-black bg-white text-base font-medium text-brown">
+              取消
+            </button>
+            <button type="button" onClick={done} disabled={!ready}
+              className="h-12 flex-1 rounded-full border border-black bg-blue text-base font-medium text-brown disabled:opacity-60">
+              完成框選
+            </button>
+          </div>
         </div>
       </div>
     </div>
