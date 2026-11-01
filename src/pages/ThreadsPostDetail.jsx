@@ -106,7 +106,7 @@ export default function ThreadsPostDetail() {
               className="flex items-center gap-3 no-underline"
             >
               <img src={asset('/icons/threads.png')} alt="Threads" className="h-9 w-9 shrink-0 object-contain" />
-              <div className="flex h-11 min-w-0 flex-1 items-center rounded-[50px] border border-black/15 bg-white px-4">
+              <div className="flex h-11 min-w-0 flex-1 items-center rounded-[50px] border border-black bg-white px-4">
                 <span className="min-w-0 flex-1 truncate text-sm text-brown underline underline-offset-2">
                   {post.url}
                 </span>

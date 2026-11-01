@@ -24,7 +24,7 @@ export default function AnalyzingScreen({ pct, error, onRetry, children }) {
             <button
               type="button"
               onClick={onRetry}
-              className="h-11 rounded-[50px] border border-black bg-white px-6 text-sm font-medium text-brown"
+              className="h-11 rounded-[50px] border border-black bg-white px-6 text-base font-medium text-brown"
             >
               返回重試
             </button>

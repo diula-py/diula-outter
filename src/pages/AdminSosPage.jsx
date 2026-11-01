@@ -102,8 +102,8 @@ export default function AdminSosPage() {
             key={t.key}
             type="button"
             onClick={() => setTab(t.key)}
-            className={`rounded-[50px] border border-black px-4 py-1.5 text-xs font-medium text-brown transition
-                        ${tab === t.key ? 'bg-blue' : 'bg-card hover:brightness-[.98]'}`}
+            className={`rounded-[50px] border-black px-4 py-1.5 text-xs font-normal text-brown transition
+                        ${tab === t.key ? 'border-[1.5px] bg-card' : 'border bg-input hover:brightness-[.98]'}`}
           >
             {t.label}
           </button>
@@ -111,7 +111,7 @@ export default function AdminSosPage() {
         <button
           type="button"
           onClick={() => load(tab)}
-          className="ml-auto rounded-[50px] border border-black bg-card px-4 py-1.5 text-xs font-medium text-brown transition hover:brightness-[.98]"
+          className="ml-auto rounded-[50px] border border-black bg-card px-4 py-1.5 text-xs font-normal text-brown transition hover:brightness-[.98]"
         >
           重新整理
         </button>
@@ -151,11 +151,11 @@ export default function AdminSosPage() {
               {it.status === 'pending' && (
                 <>
                   <button type="button" disabled={busyId === it.id} onClick={() => approve(it.id)}
-                    className="rounded-[50px] border border-black bg-blue px-5 py-2 text-xs font-medium text-brown disabled:opacity-50">
+                    className="rounded-[50px] border border-black bg-blue px-5 py-2 text-xs font-normal text-brown disabled:opacity-50">
                     {busyId === it.id ? '處理中…' : '核准並發佈'}
                   </button>
                   <button type="button" disabled={busyId === it.id} onClick={() => reject(it.id)}
-                    className="rounded-[50px] border border-black bg-white px-5 py-2 text-xs font-bold text-error disabled:opacity-50">
+                    className="rounded-[50px] border border-black bg-white px-5 py-2 text-xs font-normal text-error disabled:opacity-50">
                     退件
                   </button>
                 </>
@@ -164,12 +164,12 @@ export default function AdminSosPage() {
                 <>
                   {it.permalink && (
                     <a href={it.permalink} target="_blank" rel="noreferrer"
-                      className="rounded-[50px] border border-black bg-white px-5 py-2 text-xs font-medium text-brown">
+                      className="rounded-[50px] border border-black bg-white px-5 py-2 text-xs font-normal text-brown">
                       看貼文
                     </a>
                   )}
                   <button type="button" disabled={busyId === it.id} onClick={() => takedown(it.id)}
-                    className="rounded-[50px] border border-black bg-white px-5 py-2 text-xs font-bold text-error disabled:opacity-50">
+                    className="rounded-[50px] border border-black bg-white px-5 py-2 text-xs font-normal text-error disabled:opacity-50">
                     {busyId === it.id ? '處理中…' : '下架'}
                   </button>
                 </>

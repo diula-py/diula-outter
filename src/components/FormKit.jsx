@@ -65,12 +65,12 @@ export function UploadBox({ mt = 20, onClick, ariaLabel, src, alt = '', cameraAl
       {src && onRecrop && (
         <div className="absolute bottom-2 right-2 flex items-center gap-1.5">
           {cropped && (
-            <span className="rounded-full bg-card px-2.5 py-1 text-xs font-medium text-brown">已框選</span>
+            <span className="rounded-full border border-black bg-card px-2.5 py-1 text-xs font-normal text-brown">已框選</span>
           )}
           <button
             type="button"
             onClick={onRecrop}
-            className="rounded-full border border-black bg-input px-3 py-1 text-xs font-medium text-brown
+            className="rounded-full border border-black bg-input px-3 py-1 text-xs font-normal text-brown
                        transition hover:bg-[#ececec] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
           >
             {cropped ? '重新框選' : '框選物品'}
