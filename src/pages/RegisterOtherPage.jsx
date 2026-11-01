@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { CalendarIcon, LocationIcon, PersonChalkboardIcon } from '../components/icons'
 import { FormHeader, FormPage, UploadBox, FormCard, FormRow, RegionField, SubmitButton, pillInput } from '../components/FormKit'
 import { todayStr } from '../lib/date'
-import { wakeAi } from '../lib/api'
+import { wakeAi, wakeFlask } from '../lib/api'
 import { downscale } from '../lib/image'
 import { FOUND_STATUS } from '../data/itemStatus'
 
@@ -36,8 +36,11 @@ export default function RegisterOtherPage() {
   const foundAt = [foundCity, foundDistrict].filter(Boolean).join(' ') // 拾獲地點合併字串
   const sendTo = [dropCity, dropDistrict].filter(Boolean).join(' ')    // 送往地點合併字串
 
-  // 進頁就先喚醒 Render AI 服務（冷啟動 ~60 秒），送出時多半已就緒。
-  useEffect(() => { wakeAi() }, [])
+  // 進頁就先喚醒兩層服務，讓冷啟動並行而不是疊加：
+  // AI 辨識現在改走 Flask 代理（/ai/analyze-item，見 lib/api.js 的說明），
+  // 送出時要 Flask 醒著才轉發得到 AI 服務，少喚醒這層的話，原本 wakeAi()
+  // 幫 AI 服務爭取到的開機時間，會被「使用者按送出才開始醒的 Flask」吃掉。
+  useEffect(() => { wakeAi(); wakeFlask() }, [])
 
   function handlePhoto(e) {
     const file = e.target.files?.[0]
