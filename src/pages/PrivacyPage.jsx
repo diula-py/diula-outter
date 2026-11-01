@@ -30,7 +30,7 @@ function Label({ children }) {
 
 export default function PrivacyPage() {
   return (
-    <LegalPage title="隱私權政策" updatedAt="2026 年 10 月 12 日">
+    <LegalPage title="隱私權政策" updatedAt="2026 年 11 月 2 日">
       <Article title="第一條　前言與適用範圍">
         <Para>
           世新大學資訊傳播學系 112 級畢業製作團隊「探險活寶」（以下簡稱「本團隊」）開發營運 DiuLa! 遺失物協尋平台（以下簡稱「本平台」），並依個人資料保護法（以下簡稱「個資法」）第 8 條規定，以本政策告知使用者本平台如何蒐集、處理、利用及保護個人資料。
@@ -119,7 +119,7 @@ export default function PrivacyPage() {
 
       <Article title="第八條　瀏覽器本機儲存">
         <Bullets>
-          <li>本平台使用瀏覽器本機儲存（包括 localStorage、IndexedDB 及 Service Worker 快取），保存登入狀態、條款同意紀錄、介面偏好，以及供離線瀏覽使用之資料快取。PWA 離線上傳功能預計於 2026 年 12 月 4 日前上線，上線後將以本機儲存暫存離線時之上傳內容，待網路恢復後自動上傳。</li>
+          <li>本平台使用瀏覽器本機儲存（包括 localStorage、IndexedDB 及 Service Worker 快取），保存登入狀態、條款同意紀錄、介面偏好，以及供離線瀏覽使用之資料快取。於離線狀態下登錄之非證件類拾獲物資料（含照片），將先暫存於您的裝置，待網路恢復且您再次開啟本平台時自動上傳；上傳完成前，其他使用者無法搜尋到該筆資料。</li>
           <li>本平台不使用第三方廣告追蹤 Cookie。</li>
           <li>使用者得於瀏覽器設定中清除本平台之網站資料，但可能因此無法維持登入或使用部分功能。</li>
         </Bullets>

@@ -19,6 +19,8 @@ export default function RegisterConfirmPage() {
   const location = useLocation()
   const { userId } = useAuth()
   const item = location.state?.item
+  // 離線登錄時跳過了 AI 辨識，標籤全部由使用者自己選（標題不寫「AI 標籤」）
+  const manualTags = Boolean(location.state?.manualTags)
 
   const [date, setDate] = useState(item?.date || todayStr())
   const [city, setCity] = useState((item?.place || '').split(' ')[0] || '')
@@ -51,11 +53,12 @@ export default function RegisterConfirmPage() {
     setBusy(true)
     try {
       const place = [city, district].filter(Boolean).join(' ') || item.place
+      // 非證件類允許離線先存在手機（Firestore 離線佇列），證件類一定要連線（見 lib/items.js 的 allowQueue）
       const saved = await addMyItem('found', userId, {
         ...item, date: date || item.date, place, remark: remark.trim(), tags,
         location_detail: foundDetail.trim(), dropLocation: sendTo.trim(),
-      })
-      navigate('/register/success', { replace: true, state: { id: saved.id } })
+      }, { allowQueue: !fixedTags })
+      navigate('/register/success', { replace: true, state: { id: saved.id, queued: saved.queued } })
     } catch (e) {
       console.error('存進「我的拾獲物」失敗:', e)
       setError(`登錄失敗：${friendlyError(e)}`)
@@ -99,7 +102,7 @@ export default function RegisterConfirmPage() {
           證件類只顯示選好的證件別（不可增刪）；非證件類是 AI 標籤、可增刪 */}
       <div className="mt-5 box-border min-h-[98px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card p-5
                       land:col-start-2 land:mt-0 land:w-full land:max-w-none">
-        <div className="mb-[10px] text-base font-semibold text-brown">{fixedTags ? '標籤' : 'AI 標籤'}</div>
+        <div className="mb-[10px] text-base font-semibold text-brown">{fixedTags || manualTags ? '標籤' : 'AI 標籤'}</div>
         <div className="flex flex-wrap gap-[10px]">
           {tags.map((tag) => (
             <div key={tag} className="box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border border-black bg-blue px-5 py-[10px] text-xs font-normal text-brown">

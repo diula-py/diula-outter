@@ -7,6 +7,7 @@ import { wakeAi, wakeFlask } from '../lib/api'
 import { downscale } from '../lib/image'
 import { FOUND_STATUS } from '../data/itemStatus'
 import { useItemPhoto } from '../components/CropModal'
+import { useOnline } from '../lib/useOnline'
 
 function fileToDataUrl(file) {
   return new Promise((res, rej) => {
@@ -20,6 +21,7 @@ function fileToDataUrl(file) {
 export default function RegisterOtherPage() {
   const navigate = useNavigate()
   const fileRef = useRef(null)
+  const online = useOnline() // 離線：跳過 AI 辨識，直接到確認頁手動選標籤（存檔走 Firestore 離線佇列）
 
   const { photo, previewUrl, cropped, handlePhoto, recrop, modal: cropModal } = useItemPhoto() // 選照片後自動跳出框選
   const [date, setDate] = useState(todayStr())
@@ -66,6 +68,12 @@ export default function RegisterOtherPage() {
       status: FOUND_STATUS.KEEPING,
       created_at: new Date().toISOString(),
     }
+    // 離線 → AI 服務連不到，直接到確認頁讓使用者自己選標籤。
+    // （連到沒有對外網路的 Wi-Fi 時 navigator.onLine 還是 true，會走 AI 那條，AI 失敗一樣會進確認頁。）
+    if (!navigator.onLine) {
+      navigate('/register/confirm', { state: { item, manualTags: true } })
+      return
+    }
     // 送出後 → AI 辨識過場頁：自動補標籤後存進「我的拾獲物」（同證件類登錄，共用同一頁）。
     navigate('/register/analyzing', {
       state: { item, base64Image: uploadImage, desc: note.trim() },
@@ -111,7 +119,7 @@ export default function RegisterOtherPage() {
 
       {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error land:col-start-2 land:mt-0 land:w-full land:max-w-none">{error}</p>}
       <SubmitButton onClick={handleSubmit} disabled={status === 'submitting'}>
-        {status === 'submitting' ? '送出中…' : '填寫完成，AI 辨識產生標籤'}
+        {status === 'submitting' ? '送出中…' : online ? '填寫完成，AI 辨識產生標籤' : '填寫完成，手動選擇標籤'}
       </SubmitButton>
       {cropModal}
     </FormPage>

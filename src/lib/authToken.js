@@ -102,6 +102,12 @@ export async function getOwnerUid() {
     new Promise((resolve) => setTimeout(resolve, OWNER_SIGN_IN_WAIT_MS)),
   ])
 
+  // 離線而且手機上沒有 Firebase 身分：補換 custom token 一定要連 Spring，離線必定失敗，
+  // 不要讓使用者卡在三輪重試（最長 45 秒）才看到錯誤。
+  if (!hasOwnerIdentity() && !navigator.onLine) {
+    throw new Error('目前離線，請連上網路後再送出')
+  }
+
   let retryError = null
   if (!hasOwnerIdentity()) {
     // 背景那一輪多半是被冷啟動拖垮的——它本身就是叫醒後端的那次請求。

@@ -62,6 +62,14 @@ function fromFirestoreFields({ location, image_base64, notes, ...rest }) {
   }
 }
 
+// 讀文件內容：還沒上傳的 serverTimestamp() 是 null，改用本機預估時間，排序才不會掉到最後面。
+// pending：這筆還在 Firestore 離線佇列裡、還沒寫到伺服器（列表顯示「待上傳」）。
+function snapToPlainItem(snap, kind) {
+  const item = toPlainItem(snap.id, kind, snap.data({ serverTimestamps: 'estimate' }))
+  item.pending = snap.metadata.hasPendingWrites
+  return item
+}
+
 function toPlainItem(id, kind, data) {
   const item = { id, ...fromFirestoreFields(data), kind: data.kind || kind }
   if (LEGACY_LOST_STATUS[item.status]) item.status = LEGACY_LOST_STATUS[item.status]
@@ -88,7 +96,7 @@ export async function listMyItems(kind, userId) {
   const ownerUid = await getOwnerUid()
   const q = query(collection(db, col), where('owner_uid', '==', ownerUid))
   const snap = await getDocs(q)
-  const items = snap.docs.map((d) => toPlainItem(d.id, kind, d.data()))
+  const items = snap.docs.map((d) => snapToPlainItem(d, kind))
   items.sort((a, b) => (b.timestamp?.toMillis?.() ?? 0) - (a.timestamp?.toMillis?.() ?? 0))
   listCache.set(`${col}:${userId}`, items)
   return items
@@ -99,12 +107,19 @@ export async function getMyItem(kind, id) {
   await getOwnerUid()
   const snap = await getDoc(doc(db, col, id))
   if (!snap.exists()) return null
-  return toPlainItem(snap.id, kind, snap.data())
+  return snapToPlainItem(snap, kind)
 }
+
+// 等伺服器確認寫入最多等多久。離線（或連到沒有對外網路的 Wi-Fi）時 setDoc 會一直等到連上才結束，
+// 超過這個時間就當作「已排進 Firestore 離線佇列」，不讓畫面卡在送出中。
+const WRITE_ACK_TIMEOUT_MS = 5000
 
 // 新增一筆。kind 決定 collection；data.kind（若有，例如 'threads'/'subscription'）
 // 會照樣存進文件裡，供列表頁／詳情頁區分顯示用。
-export async function addMyItem(kind, userId, data) {
+// allowQueue：允許離線先存在手機、之後再上傳（目前只有非證件類拾獲物登錄用）。
+//   回傳值的 queued = true 代表還沒寫到伺服器。佇列只有在 DiuLa! 開著、而且有網路時才會送出。
+//   其他流程送出後馬上要呼叫後端（比對、推播），後端讀不到還沒上傳的資料，所以不開。
+export async function addMyItem(kind, userId, data, { allowQueue = false } = {}) {
   listCache.clear()
   const { id: _ignoredId, created_at: _ignoredCreatedAt, ...rest } = data
   const tags = rest.tags || []
@@ -129,8 +144,19 @@ export async function addMyItem(kind, userId, data) {
   // 自動推播的開始時間，供 Cloud Function 判斷滿五天後結束推播
   if (rest.status === LOST_STATUS.BROADCASTING) payload.autoPushStartedAt = serverTimestamp()
 
-  await setDoc(doc(db, col, newId), payload)
-  return { id: newId, ...fromFirestoreFields(payload) }
+  const write = setDoc(doc(db, col, newId), payload)
+  let queued = false
+  if (allowQueue) {
+    queued = await Promise.race([
+      write.then(() => false),
+      new Promise((resolve) => setTimeout(() => resolve(true), WRITE_ACK_TIMEOUT_MS)),
+    ])
+    // 之後上傳時才被規則擋下的話，畫面已經換頁了，只能記在 console。
+    if (queued) write.catch((e) => console.error(`離線佇列上傳失敗（${col}/${newId}）：`, e))
+  } else {
+    await write
+  }
+  return { id: newId, ...fromFirestoreFields(payload), queued }
 }
 
 export async function updateMyItem(kind, id, patch) {
