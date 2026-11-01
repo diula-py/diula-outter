@@ -7,6 +7,7 @@ import { asset } from '../lib/asset'
 import { LOST_STATUS } from '../data/itemStatus'
 import { normalizeIdWording } from '../lib/text'
 import { friendlyError } from '../lib/errors'
+import { LoadingInline } from './LoadingScreen'
 
 /**
  * 「我的遺失物／我的拾獲物」清單頁（inner page-15／page-18）。
@@ -118,7 +119,7 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
 
       <div className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-[15px]
                       land:mt-3 land:grid land:max-w-[708px] land:grid-cols-2 land:items-start land:gap-[14px]">
-        {loading && <p className={`${note} text-brown land:col-span-full`}>載入中...</p>}
+        {loading && <LoadingInline className="land:col-span-full" />}
         {!loading && error && items.length === 0 && <p className={`${note} text-error land:col-span-full`}>{error}</p>}
         {!loading && !(error && items.length === 0) && filtered.length === 0 && <p className={`${note} text-[#888] land:col-span-full`}>{emptyText}</p>}
 

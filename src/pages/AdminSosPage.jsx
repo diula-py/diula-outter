@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import { DetailHeader } from '../components/DetailKit'
 import { adminSosApprove, adminSosQueue, adminSosReject, adminSosTakedown, wakeFlask } from '../lib/api'
 import { friendlyError } from '../lib/errors'
+import { LoadingInline } from '../components/LoadingScreen'
 
 const TABS = [
   { key: 'pending', label: '待審' },
@@ -119,7 +120,7 @@ export default function AdminSosPage() {
       {error && <p className="px-5 pt-3 text-sm text-error">{error}</p>}
 
       <div className="flex flex-col gap-4 px-5 pt-4">
-        {items === null && <p className="text-xs text-brown opacity-70">載入中…</p>}
+        {items === null && <LoadingInline />}
         {items?.length === 0 && !error && <p className="text-xs text-brown opacity-70">沒有資料</p>}
 
         {items?.map((it) => (

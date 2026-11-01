@@ -41,6 +41,13 @@
   --text-lg--line-height: 1;
   --text-xl--line-height: 1;
   --text-2xl--line-height: 1;
+
+  /* 進站載入畫面的 Logo 呼吸動畫（components/LoadingScreen.jsx）：animate-breathe */
+  --animate-breathe: breathe 1.8s ease-in-out infinite;
+  @keyframes breathe {
+    0%, 100% { transform: scale(0.94); opacity: 0.65; }
+    50% { transform: scale(1.04); opacity: 1; }
+  }
 }
 
 /* @font-face 定義在 src/fonts.css（純 CSS，dev/prod url 皆正確），於 main.jsx 匯入。 */
