@@ -13,10 +13,11 @@ export default defineConfig({
     tailwindcss(),
     // PWA：Service Worker 快取網頁外殼，離線也能打開網站（企劃書「查看快取之協尋資訊」）。
     // SW 檔案、scope、precache 路徑都跟著上面的 base 走。
-    // 註冊寫在 src/main.jsx；緊急停用 SW 的步驟見 docs/pwa.md。
+    // 註冊寫在 src/lib/pwa.js；緊急停用 SW 的步驟見 docs/pwa.md。
     VitePWA({
-      registerType: 'autoUpdate',
-      injectRegister: null, // 由 main.jsx 自己呼叫 registerSW，才能加定時檢查更新
+      // prompt：新版先等待，由 src/lib/pwa.js 挑「不在填表單」的時機才換上並重整（autoUpdate 會直接重整）。
+      registerType: 'prompt',
+      injectRegister: null, // 由 src/lib/pwa.js 自己呼叫 registerSW，才能加定時檢查更新
       manifest: false, // 沿用 public/manifest.webmanifest，不另外產生
       // ⚠️ 緊急停用：把下一行註解拿掉、push 到 main 部署 → 所有裝置的 SW 會自我移除並清掉快取。
       // selfDestroying: true,
@@ -29,7 +30,7 @@ export default defineConfig({
         navigateFallbackDenylist: [/\/__\//], // Firebase Auth 的 /__/auth/* 不走 fallback
         cleanupOutdatedCaches: true,
         clientsClaim: true,
-        skipWaiting: true,
+        // 不設 skipWaiting：新版要等 lib/pwa.js 送 SKIP_WAITING 訊息才接手。
         // 只快取下面這幾種；其餘請求（Firestore、Firebase Auth、LIFF、Google OAuth、
         // Render 上的 Flask / Spring Boot / AI API）SW 一律不攔截，直接走網路。
         runtimeCaching: [

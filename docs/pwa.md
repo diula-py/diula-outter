@@ -17,8 +17,18 @@ Render 上所有後端（Flask / Spring Boot / AI，含 `/api/posts`、`/api/ima
 
 ## 更新機制
 
-`registerType: 'autoUpdate'` + `skipWaiting` + `clientsClaim`：部署新版後，裝置在下次開啟、
-每小時、或切回分頁時檢查到新版，就會自動換上並重新整理一次頁面。
+`registerType: 'prompt'` + `clientsClaim`（不設 `skipWaiting`），邏輯在 `src/lib/pwa.js`：
+部署新版後，裝置在下次開啟、每小時、或切回分頁時檢查到新版，新版 SW 會先「等待」。
+
+- 目前不在忙碌頁面 → 馬上換上新版並重新整理一次
+- 目前在 `/register/*`、`/search/*`（Threads 頁除外）、`/login` → 先不換，
+  等使用者換到其他頁面（`SwUpdater` 每次換頁會檢查）才換上並重整，避免填到一半的表單、照片不見
+- 一直沒離開忙碌頁面就關掉 App → 下次開啟時瀏覽器會直接用新版
+
+要新增「不能被重整打斷」的頁面，改 `src/lib/pwa.js` 的 `isBusyRoute`。
+
+⚠️ 從舊版（autoUpdate）換到這版的那一次：舊頁面的程式不會叫新 SW 接手，
+要等裝置把 DiuLa! 的分頁 / 主畫面 App 完全關掉再開，才會換成這版。之後的更新就照上面的規則。
 
 ## 🚨 萬一 SW 出事：緊急停用
 
