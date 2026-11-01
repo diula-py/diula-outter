@@ -137,6 +137,8 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
               <div className="-my-1 truncate py-1 text-xs font-bold">＃{String(it.id).toUpperCase()}</div>
               <div className="-my-1 truncate py-1 text-sm font-bold">{it.name || (it.tags || []).map((t) => `#${t}`).join(' ')}</div>
               <div className="text-xs font-normal">{(it.date || '').replaceAll('-', '/')}</div>
+              {/* 離線時登錄、還在手機的 Firestore 佇列裡（連上網路並開著 DiuLa! 才會上傳），見 lib/items.js */}
+              {it.pending && <div className="text-xs font-medium text-[#8C8C8C]">待上傳</div>}
               {/* 拾獲物只有「保管中」一種狀態，不顯示 */}
               {kind !== 'found' && it.status && (
                 <div className="text-xs font-medium" style={{ color: statusColor(it.status) }}>{it.status}</div>

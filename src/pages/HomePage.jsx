@@ -1,35 +1,45 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import SectionTitle from '../components/SectionTitle'
 import PillButton from '../components/PillButton'
 import AddFriendBanner from '../components/AddFriendBanner'
+import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
+import { useOnline } from '../lib/useOnline'
 
 // 首頁選單資料 —— 之後要改連結或加項目，改這裡就好。
 //   href      → 外部頁面（其他技術做的），整頁跳轉
 //   to        → React 內部路由（尚未實作的佔位頁）
+//   needsOnline → 離線時按鈕變灰，按下去跳「需要網路」提示（要打 Render 後端的流程）
 import { asset } from '../lib/asset'
 
 const FIND_ITEMS = [
-  { icon: asset('/icons/search.png'), label: '跨平台尋找遺失物', to: '/search' },
+  { icon: asset('/icons/search.png'), label: '跨平台尋找遺失物', to: '/search', needsOnline: true },
   { icon: asset('/icons/threads.png'), label: 'Threads尋找遺失物', to: '/search/threads' },
 ]
 
 const REGISTER_ITEMS = [
-  { icon: asset('/icons/address-card.png'), label: '證件類遺失物登錄', to: '/register/id' },
+  { icon: asset('/icons/address-card.png'), label: '證件類遺失物登錄', to: '/register/id', needsOnline: true },
   { icon: asset('/icons/clipboard-question.png'), label: '非證件類遺失物登錄', to: '/register/other' },
 ]
 
 export default function HomePage() {
   const navigate = useNavigate()
+  const online = useOnline()
+  const [offlineNotice, setOfflineNotice] = useState('') // 離線時按到需要網路的功能 → 彈窗顯示功能名稱
 
-  const renderItem = (item) => (
-    <PillButton
-      key={item.label}
-      icon={item.icon}
-      label={item.label}
-      href={item.href}
-      onClick={item.to ? () => navigate(item.to) : undefined}
-    />
-  )
+  const renderItem = (item) => {
+    const blocked = item.needsOnline && !online
+    return (
+      <PillButton
+        key={item.label}
+        icon={item.icon}
+        label={item.label}
+        href={item.href}
+        dimmed={blocked}
+        onClick={blocked ? () => setOfflineNotice(item.label) : item.to ? () => navigate(item.to) : undefined}
+      />
+    )
+  }
 
   return (
     <div className="flex flex-col items-center
@@ -55,6 +65,16 @@ export default function HomePage() {
         <SectionTitle>登錄拾獲物</SectionTitle>
         <div className="mt-[15px] flex flex-col gap-5">{REGISTER_ITEMS.map(renderItem)}</div>
       </section>
+
+      {offlineNotice && (
+        <WireDialog height={230} onClose={() => setOfflineNotice('')} label="需要網路">
+          <DialogTitle top={62} width={246}>需要網路</DialogTitle>
+          <div className="absolute left-1/2 top-[94px] w-[246px] -translate-x-1/2 text-center text-sm font-normal leading-5">
+            「{offlineNotice}」需要連上網路，<br />請連線後再使用
+          </div>
+          <DialogButton left={60} top={146} width={180} tone="blue" onClick={() => setOfflineNotice('')}>確認</DialogButton>
+        </WireDialog>
+      )}
     </div>
   )
 }
