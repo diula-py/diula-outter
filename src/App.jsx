@@ -29,12 +29,14 @@ import AdminSosPage from './pages/AdminSosPage'
 import OfflineBanner from './components/OfflineBanner'
 import StatusBarColor from './components/StatusBarColor'
 import ScrollToTop from './components/ScrollToTop'
+import SwUpdater from './components/SwUpdater'
 
 export default function App() {
   return (
     <>
       <StatusBarColor />
       <ScrollToTop />
+      <SwUpdater />
       <OfflineBanner />
       <Routes>
         {/* 登入頁本身不能被擋，否則會變成無窮迴圈 */}
