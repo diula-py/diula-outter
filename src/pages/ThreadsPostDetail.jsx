@@ -4,6 +4,7 @@ import { ChevronLeftIcon, CalendarIcon, DiulaPinIcon } from '../components/icons
 
 import { fetchThreadsPosts } from '../lib/api'
 import { asset } from '../lib/asset'
+import { LoadingInline } from '../components/LoadingScreen'
 
 // post_date 是 UTC（例如 2026-10-09T22:42:52.000Z），直接切前 10 個字，台灣清晨的貼文會少一天。
 // 先換成本地時間再取年月日（同 lib/date.js 的做法）。
@@ -59,7 +60,7 @@ export default function ThreadsPostDetail() {
         </div>
       </header>
 
-      {state === 'loading' && <p className="py-10 text-center text-sm leading-normal text-brown/60">載入中…</p>}
+      {state === 'loading' && <LoadingInline />}
       {state === 'error' && <p className="py-10 text-center text-sm leading-normal text-error">找不到這則貼文</p>}
 
       {state === 'ready' && post && (
@@ -105,7 +106,7 @@ export default function ThreadsPostDetail() {
               className="flex items-center gap-3 no-underline"
             >
               <img src={asset('/icons/threads.png')} alt="Threads" className="h-9 w-9 shrink-0 object-contain" />
-              <div className="flex h-11 min-w-0 flex-1 items-center rounded-[50px] border border-black/15 bg-white px-4">
+              <div className="flex h-11 min-w-0 flex-1 items-center rounded-[50px] border border-black bg-white px-4">
                 <span className="min-w-0 flex-1 truncate text-sm text-brown underline underline-offset-2">
                   {post.url}
                 </span>

@@ -5,7 +5,8 @@
  * 兩種用法：
  *   1. 內部路由 / 動作 → 傳 onClick（渲染成 <button>）
  *   2. 外部頁面連結   → 傳 href（渲染成 <a>，整頁跳轉、可中鍵開新分頁）
- * props: icon, label, onClick?, href?, external?
+ * props: icon, label, onClick?, href?, external?, dimmed?
+ * dimmed：看起來是停用的（變淡），但仍可以按——用來在離線時按下去跳說明，而不是完全沒反應。
  */
 const BASE_CLASS =
   'flex h-[100px] w-full items-center gap-5 rounded-[50px] px-5 py-[30px] min-[380px]:gap-10 min-[380px]:px-10 land:h-[88px] land:py-5 ' +
@@ -22,7 +23,7 @@ function Inner({ icon, label }) {
   )
 }
 
-export default function PillButton({ icon, label, onClick, href, external }) {
+export default function PillButton({ icon, label, onClick, href, external, dimmed }) {
   if (href) {
     return (
       <a
@@ -36,7 +37,7 @@ export default function PillButton({ icon, label, onClick, href, external }) {
   }
 
   return (
-    <button type="button" onClick={onClick} className={BASE_CLASS}>
+    <button type="button" onClick={onClick} aria-disabled={dimmed || undefined} className={dimmed ? `${BASE_CLASS} opacity-40` : BASE_CLASS}>
       <Inner icon={icon} label={label} />
     </button>
   )

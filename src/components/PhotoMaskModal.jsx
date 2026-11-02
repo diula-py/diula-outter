@@ -97,16 +97,12 @@ export default function PhotoMaskModal({ src, onCancel, onConfirm }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <Backdrop className="bg-black/70" />
       <div className="relative flex max-h-full w-full max-w-[393px] flex-col overflow-hidden rounded-2xl bg-paper">
-        <div className="flex items-center justify-between border-b border-black/10 px-4 py-3">
-          <button type="button" onClick={onCancel} className="text-sm text-brown">取消</button>
-          <span className="text-base font-bold text-brown">為圖片打碼</span>
-          <button type="button" onClick={done} className="text-sm font-bold text-brown">完成</button>
-        </div>
-
+        {/* 不放 header：由上而下是 上一步／清除 → 圖片 → 說明 → 底部 取消／完成 */}
         <div className="min-h-0 flex-1 overflow-auto p-4">
-          <p className="mb-2 text-xs leading-normal text-brown/70">
-            在照片上拖曳，框住要遮住的部分（路人臉、車牌、地址…）。可不打碼直接按「完成」。
-          </p>
+          <div className="mb-3 flex gap-2">
+            <button type="button" onClick={undo} className="rounded-full border border-black bg-input px-4 py-1 text-xs font-normal text-brown">上一步</button>
+            <button type="button" onClick={clearAll} className="rounded-full border border-black bg-input px-4 py-1 text-xs font-normal text-brown">清除</button>
+          </div>
           <div className="relative overflow-hidden rounded-xl bg-black/5">
             <canvas ref={baseRef} className="block w-full" />
             <canvas
@@ -118,19 +114,22 @@ export default function PhotoMaskModal({ src, onCancel, onConfirm }) {
               style={{ cursor: 'crosshair' }}
             />
           </div>
-          <p className={`mt-2 text-xs leading-normal ${count ? 'text-brown/70' : 'text-brown/50'}`}>
+          <p className="mt-3 text-xs leading-normal text-brown/70">
+            在照片上拖曳，框住要遮住的部分（路人臉、車牌、地址…）。可不打碼直接按「完成」。
+          </p>
+          <p className={`mt-1 text-xs leading-normal ${count ? 'text-brown/70' : 'text-brown/50'}`}>
             {count ? `已遮蔽 ${count} 個區域（可拖曳新增、上一步移除）` : '尚未遮蔽任何區域'}
           </p>
-          <div className="mt-2 flex gap-2">
-            <button type="button" onClick={undo} className="rounded-full border border-black bg-input px-4 py-1 text-sm text-brown">上一步</button>
-            <button type="button" onClick={clearAll} className="rounded-full border border-black bg-input px-4 py-1 text-sm text-brown">清除</button>
-          </div>
         </div>
 
-        <div className="border-t border-black/10 p-4">
+        <div className="flex gap-3 border-t border-black/10 p-4">
+          <button type="button" onClick={onCancel}
+            className="h-12 flex-1 rounded-full border border-black bg-white text-base font-medium text-brown">
+            取消
+          </button>
           <button type="button" onClick={done}
-            className="h-12 w-full rounded-full border border-black bg-blue text-base font-medium text-brown">
-            完成打碼，套用照片
+            className="h-12 flex-1 rounded-full border border-black bg-blue text-base font-medium text-brown">
+            完成
           </button>
         </div>
       </div>

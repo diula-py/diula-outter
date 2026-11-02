@@ -6,25 +6,12 @@ import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import './lib/debugItems.js'
-import { registerSW } from 'virtual:pwa-register'
+import { initPwa } from './lib/pwa'
 import { prefetchThreadsSnapshot, wakeSpring } from './lib/api'
 import { initLiff } from './lib/liff'
 
-// PWA Service Worker（設定在 vite.config.js）。autoUpdate：有新版就自動換上並重新整理頁面。
-// 展場裝置可能整天開著不重整 → 每小時、以及每次切回這個分頁時都主動檢查一次更新。
-registerSW({
-  immediate: true,
-  onRegisteredSW(_swUrl, registration) {
-    if (!registration) return
-    const checkUpdate = () => {
-      if (navigator.onLine) registration.update().catch(() => {})
-    }
-    setInterval(checkUpdate, 60 * 60 * 1000)
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') checkUpdate()
-    })
-  },
-})
+// PWA Service Worker：有新版時，等使用者不在登記／搜尋流程才換上並重新整理。見 lib/pwa.js。
+initPwa()
 
 // 背景先抓一次 Threads 快照存起來，離線時 Threads 頁才有東西看（見 lib/api.js）。
 prefetchThreadsSnapshot()

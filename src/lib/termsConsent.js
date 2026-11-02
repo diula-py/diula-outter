@@ -7,7 +7,7 @@ import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from './firebase'
 import { getOwnerUid } from './authToken'
 
-export const TERMS_VERSION = '2026-10-12'
+export const TERMS_VERSION = '2026-11-02'
 
 const PENDING_KEY = 'diula_terms_consent_pending'
 

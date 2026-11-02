@@ -257,7 +257,7 @@ export default function SosPostPage() {
                 <button
                   type="button"
                   onClick={() => setMaskOpen(true)}
-                  className="rounded-full border border-black bg-input px-3 py-1 text-xs font-medium text-brown
+                  className="rounded-full border border-black bg-input px-3 py-1 text-xs font-normal text-brown
                              transition hover:bg-[#ececec] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
                 >
                   {editedImage ? '重新打碼' : '為圖片打碼'}

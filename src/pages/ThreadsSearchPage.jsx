@@ -7,6 +7,7 @@ import BackToTopButton from '../components/BackToTopButton'
 import { fetchThreadsPosts, getCachedThreadsPosts } from '../lib/api'
 import { normalizeIdWording } from '../lib/text'
 import { asset } from '../lib/asset'
+import { LoadingInline } from '../components/LoadingScreen'
 
 /**
  * 貼文縮圖：載快照給的網址，不繞 Spring Boot /api/image 代理——那台在 Render 免費方案會休眠，
@@ -84,7 +85,7 @@ export default function ThreadsSearchPage() {
       {/* 貼文清單：340 寬、卡片間距 15；卡片 padding 20、間距 15、文字 16/500 最多 3 行 */}
       <div className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-[15px]
                       land:mt-3 land:grid land:max-w-[708px] land:grid-cols-2 land:items-start land:gap-[14px]">
-        {state === 'loading' && <div className="py-5 text-center land:col-span-full text-base opacity-60">載入中...</div>}
+        {state === 'loading' && <LoadingInline className="land:col-span-full" />}
         {state === 'error' && <div className="py-5 text-center land:col-span-full text-sm leading-normal text-error">載入失敗，請檢查網路後再試一次</div>}
         {state === 'offline' && <div className="py-5 text-center land:col-span-full text-sm leading-normal text-error">目前離線，尚未儲存 Threads 貼文，請連上網路後再試一次</div>}
         {state === 'ready' && filtered.length === 0 && <div className="py-5 text-center land:col-span-full text-base opacity-60">目前尚無 Threads 協尋文</div>}

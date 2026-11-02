@@ -7,6 +7,7 @@ import { asset } from '../lib/asset'
 import { LOST_STATUS, statusColor } from '../data/itemStatus'
 import { normalizeIdWording } from '../lib/text'
 import { friendlyError } from '../lib/errors'
+import { LoadingInline } from './LoadingScreen'
 
 /**
  * 「我的遺失物／我的拾獲物」清單頁（inner page-15／page-18）。
@@ -109,7 +110,7 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
 
       <div className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-[15px]
                       land:mt-3 land:grid land:max-w-[708px] land:grid-cols-2 land:items-start land:gap-[14px]">
-        {loading && <p className={`${note} text-brown land:col-span-full`}>載入中...</p>}
+        {loading && <LoadingInline className="land:col-span-full" />}
         {!loading && error && items.length === 0 && <p className={`${note} text-error land:col-span-full`}>{error}</p>}
         {!loading && !(error && items.length === 0) && filtered.length === 0 && <p className={`${note} text-[#888] land:col-span-full`}>{emptyText}</p>}
 
@@ -127,6 +128,8 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
               <div className="-my-1 truncate py-1 text-xs font-bold">＃{String(it.id).toUpperCase()}</div>
               <div className="-my-1 truncate py-1 text-sm font-bold">{it.name || (it.tags || []).map((t) => `#${t}`).join(' ')}</div>
               <div className="text-xs font-normal">{(it.date || '').replaceAll('-', '/')}</div>
+              {/* 離線時登錄、還在手機的 Firestore 佇列裡（連上網路並開著 DiuLa! 才會上傳），見 lib/items.js */}
+              {it.pending && <div className="text-xs font-medium text-[#8C8C8C]">待上傳</div>}
               {/* 拾獲物只有「保管中」一種狀態，不顯示 */}
               {kind !== 'found' && it.status && (
                 <div className="text-xs font-medium" style={{ color: statusColor(it.status) }}>{it.status}</div>

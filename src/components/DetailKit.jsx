@@ -87,11 +87,11 @@ export function InfoRow({ icon, text, iconTop, textTop, pillTop, pillLeft = 82.5
   )
 }
 
-/** AI 標籤區：340 寬、padding 20、標題 16/600（同 inner）、chip 12/400 白底圓角 10、padding 6 14、間距 10。 */
+/** 標籤區（AI 產生、使用者增刪、證件類固定、離線手動選的都存在同一個 tags，分不出來源，所以不寫「AI 標籤」）：340 寬、padding 20、標題 16/600（同 inner）、chip 12/400 白底圓角 10、padding 6 14、間距 10。 */
 export function TagsBox({ tags, mt = 20 }) {
   return (
     <div className="box-border min-h-[98px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card p-5 land:col-start-2 land:mt-0! land:w-full land:max-w-none" style={{ marginTop: mt }}>
-      <div className="mb-[10px] text-base font-semibold leading-[18px]">AI 標籤</div>
+      <div className="mb-[10px] text-base font-semibold leading-[18px]">標籤</div>
       <div className="flex flex-wrap gap-[10px]">
         {tags.map((t) => (
           <div key={t} className="rounded-[10px] bg-white px-[14px] py-[6px] text-xs font-normal">{t}</div>

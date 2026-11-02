@@ -42,7 +42,7 @@ export default function TagPickerModal({ open, value, onClose, onConfirm, taxono
 
   // inner .modal-tag：高 30、padding 10 20、間距 8、12/400、白底黑框；已選＝藍底
   const chip = (on) =>
-    `box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border border-black px-5 py-[10px] text-xs font-normal leading-3 text-brown ${on ? 'bg-blue' : 'bg-white'}`
+    `box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border-black px-5 py-[10px] text-xs font-normal leading-3 text-brown ${on ? 'border-[1.5px] bg-blue' : 'border bg-white'}`
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center" onClick={onClose}>

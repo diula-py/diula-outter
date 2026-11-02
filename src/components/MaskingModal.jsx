@@ -247,8 +247,8 @@ export default function MaskingModal({ file, docType, onCancel, onConfirm }) {
                 {maskCount ? `已遮蔽 ${maskCount} 個區域（可拖曳新增、上一步移除）` : '尚未遮蔽任何區域，打碼後才能上傳'}
               </p>
               <div className="mt-2 flex gap-2">
-                <button type="button" onClick={undo} className="rounded-full border border-black bg-input px-4 py-1 text-sm text-brown">上一步</button>
-                <button type="button" onClick={clearAll} className="rounded-full border border-black bg-input px-4 py-1 text-sm text-brown">清除</button>
+                <button type="button" onClick={undo} className="rounded-full border border-black bg-input px-4 py-1 text-xs font-normal text-brown">上一步</button>
+                <button type="button" onClick={clearAll} className="rounded-full border border-black bg-input px-4 py-1 text-xs font-normal text-brown">清除</button>
               </div>
             </>
           )}
