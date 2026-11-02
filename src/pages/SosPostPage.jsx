@@ -242,7 +242,7 @@ export default function SosPostPage() {
           <div className="rounded-[10px] bg-card p-4 text-xs font-medium leading-normal text-brown">
             由 <b>DiuLa!官方帳號</b> 幫你把協尋資訊發到 Threads，擴大協尋範圍。貼文圖片將沿用比對尋找時上傳的圖片（有框選就用框內範圍）!
             <b>會公開發到 Threads，發佈前可框住路人臉、車牌、地址等個資。</b>
-            送出後會先經過內容審核，通過才會發出（少數情況需要人工確認，會再通知你）。
+            送出後會先經過審核，經小編確認沒問題才會正式發出，通過或退件都會通知你。
           </div>
 
           <div>
@@ -276,7 +276,7 @@ export default function SosPostPage() {
             <CircleCheckIcon className="h-9 w-9 shrink-0 text-brown" />
             {status === 'submitting'
               ? (posted ? '存檔中…' : '審核中…')
-              : (posted ? '重試存檔' : '確認!發佈此則Threads文')}
+              : (posted ? '重試存檔' : '確認!送出審核')}
           </button>
         </div>
       )}
