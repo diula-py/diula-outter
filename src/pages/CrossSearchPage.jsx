@@ -70,12 +70,12 @@ export default function CrossSearchPage() {
     <FormPage>
       <FormHeader title="跨平台尋找遺失物" onBack={() => navigate(-1)} />
 
-      {/* 圖片 / 文字 切換：168×46 米色膠囊，選中態是 76×40、圓角 42（inner Frame 48） */}
+      {/* 圖片 / 文字 切換：168×46 米色膠囊，選中態是 76×40、圓角 42（inner Frame 48）；左右各留 4px，底塊中心才對齊按鈕中心 */}
       <div className="relative mt-[25px] flex h-[46px] w-[168px] shrink-0 items-center rounded-[50px] bg-card land:col-span-full land:mt-0 land:justify-self-center">
         <div
           aria-hidden="true"
           className={`absolute top-[3px] box-border h-[40px] w-[76px] rounded-[42px] border-[1.5px] border-black bg-input transition-[left] duration-300
-            ${mode === 'image' ? 'left-[6px]' : 'left-[88px]'}`}
+            ${mode === 'image' ? 'left-[4px]' : 'left-[88px]'}`}
         />
         {[
           { key: 'image', label: '圖片' },
