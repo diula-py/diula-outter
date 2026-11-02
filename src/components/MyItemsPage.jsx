@@ -4,7 +4,7 @@ import { ChevronLeftIcon, CalendarIcon, MagnifyingGlassIcon } from './icons'
 import { listMyItems, getCachedMyItems } from '../lib/items'
 import { useAuth } from '../context/AuthContext'
 import { asset } from '../lib/asset'
-import { LOST_STATUS } from '../data/itemStatus'
+import { LOST_STATUS, statusColor } from '../data/itemStatus'
 import { normalizeIdWording } from '../lib/text'
 import { friendlyError } from '../lib/errors'
 
@@ -13,15 +13,6 @@ import { friendlyError } from '../lib/errors'
  * 標頭 174px（標題 top:74、返回鍵 30×30 在 (21,69)），搜尋列併在標頭內（top:109、340 寬、間距 10），
  * 清單 340 寬、卡片間距 15，卡片 padding 10／gap 15／縮圖 100。
  */
-
-// 狀態文字顏色（原本照 inner renderMyLostItems）；自動推播中改用 design.md 的品牌紅 --color-status-error
-function statusColor(status) {
-  if (status === LOST_STATUS.FOUND) return '#2E7D32'
-  if (status === LOST_STATUS.BROADCASTING) return '#C72F02'
-  if (status === LOST_STATUS.POSTED) return '#B8860B'
-  if (status === LOST_STATUS.BROADCAST_ENDED) return '#8C8C8C'
-  return '#492C13'
-}
 
 function Thumb({ img }) {
   return (

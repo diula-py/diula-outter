@@ -23,3 +23,13 @@ export const FOUND_STATUS = {
   KEEPING: '保管中',
   FOUND: '已找到',
 }
+
+// 狀態文字顏色（原本照 inner renderMyLostItems）；自動推播中改用 design.md 的品牌紅 --color-status-error。
+// 共用給「我的遺失物」清單與個人頁的「近2日遺失物」快速看，兩處狀態字樣要一致。
+export function statusColor(status) {
+  if (status === LOST_STATUS.FOUND) return '#2E7D32'
+  if (status === LOST_STATUS.BROADCASTING) return '#C72F02'
+  if (status === LOST_STATUS.POSTED) return '#B8860B'
+  if (status === LOST_STATUS.BROADCAST_ENDED) return '#8C8C8C'
+  return '#492C13'
+}

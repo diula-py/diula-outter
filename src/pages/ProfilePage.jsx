@@ -1,9 +1,86 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CubesIcon, FolderIcon } from '../components/icons'
+import { ChevronLeftIcon, CubesIcon, FolderIcon } from '../components/icons'
 import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import { asset } from '../lib/asset'
 import { useAuth } from '../context/AuthContext'
+import { listMyItems, getCachedMyItems } from '../lib/items'
+import { statusColor } from '../data/itemStatus'
+
+const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000
+
+// 判斷用「登錄時間」而不是使用者填的遺失日：這是「我最近動手做了什麼」的快速看，
+// 遺失日可能填很久以前的日期（例如事後才想起來補登），用它篩反而會漏掉剛登錄的東西。
+function recentTimeMs(item) {
+  const ts = item.timestamp?.toMillis?.()
+  if (ts) return ts
+  const parsed = Date.parse(item.date || '')
+  return Number.isNaN(parsed) ? 0 : parsed
+}
+
+function RecentLostQuickView() {
+  const navigate = useNavigate()
+  const { userId } = useAuth()
+  const cached = getCachedMyItems('lost', userId)
+  const [items, setItems] = useState(cached || [])
+  const [loading, setLoading] = useState(!cached)
+
+  useEffect(() => {
+    let alive = true
+    listMyItems('lost', userId).then((list) => {
+      if (alive) { setItems(list); setLoading(false) }
+    }).catch((e) => {
+      console.warn('讀取近2日遺失物失敗：', e)
+      if (alive) setLoading(false)
+    })
+    return () => { alive = false }
+  }, [userId])
+
+  const recent = useMemo(() => {
+    const now = Date.now()
+    return items
+      .filter((it) => now - recentTimeMs(it) <= TWO_DAYS_MS)
+      .sort((a, b) => recentTimeMs(b) - recentTimeMs(a))
+      .slice(0, 5)
+  }, [items])
+
+  return (
+    <div className="flex w-full max-w-[350px] flex-col gap-3 rounded-[20px] border border-black bg-card/50 p-4 land:max-w-none">
+      <h2 className="text-sm font-bold text-brown">近2日遺失物</h2>
+      {loading && !items.length && <p className="text-xs text-[#888]">載入中...</p>}
+      {!loading && !recent.length && <p className="text-xs text-[#888]">最近2天沒有新增的遺失物</p>}
+      {!!recent.length && (
+        <div className="flex flex-col gap-2">
+          {recent.map((it) => (
+            <button
+              key={it.id}
+              type="button"
+              onClick={() => navigate(`/my/lost/${it.id}`, { state: { item: it } })}
+              className="flex w-full items-center gap-2 rounded-[10px] border border-black bg-card p-2 text-left text-brown
+                         focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+            >
+              <div className="flex h-[48px] w-[48px] shrink-0 items-center justify-center overflow-hidden rounded-[8px] bg-white">
+                <img
+                  src={it.image || asset('/icons/logo2.png')}
+                  alt=""
+                  className={`h-full w-full ${it.image ? 'object-cover' : 'object-contain'}`}
+                />
+              </div>
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5 overflow-hidden">
+                <div className="truncate text-xs font-bold">{it.name || (it.tags || []).map((t) => `#${t}`).join(' ')}</div>
+                <div className="flex items-center gap-2 text-[11px]">
+                  <span>{(it.date || '').replaceAll('-', '/')}</span>
+                  {it.status && <span style={{ color: statusColor(it.status) }}>{it.status}</span>}
+                </div>
+              </div>
+              <ChevronLeftIcon className="h-4 w-4 shrink-0 -scale-x-100" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 function MenuButton({ icon, label, onClick }) {
   return (
@@ -58,9 +135,10 @@ export default function ProfilePage() {
         <div className="whitespace-nowrap text-xs font-medium">{displayCode && `User ID：${displayCode}`}</div>
       </div>
 
-      {/* 我的遺失物 / 我的拾獲物：350×100、x=22、y=351／471（窄螢幕右側留 21、跟著縮短） */}
+      {/* 近2日遺失物快速看 + 我的遺失物 / 我的拾獲物：350×100、x=22、y=351／471（窄螢幕右側留 21、跟著縮短） */}
       <div className="mt-[22px] flex w-full flex-col gap-5 self-start pl-[22px] pr-[21px]
                       land:col-start-2 land:mt-[18px] land:gap-[10px] land:px-0 land:self-auto">
+        <RecentLostQuickView />
         <MenuButton
           icon={<CubesIcon className="h-10 w-10 shrink-0" />}
           label="我的遺失物"
