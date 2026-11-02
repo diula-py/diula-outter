@@ -165,16 +165,23 @@ export async function fetchLineCustomToken(timeoutMs) {
 // 為什麼要在清掉本機狀態「之前」呼叫：這支端點要靠當下這個 idToken 才能證明是本人，
 // 一旦 signOut() 跑完、auth.currentUser 變 null，就再也叫不到自己的 token 了。
 // 失敗（網路、後端睡著）不拋出，不該讓使用者卡在登出不了。
+//
+// 最多只等 REVOKE_WAIT_MS：Spring 在 Render 上睡著時冷啟動要 60 秒以上，原本 await 到底
+// （還走 apiFetch 的開機重試），使用者按「是」之後畫面整整一分多鐘沒反應。
+// 用 keepalive 送：等不到就先往下登出、重新載入，請求仍會在背景送完，不會被換頁砍掉。
+const REVOKE_WAIT_MS = 3000
 export async function revokeFirebaseToken() {
   const user = auth.currentUser
   if (!user || user.isAnonymous) return
-  try {
+  const revoke = (async () => {
     const token = await user.getIdToken()
-    await apiFetch(spring('/api/auth/revoke'), {
+    await fetch(spring('/api/auth/revoke'), {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'X-Auth-Provider': 'firebase' },
+      keepalive: true,
     })
-  } catch (e) {
+  })().catch((e) => {
     console.warn('登出時撤銷 token 失敗（不影響登出本身）：', e)
-  }
+  })
+  await Promise.race([revoke, new Promise((resolve) => setTimeout(resolve, REVOKE_WAIT_MS))])
 }
