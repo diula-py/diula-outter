@@ -2,12 +2,13 @@ import { NavLink } from 'react-router-dom'
 
 import { asset } from '../lib/asset'
 
-// 2026-11：從「首頁／個人」2 分頁改成「拾獲／尋找／個人」3 分頁（設計稿對應圖示：
-// hand／magnifying-glass／user）。「尋找」維持掛在 '/'——原本合併版首頁裡「尋找遺失物」
-// 排在最前面，當作 app 預設落地頁；「拾獲」另開 '/found'。
+// 2026-11：從「首頁／個人」2 分頁改成「拾獲／尋找／個人」3 分頁。「尋找」維持掛在
+// '/'——原本合併版首頁裡「尋找遺失物」排在最前面，當作 app 預設落地頁；「拾獲」另開
+// '/found'。⚠ 使用者確認圖示跟路由的對應是 hand→尋找、magnifying-glass→拾獲
+// （不是直覺上「手=拾獲、放大鏡=尋找」的配法，照使用者給的畫面為準，不要憑直覺改回去）。
 const TABS = [
-  { to: '/found', icon: asset('/icons/hand.png'), label: '拾獲' },
-  { to: '/', icon: asset('/icons/search.png'), label: '尋找', end: true },
+  { to: '/found', icon: asset('/icons/search.png'), label: '拾獲' },
+  { to: '/', icon: asset('/icons/hand.png'), label: '尋找', end: true },
   { to: '/profile', icon: asset('/icons/user.png'), label: '個人' },
 ]
 
