@@ -4,6 +4,18 @@
 //
 // 重點：遺失物／拾獲物只有主人（owner_uid == request.auth.uid）讀得到、改得到。
 // 2026-10-11 之前讀取條件只有「有登入」，任何人登入後就能在主控台把全部物品和照片撈出來。
+//
+// 2026-11-06 第三版，兩件事：
+//   ① user_registry 補上 owner_uid，get 收緊成只能讀自己（原本任何登入者都能讀任何人的
+//     登入名冊，只要猜中 docId——格式固定、空間只有 2×36^4≈336 萬種，不是真的擋得住）。
+//   ② lost_items / found_items 的 create 加欄位格式驗證（原本只驗 owner_uid，user_id／
+//     tags 等欄位完全不驗，送什麼都收；user_registry 的 create 同樣沒驗過，而且已經被
+//     實際利用——資料庫裡有一筆 docId 是 `PIYANhaha-...`，完全不符合應有的格式）。
+//
+// ⚠️ 部署前置條件（user_registry 這段尤其重要，漏做會讓使用者登入後讀不到自己）：
+//   先跑 scripts/backfill-owner-uid.cjs --apply 把舊資料補上 owner_uid，確認過後才能
+//   發布這份規則，否則還沒補到的使用者下次開「我的」會讀不到 registry、退回臨時 user_id。
+//   細節與目前已知補不到的帳號清單，見 diula技術.md 當天的紀錄。
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -18,11 +30,31 @@ service cloud.firestore {
       return signedIn() && resource.data.owner_uid == request.auth.uid;
     }
 
+    // user_id 的樣子是 `${provider}${yy}${mm}${hash4}`（src/lib/userId.js 的
+    // getOrCreateUserId）：L 或 G、接兩碼年、兩碼月、四碼大寫英數雜湊，共 9 碼。
+    // 這條只驗「格式對不對」，驗不出「是不是真的屬於這個 owner」——那需要反查
+    // user_registry，但 docId 的雜湊沒辦法在規則語言裡重新算一次，做不到。
+    // 格式驗證仍然有意義：擋掉 2026-10-12 實測過的那種「user_id 填任意字串冒充別人」。
+    function validUserIdFormat() {
+      return request.resource.data.user_id is string
+        && request.resource.data.user_id.matches('^[LG][0-9]{4}[A-Z0-9]{4}$');
+    }
+
+    // tags 沒有型別/長度限制的話，誰都能塞一個超大陣列進去，拖垮這筆文件之後
+    // 每一次讀取與查詢。沒帶 tags 的寫入（例如訂閱、Threads 來源的項目）照樣放行。
+    function validTagsIfPresent() {
+      return !('tags' in request.resource.data)
+        || (request.resource.data.tags is list && request.resource.data.tags.size() <= 20);
+    }
+
     match /lost_items/{id} {
       // resource == null：讀不存在的文件（例如打錯編號）回「找不到」而不是權限錯誤，不會洩漏任何資料。
       allow get: if signedIn() && (resource == null || isOwner());
       allow list: if isOwner();
-      allow create: if signedIn() && request.resource.data.owner_uid == request.auth.uid;
+      allow create: if signedIn()
+        && request.resource.data.owner_uid == request.auth.uid
+        && request.resource.data.keys().hasAll(['owner_uid', 'kind', 'user_id'])
+        && validUserIdFormat() && validTagsIfPresent();
       allow update: if isOwner() && request.resource.data.owner_uid == request.auth.uid;
       allow delete: if isOwner();
     }
@@ -30,20 +62,39 @@ service cloud.firestore {
     match /found_items/{id} {
       allow get: if signedIn() && (resource == null || isOwner());
       allow list: if isOwner();
-      allow create: if signedIn() && request.resource.data.owner_uid == request.auth.uid;
+      allow create: if signedIn()
+        && request.resource.data.owner_uid == request.auth.uid
+        && request.resource.data.keys().hasAll(['owner_uid', 'kind', 'user_id'])
+        && validUserIdFormat() && validTagsIfPresent();
       allow update: if isOwner() && request.resource.data.owner_uid == request.auth.uid;
       allow delete: if isOwner();
     }
 
-    // 文件 id 是 `${provider}_${4 碼雜湊}`，內容只有 user_id、登入方式、註冊年月。
+    // 文件 id 是 `${provider}_${4 碼雜湊}`，內容只有 user_id、登入方式、註冊年月、
+    // owner_uid（2026-11-06 補上，backfill-owner-uid.cjs 處理舊資料）。
     //
     // get 與 list 要分開寫：`read` 同時涵蓋兩者，等於任何登入者都能把整張表列出來，
     // 洩漏「系統有哪些使用者編號、各自用什麼方式登入」。前端 getOrCreateUserId() 只會
     // 用文件 id 讀自己那一筆（getDoc），從不做查詢，所以關掉 list 不影響任何功能。
+    //
+    // get 現在還比對 owner_uid：原本任何登入者都讀得到任何一筆，只是「要多打一個
+    // 請求」而不是真的鎖；docId 格式固定、空間只有 2×36^4≈336 萬種，不是有效門檻。
+    //
+    // create 加了格式驗證：原本完全不驗，資料庫裡已經有一筆 docId 是
+    // `PIYANhaha-1791733705068`，完全不是 `L_XXXX`/`G_XXXX` 的格式——這不是假設性
+    // 風險，是已經發生過的髒資料（2026-11-06 跑 backfill 的 dry-run 才發現）。
     match /user_registry/{id} {
-      allow get: if signedIn();
+      allow get: if signedIn() && resource.data.owner_uid == request.auth.uid;
       allow list: if false;
-      allow create: if signedIn();
+      allow create: if signedIn()
+        && id.matches('^[LG]_[A-Z0-9]{4}$')
+        && request.resource.data.owner_uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['user_id', 'login_provider', 'yy', 'mm', 'owner_uid', 'created_at'])
+        && request.resource.data.login_provider in ['L', 'G']
+        && request.resource.data.user_id is string
+        && request.resource.data.user_id.size() > 0 && request.resource.data.user_id.size() <= 20
+        && request.resource.data.yy is string && request.resource.data.yy.size() == 2
+        && request.resource.data.mm is string && request.resource.data.mm.size() == 2;
       allow update, delete: if false;
     }
 

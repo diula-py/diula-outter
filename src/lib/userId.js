@@ -1,5 +1,5 @@
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
-import { db } from './firebase'
+import { auth, db } from './firebase'
 
 // 把原始 UID（LINE userId / Firebase uid）雜湊成固定 4 碼英數字，
 // 同一個人永遠得到同樣的結果，不受時間影響——搬自 index.html 的 _hashUid()。
@@ -24,6 +24,12 @@ export function hashUid(originalUid) {
 export async function getOrCreateUserId(loginProvider, originalUid) {
   const hash4 = hashUid(originalUid)
   const registryId = `${loginProvider}_${hash4}`
+  // Firestore 規則要求 owner_uid == request.auth.uid 才讀寫得到這筆（見
+  // firestore.rules，V-04b：原本任何登入者都能讀任何人的 user_registry）。
+  // 直接讀 auth.currentUser 而不是讓呼叫端傳參數：這個函式有好幾個呼叫點，有的是
+  // 在 custom token 還沒換完就先被呼叫（AuthContext 的逾時放行分支），用當下真正
+  // 的 Firebase 身分最準，也不用每個呼叫點都記得傳對值。
+  const ownerUid = auth.currentUser?.uid || null
 
   try {
     const registryRef = doc(db, 'user_registry', registryId)
@@ -31,6 +37,12 @@ export async function getOrCreateUserId(loginProvider, originalUid) {
     if (snap.exists() && snap.data().user_id) {
       return snap.data().user_id
     }
+
+    // 還沒登入到正式身分（custom token 還在背景換）：這裡不嘗試寫入，直接走下面
+    // catch 區塊回傳臨時 user_id——寫了也會被規則擋下（owner_uid 對不上 request.auth.uid
+    // 或 request.auth 本身是 null），等 token 換好後背景會再呼叫一次這個函式補上正確記錄
+    // （見 AuthContext.jsx 的 resolveFromLine）。
+    if (!ownerUid) throw new Error('尚未取得正式登入身分')
 
     const date = new Date()
     const yy = String(date.getFullYear()).slice(-2)
@@ -42,6 +54,7 @@ export async function getOrCreateUserId(loginProvider, originalUid) {
       login_provider: loginProvider,
       yy,
       mm,
+      owner_uid: ownerUid,
       created_at: serverTimestamp(),
     })
     return newUserId
