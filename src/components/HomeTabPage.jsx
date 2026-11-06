@@ -14,9 +14,10 @@ import { asset } from '../lib/asset'
  * 不一樣，其餘（頂部 banner、AddFriendBanner、離線提示彈窗）完全相同，抽成這支共用——
  * 之後要幫兩頁加插圖卡片之類的裝飾，改這裡一次就蓋到兩頁。
  *
- * props: title（SectionTitle 文字）、items（PillButton 清單，格式同舊版 FIND_ITEMS/REGISTER_ITEMS）
+ * props: title（SectionTitle 文字）、items（PillButton 清單，格式同舊版 FIND_ITEMS/REGISTER_ITEMS）、
+ *   illustration（選填，{ src, alt } ）——拾獲頁的插圖還沒拿到，沒給就不渲染卡片，不會留空殼。
  */
-export default function HomeTabPage({ title, items }) {
+export default function HomeTabPage({ title, items, illustration }) {
   const navigate = useNavigate()
   const online = useOnline()
   const [offlineNotice, setOfflineNotice] = useState('') // 離線時按到需要網路的功能 → 彈窗顯示功能名稱
@@ -48,6 +49,15 @@ export default function HomeTabPage({ title, items }) {
 
       {/* LINE 登入但還沒加官方帳號好友才會出現（見 AddFriendBanner） */}
       <AddFriendBanner />
+
+      {/* 插圖卡片：2026-11 設計討論時提過舊稿插圖偏一邊、卡片一半是死空間，兩頁底色又不一致，
+          這裡改成置中構圖、底色統一用跟按鈕同一組 card 米色（不另外混新顏色）。純裝飾，
+          橫式矮螢幕直接藏起來，把高度讓給下面真正有功能的按鈕（land: 本來就是為了這個）。 */}
+      {illustration && (
+        <div className="mt-[18px] flex w-[calc(100%-40px)] max-w-[350px] items-center justify-center rounded-[10px] border border-brown bg-card py-7 land:hidden">
+          <img src={illustration.src} alt={illustration.alt || ''} aria-hidden={illustration.alt ? undefined : 'true'} className="h-[140px] w-[140px] object-contain" />
+        </div>
+      )}
 
       {/* 內容欄 350 寬（窄螢幕左右各留 20）。橫式矮螢幕把按鈕排成兩欄，不然只有兩顆按鈕
           堆疊起來也要捲動，違背 land: 本來要解決的問題。 */}
