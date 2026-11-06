@@ -15,9 +15,10 @@ import { asset } from '../lib/asset'
  * 之後要幫兩頁加插圖卡片之類的裝飾，改這裡一次就蓋到兩頁。
  *
  * props: title（SectionTitle 文字）、items（PillButton 清單，格式同舊版 FIND_ITEMS/REGISTER_ITEMS）、
- *   illustration（選填，{ src, alt } ）——拾獲頁的插圖還沒拿到，沒給就不渲染卡片，不會留空殼。
+ *   hero（選填）——頂部插圖卡片：{ bg（底色）, image: { src, size, right, textRight }（插圖設計稿邊長、離右框距離、左邊文字最寬到哪；
+ *   窄螢幕卡片變窄時插圖跟著縮小，不壓到文字；垂直置中）, content（卡片左邊的文字 JSX）}。
  */
-export default function HomeTabPage({ title, items, illustration }) {
+export default function HomeTabPage({ title, items, hero }) {
   const navigate = useNavigate()
   const online = useOnline()
   const [offlineNotice, setOfflineNotice] = useState('') // 離線時按到需要網路的功能 → 彈窗顯示功能名稱
@@ -49,18 +50,22 @@ export default function HomeTabPage({ title, items, illustration }) {
       {/* LINE 登入但還沒加官方帳號好友才會出現（見 AddFriendBanner） */}
       <AddFriendBanner />
 
-      {/* 插圖卡片：照原始設計稿的 CSS，圖靠右（card 350 寬時右留 ~16px、圖 150×150 垂直置中），
-          左邊空下來的位置之後要放文字，不是死空間、不要置中。底色統一用跟按鈕同一組 card
-          米色（原稿兩頁底色不一致，這裡不跟著混新顏色）。純裝飾，橫式矮螢幕直接藏起來，
-          把高度讓給下面真正有功能的按鈕（land: 本來就是為了這個）。 */}
-      {illustration && (
-        <div className="relative mt-[18px] h-[190px] w-[calc(100%-40px)] max-w-[350px] overflow-hidden rounded-[10px] border border-brown bg-card land:hidden">
+      {/* 插圖卡片（設計稿 Rectangle 111）：350×190、1px 咖啡框、圓角 10；底色每頁不同
+          （尋找＝黃、拾獲＝綠），左邊放文字（各頁自己傳 hero.content）、右邊放插圖。
+          純裝飾，橫式矮螢幕直接藏起來，把高度讓給下面真正有功能的按鈕。 */}
+      {hero && (
+        <div
+          className="relative mt-[18px] h-[190px] w-[calc(100%-40px)] max-w-[350px] overflow-hidden rounded-[10px] border border-brown land:hidden"
+          style={{ background: hero.bg }}
+        >
           <img
-            src={illustration.src}
-            alt={illustration.alt || ''}
-            aria-hidden={illustration.alt ? undefined : 'true'}
-            className="absolute right-4 top-1/2 h-[150px] w-[150px] -translate-y-1/2 object-contain"
+            src={hero.image.src}
+            alt=""
+            aria-hidden="true"
+            className="absolute top-1/2 aspect-square -translate-y-1/2 object-contain"
+            style={{ width: `min(${hero.image.size}px, calc(100% - ${hero.image.textRight + hero.image.right}px))`, right: hero.image.right }}
           />
+          <div className="relative h-full text-brown">{hero.content}</div>
         </div>
       )}
 

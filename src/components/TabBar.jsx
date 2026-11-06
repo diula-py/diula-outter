@@ -3,36 +3,38 @@ import { NavLink } from 'react-router-dom'
 import { asset } from '../lib/asset'
 
 // 2026-11：從「首頁／個人」2 分頁改成「拾獲／尋找／個人」3 分頁。「尋找」維持掛在
-// '/'——原本合併版首頁裡「尋找遺失物」排在最前面，當作 app 預設落地頁；「拾獲」另開
-// '/found'。⚠ 使用者確認圖示跟路由的對應是 hand→尋找、magnifying-glass→拾獲
-// （不是直覺上「手=拾獲、放大鏡=尋找」的配法，照使用者給的畫面為準，不要憑直覺改回去）。
+// '/'（app 預設落地頁），「拾獲」另開 '/found'。
+// 2026-11-06 使用者定案：由左到右「手＝拾獲、放大鏡＝尋找、人像＝個人」。
 const TABS = [
-  { to: '/found', icon: asset('/icons/search.png'), label: '拾獲' },
-  { to: '/', icon: asset('/icons/hand.png'), label: '尋找', end: true },
+  { to: '/found', icon: asset('/icons/hand.png'), label: '拾獲' },
+  { to: '/', icon: asset('/icons/search.png'), label: '尋找', end: true },
   { to: '/profile', icon: asset('/icons/user.png'), label: '個人' },
 ]
 
 /**
- * 底部導覽列：340×65 淺藍膠囊，選中態白底圓角 42。
- * 窄螢幕：外框左右各留 20；每個項目用 flex-1 平分寬度（原本 2 分頁時是寫死各佔 50%-14，
- * 3 分頁改用 flex-1 讓它自動三等分，不用重算每個斷點的 px）。
+ * 底部導覽列（設計稿 Frame 6）：340×65 淺藍膠囊，三個項目平分寬度；
+ * 選中態是置中的 90×46 白底、圓角 40（窄螢幕分到的寬度不夠 90 時跟著縮）。
  */
 export default function TabBar() {
   return (
-    <nav aria-label="主導覽" className="flex h-[65px] w-[calc(100vw-40px)] max-w-[340px] justify-between gap-1 rounded-[50px] bg-blue px-[11px] pt-[10px] land:h-[52px] land:pt-[6px]">
+    <nav aria-label="主導覽" className="flex h-[65px] w-[calc(100vw-40px)] max-w-[340px] justify-between rounded-[50px] bg-blue px-[11px] pt-[10px] land:h-[52px] land:pt-[6px]">
       {TABS.map((tab) => (
         <NavLink
           key={tab.to}
           to={tab.to}
           end={tab.end}
           aria-label={tab.label}
-          className={({ isActive }) =>
-            `flex h-[46px] max-w-[145px] flex-1 items-center justify-center rounded-[42px] transition-colors duration-300 land:h-10 ${
-              isActive ? 'bg-paper' : ''
-            }`
-          }
+          className="flex h-[46px] flex-1 justify-center land:h-10"
         >
-          <img src={tab.icon} alt="" aria-hidden="true" className="h-[35px] w-[35px] object-contain land:h-7 land:w-7" />
+          {({ isActive }) => (
+            <span
+              className={`flex h-full w-full max-w-[90px] items-center justify-center rounded-[40px] transition-colors duration-300 ${
+                isActive ? 'bg-paper' : ''
+              }`}
+            >
+              <img src={tab.icon} alt="" aria-hidden="true" className="h-[35px] w-[35px] object-contain land:h-7 land:w-7" />
+            </span>
+          )}
         </NavLink>
       ))}
     </nav>

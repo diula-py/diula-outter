@@ -21,7 +21,18 @@ export default function HomePage() {
     <HomeTabPage
       title="尋找遺失物"
       items={FIND_ITEMS}
-      illustration={{ src: asset('/icons/illustration-search.png') }}
+      hero={{
+        bg: 'rgba(252, 230, 183, 0.6)', // 設計稿：黃底
+        image: { src: asset('/icons/illustration-search.png'), size: 145, right: 11.5, textRight: 192 }, // 放大鏡插圖
+        content: (
+          <>
+            <p className="absolute left-[24.5px] top-[26px] w-[156px] text-2xl font-bold leading-[26px]">東西不見了<br />別擔心</p>
+            <img src={asset('/icons/diula-logo-cropped.png')} alt="DiuLa!" className="absolute left-[24.5px] top-[97px] h-5" />
+            <p className="absolute left-[24.5px] top-[124px] text-sm font-normal leading-5">是你與失物重逢的捷徑</p>
+            <p className="absolute left-[24.5px] top-[143px] text-xs font-normal leading-5">省時省力｜自動尋找｜擴大協尋</p>
+          </>
+        ),
+      }}
     />
   )
 }
