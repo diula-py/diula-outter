@@ -40,8 +40,8 @@ export default function ProfilePage() {
   return (
     <div className="flex flex-col items-center
                     land:grid land:grid-cols-[repeat(2,minmax(0,340px))] land:content-start land:items-start land:justify-center land:gap-x-7">
-      {/* 藍色 header 109px + logo 106×35（比照 inner page-14） */}
-      <header className="safe-header flex w-full items-end justify-center rounded-b-[20px] bg-blue pb-[10px] [--header-h:109px]
+      {/* 藍色 header 100px + logo 106×35，跟尋找／拾獲分頁同一套（設計稿 Group 17），切換分頁不跳動 */}
+      <header className="safe-header flex w-full items-end justify-center rounded-b-[20px] bg-blue pb-[10px] [--header-h:100px]
                          land:col-span-full land:mx-[calc(50%-50vw)] land:w-screen land:[--header-h:76px]">
         <div className="flex h-[35px] w-[106px] items-center justify-center overflow-hidden">
           <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="w-full" />

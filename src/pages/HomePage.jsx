@@ -10,8 +10,8 @@ import { asset } from '../lib/asset'
 // 還沒決定這個功能最後要放哪（獨立頁面／別的地方），先別自己接掉，等使用者決定。
 const FIND_ITEMS = [
   { icon: asset('/icons/search.png'), label: '跨平台尋找遺失物', to: '/search', needsOnline: true },
-  { icon: asset('/icons/clock-rotate-left.png'), label: '近2日遺失物快速看', to: '/profile', needsOnline: true },
-  { icon: asset('/icons/threads.png'), label: 'Threads尋找遺失物', to: '/search/threads' },
+  { icon: asset('/icons/clock-rotate-left.png'), label: '近 2 日遺失物快速看', to: '/profile', needsOnline: true },
+  { icon: asset('/icons/threads.png'), label: 'Threads 尋找遺失物', to: '/search/threads' },
 ]
 
 // 掛在底部 TabBar 的「尋找」分頁（路由 '/'）。2026-11 從合併版首頁拆出來，

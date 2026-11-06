@@ -39,9 +39,9 @@ export default function HomeTabPage({ title, items, hero }) {
 
   return (
     <div className="flex flex-col items-center">
-      {/* 頂部 banner：淺藍、下圓角、109px 高，logo 106×35（比照 inner）。
+      {/* 頂部 banner（設計稿 Group 17）：淺藍、下圓角 20、100px 高；logo 維持 106×35、離底 10（使用者指定不照設計稿縮小）。
           每頁只有一個 section，不像舊版合併首頁要用 land: 2 欄 grid，header 不用另外 full-bleed。 */}
-      <header className="safe-header flex w-full items-end justify-center rounded-b-[20px] bg-blue pb-[10px] [--header-h:109px] land:[--header-h:76px]">
+      <header className="safe-header flex w-full items-end justify-center rounded-b-[20px] bg-blue pb-[10px] [--header-h:100px] land:[--header-h:76px]">
         <div className="flex h-[35px] w-[106px] items-center justify-center overflow-hidden">
           <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="w-full" />
         </div>

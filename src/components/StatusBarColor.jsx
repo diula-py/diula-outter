@@ -16,6 +16,7 @@ import { useStatusBarOverrideValue } from '../lib/statusBarOverride'
  */
 const COLOR_BY_PATH = {
   '/': '#dfeaf5', // 首頁 banner（bg-blue）
+  '/found': '#dfeaf5', // 拾獲分頁，header 同首頁藍
   '/profile': '#dfeaf5',
   '/login': '#dfeaf5',
   '/search/analyzing': '#CDDCF0', // AnalyzingScreen 底色

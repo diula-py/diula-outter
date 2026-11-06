@@ -12,12 +12,13 @@ const TABS = [
 ]
 
 /**
- * 底部導覽列（設計稿 Frame 6）：340×65 淺藍膠囊，三個項目平分寬度；
+ * 底部導覽列（設計稿 Frame 6）：340×65 淺藍膠囊，左右內距 16、三個項目平分寬度
+ * （icon 落在 x≈50／152.5／255，對齊設計稿 50／152／255）；
  * 選中態是置中的 90×46 白底、圓角 40（窄螢幕分到的寬度不夠 90 時跟著縮）。
  */
 export default function TabBar() {
   return (
-    <nav aria-label="主導覽" className="flex h-[65px] w-[calc(100vw-40px)] max-w-[340px] justify-between rounded-[50px] bg-blue px-[11px] pt-[10px] land:h-[52px] land:pt-[6px]">
+    <nav aria-label="主導覽" className="flex h-[65px] w-[calc(100vw-40px)] max-w-[340px] justify-between rounded-[50px] bg-blue px-4 pt-[10px] land:h-[52px] land:pt-[6px]">
       {TABS.map((tab) => (
         <NavLink
           key={tab.to}

@@ -68,7 +68,7 @@ export default function ThreadsSearchPage() {
     // 沒有 AppLayout（無 TabBar），外框與底部留白（含 iOS safe-area）自己處理；
     // 底部留 90px：滑到底時最後一張卡片不會被「回到頂部」圓鈕（離底 20、高 50）蓋住
     <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(90px+env(safe-area-inset-bottom))] land:max-w-none">
-      <FormHeader title="Threads尋找遺失物" onBack={() => navigate(-1)} />
+      <FormHeader title="Threads 尋找遺失物" onBack={() => navigate(-1)} />
 
       {/* 搜尋列（inner）：寬 calc(100% - 44px)、最大 340、高 46、圓角 10、padding 10 20、間距 10、icon 20×20 */}
       <div className="mt-5 box-border flex h-[46px] w-[calc(100%-44px)] max-w-[340px] shrink-0 items-center gap-[10px] rounded-[10px] border border-black bg-input px-5 py-[10px] land:mt-3 land:max-w-[708px]">
