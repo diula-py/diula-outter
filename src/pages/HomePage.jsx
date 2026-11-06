@@ -14,5 +14,11 @@ const FIND_ITEMS = [
 // 掛在底部 TabBar 的「尋找」分頁（路由 '/'）。2026-11 從合併版首頁拆出來，
 // 「登錄拾獲物」那半移去 FoundHomePage（路由 '/found'）。
 export default function HomePage() {
-  return <HomeTabPage title="尋找遺失物" items={FIND_ITEMS} />
+  return (
+    <HomeTabPage
+      title="尋找遺失物"
+      items={FIND_ITEMS}
+      illustration={{ src: asset('/icons/illustration-search.png') }}
+    />
+  )
 }
