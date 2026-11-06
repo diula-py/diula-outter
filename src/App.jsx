@@ -3,6 +3,7 @@ import AppLayout from './layouts/AppLayout'
 import RequireAuth from './components/RequireAuth'
 import LoginPage from './pages/LoginPage'
 import HomePage from './pages/HomePage'
+import FoundHomePage from './pages/FoundHomePage'
 import ProfilePage from './pages/ProfilePage'
 import RegisterIdPage from './pages/RegisterIdPage'
 import RegisterOtherPage from './pages/RegisterOtherPage'
@@ -49,8 +50,11 @@ export default function App() {
         {/* 2026-09-04 定案：一打開網頁就強制登入，未登入一律導去 /login，
             所以下面全部包在 RequireAuth 底下，不是只有寫入動作的地方才判斷。 */}
         <Route element={<RequireAuth><Outlet /></RequireAuth>}>
-          {/* 有底部 TabBar 的主頁面 */}
+          {/* 有底部 TabBar 的主頁面。2026-11：底部導覽從「首頁／個人」2 分頁
+              改成「拾獲／尋找／個人」3 分頁，原本合併版首頁拆成 HomePage（尋找，'/'）
+              與 FoundHomePage（拾獲，'/found'）兩頁，見 components/HomeTabPage.jsx。 */}
           <Route element={<AppLayout />}>
+            <Route path="/found" element={<FoundHomePage />} />
             <Route path="/" element={<HomePage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Route>
