@@ -49,12 +49,18 @@ export default function HomeTabPage({ title, items, illustration }) {
       {/* LINE 登入但還沒加官方帳號好友才會出現（見 AddFriendBanner） */}
       <AddFriendBanner />
 
-      {/* 插圖卡片：2026-11 設計討論時提過舊稿插圖偏一邊、卡片一半是死空間，兩頁底色又不一致，
-          這裡改成置中構圖、底色統一用跟按鈕同一組 card 米色（不另外混新顏色）。純裝飾，
-          橫式矮螢幕直接藏起來，把高度讓給下面真正有功能的按鈕（land: 本來就是為了這個）。 */}
+      {/* 插圖卡片：照原始設計稿的 CSS，圖靠右（card 350 寬時右留 ~16px、圖 150×150 垂直置中），
+          左邊空下來的位置之後要放文字，不是死空間、不要置中。底色統一用跟按鈕同一組 card
+          米色（原稿兩頁底色不一致，這裡不跟著混新顏色）。純裝飾，橫式矮螢幕直接藏起來，
+          把高度讓給下面真正有功能的按鈕（land: 本來就是為了這個）。 */}
       {illustration && (
-        <div className="mt-[18px] flex w-[calc(100%-40px)] max-w-[350px] items-center justify-center rounded-[10px] border border-brown bg-card py-7 land:hidden">
-          <img src={illustration.src} alt={illustration.alt || ''} aria-hidden={illustration.alt ? undefined : 'true'} className="h-[140px] w-[140px] object-contain" />
+        <div className="relative mt-[18px] h-[190px] w-[calc(100%-40px)] max-w-[350px] overflow-hidden rounded-[10px] border border-brown bg-card land:hidden">
+          <img
+            src={illustration.src}
+            alt={illustration.alt || ''}
+            aria-hidden={illustration.alt ? undefined : 'true'}
+            className="absolute right-4 top-1/2 h-[150px] w-[150px] -translate-y-1/2 object-contain"
+          />
         </div>
       )}
 
