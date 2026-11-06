@@ -31,7 +31,6 @@ export default function HomeTabPage({ title, items, illustration }) {
         label={item.label}
         href={item.href}
         dimmed={blocked}
-        primary={item.primary}
         onClick={blocked ? () => setOfflineNotice(item.label) : item.to ? () => navigate(item.to) : undefined}
       />
     )
