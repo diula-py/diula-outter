@@ -1,6 +1,6 @@
 /**
  * 米色圓角膠囊按鈕：icon + 文字並排靠左（比照 design.md／inner：
- * 100px 高、30px 40px padding、icon 與文字間 gap 40px），咖啡色細框。
+ * 90px 高（新版設計稿；原 100）、30px 40px padding、icon 與文字間 gap 40px），咖啡色細框。
  * 寬度不到 380 的螢幕 padding 與 gap 縮成 20，「非證件類遺失物登錄」才排得進一行。
  * 兩種用法：
  *   1. 內部路由 / 動作 → 傳 onClick（渲染成 <button>）
@@ -11,7 +11,7 @@
  *   全部按鈕都同一個樣式，拿掉了（見 git log，這段 UI 討論沒有另外留文件記錄）。
  */
 const BASE_CLASS =
-  'flex h-[100px] w-full items-center gap-5 rounded-[50px] px-5 py-[30px] min-[380px]:gap-10 min-[380px]:px-10 land:h-[88px] land:py-5 ' +
+  'flex h-[90px] w-full items-center gap-5 rounded-[50px] px-5 min-[380px]:gap-10 min-[380px]:px-10 land:h-[88px] land:py-5 ' +
   'border border-brown bg-card text-base font-medium text-brown no-underline ' +
   'transition hover:bg-[#eee8d7] active:scale-[.985] ' +
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown'

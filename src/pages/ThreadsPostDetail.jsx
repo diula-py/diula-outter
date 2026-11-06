@@ -56,7 +56,7 @@ export default function ThreadsPostDetail() {
           >
             <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
           </button>
-          <h1 className="text-xl font-bold text-brown">Threads尋找遺失物</h1>
+          <h1 className="text-xl font-bold text-brown">Threads 尋找遺失物</h1>
         </div>
       </header>
 
