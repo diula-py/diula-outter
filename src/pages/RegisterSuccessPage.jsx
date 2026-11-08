@@ -6,7 +6,7 @@ import { CircleCheckIcon } from '../components/icons'
  * 「前往我的拾獲物」文字連結、底部「返回首頁」；樣式改套 design.md
  * （主棕色圖示與文字、50px 膠囊按鈕、1px 黑框），不用 inner 舊版的 LINE 綠與通用按鈕。
  * inner 的「前往我的拾獲物」實際是跳個人頁，這裡直接到「我的拾獲物」列表。
- * queued：離線登錄、資料還在手機的 Firestore 佇列裡 → 加一段說明，提醒要連網並打開 DiuLa! 才會上傳。
+ * queued：離線登錄、資料還在手機的 Firestore 佇列裡 → 標題改「暫存成功！」（還沒真的登錄上去），並加一段說明，提醒要連網並打開 DiuLa! 才會上傳。
  */
 export default function RegisterSuccessPage() {
   const navigate = useNavigate()
@@ -16,7 +16,7 @@ export default function RegisterSuccessPage() {
     <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper px-[22px] pb-[40px] text-brown land:max-w-[560px]">
       <div className="flex w-full flex-1 flex-col items-center justify-center text-center">
         <CircleCheckIcon className="mb-6 h-[120px] w-[120px]" />
-        <h1 className="mb-4 text-xl font-bold leading-5">登錄成功！</h1>
+        <h1 className="mb-4 text-xl font-bold leading-5">{queued ? '暫存成功！' : '登錄成功！'}</h1>
         {id && <div className="mb-6 text-xl font-bold leading-5">＃{String(id).toUpperCase()}</div>}
         {queued && (
           <p className="mb-6 max-w-[300px] text-sm leading-normal">
