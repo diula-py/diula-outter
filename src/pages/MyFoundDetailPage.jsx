@@ -4,14 +4,18 @@ import { CalendarIcon, LocationIcon, PersonChalkboardIcon } from '../components/
 import { DeleteConfirmModal, DeleteSuccessModal } from '../components/DialogKit'
 import { DetailHeader, DetailImage, InfoBox, InfoRow, TagsBox, DeleteButton } from '../components/DetailKit'
 import { removeMyItem } from '../lib/items'
+import { titleFromTags } from '../data/tagTaxonomy'
 
 export default function MyFoundDetailPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const passed = location.state?.item
 
+  const tags = passed?.tags && passed.tags.length ? passed.tags : []
   const item = {
-    name: passed?.name || '拾獲物',
+    // 標題同遺失物：用標籤組成「顏色＋物品」（例如「灰色滑鼠」）。拾獲物存檔時沒存 name，
+    // 所以這裡直接由標籤算；證件類只有一個證件別標籤，算出來就是證件別本身。
+    name: titleFromTags(tags) || passed?.name || '拾獲物',
     code: passed?.id ? `＃${String(passed.id).toUpperCase()}` : '--', // 同遺失物詳情：＃文件 ID（大寫）
     date: (passed?.date || '').replaceAll('-', '/') || '—',
     // inner：「拾獲地點：…」「送往：…」，空值顯示「未知地點」；備註沒填改顯示描述
@@ -19,7 +23,7 @@ export default function MyFoundDetailPage() {
     place: `拾獲地點：${[passed?.place || '未知地點', passed?.location_detail].filter(Boolean).join(' ')}`,
     dropLocation: `送往：${[passed?.dropLocation || '未知地點', passed?.dropLocation_detail].filter(Boolean).join(' ')}`,
     remark: passed?.remark || passed?.desc || '--',
-    tags: passed?.tags && passed.tags.length ? passed.tags : [],
+    tags,
     img: passed?.image || passed?.img || null,
   }
 
