@@ -61,21 +61,21 @@ export function UploadBox({ mt = 20, onClick, ariaLabel, src, alt = '', cameraAl
           <img src={asset('/icons/camera.png')} alt={cameraAlt} className="h-10 w-10 object-contain" />
         )}
       </button>
-      {/* 有照片才出現：疊在右下角，不用另佔一列。預覽是原圖，框過的話標「已框選」提醒 AI 只看框內 */}
+      {/* 框過的話右上角標「已框選」：狀態框（圓角 6、無框線、「已找到」#2E7D32 的淺綠底），跟膠囊按鈕區分；
+          pointer-events-none 讓點到它也算點上傳框 */}
+      {src && cropped && (
+        <span className="pointer-events-none absolute right-2 top-2 rounded-[6px] bg-[#D5EBD6] px-2 py-1 text-xs font-normal text-brown">已框選</span>
+      )}
+      {/* 有照片才出現：疊在右下角，不用另佔一列 */}
       {src && onRecrop && (
-        <div className="absolute bottom-2 right-2 flex items-center gap-1.5">
-          {cropped && (
-            <span className="rounded-full border border-black bg-card px-2.5 py-1 text-xs font-normal text-brown">已框選</span>
-          )}
-          <button
-            type="button"
-            onClick={onRecrop}
-            className="rounded-full border border-black bg-input px-3 py-1 text-xs font-normal text-brown
-                       transition hover:bg-[#ececec] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-          >
-            {cropped ? '重新框選' : '框選物品'}
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={onRecrop}
+          className="absolute bottom-2 right-2 rounded-full border border-black bg-input px-3 py-1 text-xs font-normal text-brown
+                     transition hover:bg-[#ececec] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+        >
+          {cropped ? '重新框選' : '框選物品'}
+        </button>
       )}
     </div>
   )
