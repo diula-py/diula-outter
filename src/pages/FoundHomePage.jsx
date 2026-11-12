@@ -16,7 +16,8 @@ export default function FoundHomePage() {
       items={REGISTER_ITEMS}
       hero={{
         bg: '#EAE9D5', // 設計稿：綠底
-        image: { src: asset('/icons/illustration-found.png'), size: 150, right: 3.5, textRight: 190 }, // 撿東西的小人
+        image: { src: asset('/icons/illustration-found.svg'), size: 170, right: 3.5, textRight: 176.5 }, // 拿證件的小人（動畫：CSS keyframes 寫在 SVG 裡，要用 <img> 載入才會動；直式圖，在正方形框內 object-contain 置中）
+        // 直式圖在 170 方框裡實際只佔中間約 123 寬，框左邊約 24px 是透明的，所以 textRight 設到 176.5（350−170−3.5）讓 350 寬卡片能放滿 170，文字也不會被壓到
         content: (
           <>
             <p className="absolute left-[24.5px] top-[26px] w-[170px] text-2xl font-bold leading-[26px]">拾獲物品<br />輕鬆快速登錄</p>
