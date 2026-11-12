@@ -23,7 +23,7 @@ export default function HomePage() {
       items={FIND_ITEMS}
       hero={{
         bg: 'rgba(252, 230, 183, 0.6)', // 設計稿：黃底
-        image: { src: asset('/icons/illustration-search.png'), size: 145, right: 11.5, textRight: 192 }, // 放大鏡插圖
+        image: { src: asset('/icons/illustration-search.svg'), size: 145, right: 11.5, textRight: 192 }, // 放大鏡插圖（動畫：CSS keyframes 寫在 SVG 裡，要用 <img> 載入才會動）
         content: (
           <>
             <p className="absolute left-[24.5px] top-[26px] w-[156px] text-2xl font-bold leading-[26px]">東西不見了<br />別擔心</p>
