@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import TabBar from '../components/TabBar'
+import OnboardingGate from '../components/OnboardingGate'
 
 /**
  * 手機直向的外框：桌機上置中、限制最大寬度 393（design.md §5）。
@@ -18,6 +19,9 @@ export default function AppLayout() {
           <TabBar />
         </div>
       </div>
+
+      {/* 新手教學：登入後第一次進來自動跳出，個人頁可以再打開 */}
+      <OnboardingGate />
     </div>
   )
 }

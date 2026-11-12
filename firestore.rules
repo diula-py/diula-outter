@@ -107,6 +107,17 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // 新手教學看過紀錄（lib/onboarding.js，2026-11-13 新增）：文件 id 是 Firebase uid，
+    // 只能讀寫自己的，不能刪；內容只有教學版本號與伺服器時間。
+    match /onboarding_seen/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['version', 'seen_at'])
+        && request.resource.data.version is int
+        && request.resource.data.seen_at == request.time;
+      allow delete: if false;
+    }
+
     // 證件登錄只走後端（Admin SDK），前端完全不碰。
     match /diula_id_card/{id} {
       allow read, write: if false;

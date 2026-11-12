@@ -4,6 +4,7 @@ import { CubesIcon, FolderIcon } from '../components/icons'
 import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import { asset } from '../lib/asset'
 import { useAuth } from '../context/AuthContext'
+import { openOnboarding } from '../lib/onboarding'
 
 function MenuButton({ icon, label, onClick }) {
   return (
@@ -93,6 +94,8 @@ export default function ProfilePage() {
         <a href="https://about.diula.co" target="_blank" rel="noopener noreferrer" className="underline">
           關於DiuLa!
         </a>
+        {/* 新手教學重看入口（2026-11 定案：放在底部連結列，不加大按鈕，整頁才放得進一個畫面） */}
+        <button type="button" onClick={openOnboarding} className="underline">使用教學</button>
         <button type="button" onClick={() => navigate('/terms')} className="underline">服務條款</button>
         <button type="button" onClick={() => navigate('/privacy')} className="underline">隱私權政策</button>
       </div>
