@@ -39,7 +39,7 @@ export default function RegisterIdPage() {
   const [pickerOpen, setPickerOpen] = useState(false)    // 其他證件類型選擇彈窗
   const [pendingFile, setPendingFile] = useState(null)   // 待打碼的原始照片（只留在本機）
   const [maskedImage, setMaskedImage] = useState('')     // 打碼後 JPEG data URL（唯一會送出的圖）
-  const [maskInfo, setMaskInfo] = useState(null)         // { maskRegionCount, manual }
+  const [maskInfo, setMaskInfo] = useState(null)         // { maskRegionCount, manual, regions }
   const [date, setDate] = useState(todayStr())
   const [foundCity, setFoundCity] = useState('')       // 拾獲地點：縣市
   const [foundDistrict, setFoundDistrict] = useState('') // 拾獲地點：地區
@@ -66,9 +66,9 @@ export default function RegisterIdPage() {
     e.target.value = '' // 讓同一張照片能重選
   }
 
-  function onMaskDone({ image, maskRegionCount, manual }) {
+  function onMaskDone({ image, maskRegionCount, manual, regions }) {
     setMaskedImage(image)
-    setMaskInfo({ maskRegionCount, manual })
+    setMaskInfo({ maskRegionCount, manual, regions })
     setPendingFile(null)
   }
 
@@ -90,6 +90,11 @@ export default function RegisterIdPage() {
       docType: DOCTYPE_MAP[type],
       maskRegionCount: maskInfo.maskRegionCount,
       manual: maskInfo.manual,
+      // 遮罩矩形座標：後端用來驗證真的有打碼（見 diula-api 的 IdCardController），
+      // 不只是信一個數字。座標是 MaskingModal 匯出時的尺寸算的，這裡沒有再次
+      // 縮放圖片（downscale 的 1280 上限比匯出尺寸大，scale 算出來是 1），
+      // 所以不用換算，直接沿用。
+      regions: maskInfo.regions,
       date,                 // 拾獲日 YYYY-MM-DD
       location: foundAt,    // 拾獲地點
       dropLocation: sendTo, // 送往地點
