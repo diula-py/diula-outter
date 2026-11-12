@@ -88,6 +88,8 @@ export default defineConfig({
       '/categories': { target: 'https://diula.onrender.com', changeOrigin: true },
       '/threads': { target: 'https://diula.onrender.com', changeOrigin: true },
       '/subscriptions': { target: 'https://diula.onrender.com', changeOrigin: true },
+      // 「近2日遺失物快速看」（RecentFoundPage）打的新端點，同一個 Flask 服務。
+      '/items': { target: 'https://diula.onrender.com', changeOrigin: true },
       // AI 圖片辨識：外部 Render 服務（避免 CORS，伺服器端轉發）
       '/ext-ai': {
         target: 'https://diula-backend-api.onrender.com',

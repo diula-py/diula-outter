@@ -4,13 +4,13 @@ import { asset } from '../lib/asset'
 // 「尋找」分頁選單資料 —— 之後要改連結或加項目，改這裡就好。
 //   to          → React 內部路由
 //   needsOnline → 離線時按鈕變灰，按下去跳「需要網路」提示（要打 Render 後端的流程）
-// ⚠「近2日遺失物快速看」目前導去 /profile，但那邊原本顯示這份資料的卡片
-// （RecentLostQuickView，打 /subscriptions/recent-matches）2026-11 已經被拿掉
-// （使用者說個人頁不需要那張卡片），這顆按鈕現在等於導去一個沒有對應內容的頁面。
-// 還沒決定這個功能最後要放哪（獨立頁面／別的地方），先別自己接掉，等使用者決定。
+// 「近2日遺失物快速看」（2026-11）：導去 /recent-found（RecentFoundPage），
+// 打 Flask 新增的 /items/recent——全站最近拾獲物瀏覽，不是個人化比對，
+// 不需要登入也看得到同一批資料，所以這裡不標 needsOnline（離線時打不到，
+// 但不是「功能需要登入」那種要攔的情況，讓它自然失敗、顯示錯誤訊息就好）。
 const FIND_ITEMS = [
   { icon: asset('/icons/search.png'), label: '跨平台尋找遺失物', to: '/search', needsOnline: true },
-  { icon: asset('/icons/clock-rotate-left.png'), label: '近 2 日遺失物快速看', to: '/profile', needsOnline: true },
+  { icon: asset('/icons/clock-rotate-left.png'), label: '近 2 日遺失物快速看', to: '/recent-found' },
   { icon: asset('/icons/threads.png'), label: 'Threads 尋找遺失物', to: '/search/threads' },
 ]
 

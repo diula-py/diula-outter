@@ -17,6 +17,7 @@ import AiAnalyzingPage from './pages/AiAnalyzingPage'
 import ConfirmTagsPage from './pages/ConfirmTagsPage'
 import ResultsPage from './pages/ResultsPage'
 import ResultDetailPage from './pages/ResultDetailPage'
+import RecentFoundPage from './pages/RecentFoundPage'
 import SosPostPage from './pages/SosPostPage'
 import SubscribePage from './pages/SubscribePage'
 import MyLostPage from './pages/MyLostPage'
@@ -68,6 +69,9 @@ export default function App() {
               結果頁改用右上角「回首頁」＋確認彈窗；詳情頁、協尋文頁用返回鍵回結果頁 */}
           <Route path="/search/results" element={<ResultsPage />} />
           <Route path="/search/results/:id" element={<ResultDetailPage />} />
+          {/* 尋找頁「近2日遺失物快速看」按鈕的目的地（2026-11）：全站最近拾獲物瀏覽，
+              不是個人化比對，不放 TabBar，跟結果詳情頁共用 /search/results/:id。 */}
+          <Route path="/recent-found" element={<RecentFoundPage />} />
           <Route path="/search/sos" element={<SosPostPage />} />
           {/* Threads 尋找遺失物（列表／貼文詳情）也不放 TabBar：TabBar 只留首頁、我的兩個主頁面 */}
           <Route path="/search/threads" element={<ThreadsSearchPage />} />
