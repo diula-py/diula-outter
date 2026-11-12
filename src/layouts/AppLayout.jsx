@@ -4,7 +4,7 @@ import OnboardingGate from '../components/OnboardingGate'
 
 /**
  * 手機直向的外框：桌機上置中、限制最大寬度 393（design.md §5）。
- * 底部 TabBar 比照 inner：離視窗底部 40px（inner 的 bottom:20px 再加 margin-bottom:20px），並預留 iOS safe-area。
+ * 底部 TabBar：離視窗底部 20px（同比對結果頁「都沒有我的物品」膠囊），並預留 iOS safe-area。
  */
 export default function AppLayout() {
   return (
@@ -13,7 +13,7 @@ export default function AppLayout() {
         <Outlet />
       </main>
 
-      <div className="pointer-events-none sticky bottom-[calc(40px+env(safe-area-inset-bottom))] mb-[calc(40px+env(safe-area-inset-bottom))] mt-5 flex justify-center
+      <div className="pointer-events-none sticky bottom-[calc(20px+env(safe-area-inset-bottom))] mb-[calc(20px+env(safe-area-inset-bottom))] mt-5 flex justify-center
                       land:bottom-[calc(10px+env(safe-area-inset-bottom))] land:mb-[calc(10px+env(safe-area-inset-bottom))] land:mt-2">
         <div className="pointer-events-auto">
           <TabBar />
