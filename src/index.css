@@ -92,6 +92,10 @@ body {
   /* 防 iOS 直向→橫向自動放大字，避免看起來更粗更大 */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* 關掉 Chrome 預設的標點擠壓：Chrome 123+ 會把相鄰全形標點（例如「」「」）各擠掉半格，
+     源泉圓體支援擠壓，電腦上「拾獲」「尋找」的引號會疊在一起；iPhone Safari 不擠壓。
+     設成 space-all 讓電腦跟手機一樣，每個全形標點都佔一整格（2026-11-14）。 */
+  text-spacing-trim: space-all;
   /* Flat Design 2.0 — 全站零陰影 */
 }
 
