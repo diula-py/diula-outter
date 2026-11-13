@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DetailHeader } from '../components/DetailKit'
-import { ChevronLeftIcon, DiulaPinIcon } from '../components/icons'
+import { ChevronLeftIcon, DiulaPinIcon, XmarkIcon } from '../components/icons'
+import { Overlay } from '../components/DialogKit'
 import { asset } from '../lib/asset'
 import { flask, apiFetch, wakeFlask } from '../lib/api'
 import { itemTitle } from '../lib/text'
@@ -63,6 +64,7 @@ export default function RecentFoundPage() {
   const [loadingCats, setLoadingCats] = useState(true)
   const [loadingItems, setLoadingItems] = useState(true)
   const [error, setError] = useState('')
+  const [sosOpen, setSosOpen] = useState(false)
 
   // 1) 先抓分類表，決定頁籤有哪些、預設選第一個頂層＋它底下第一個次層
   useEffect(() => {
@@ -200,12 +202,49 @@ export default function RecentFoundPage() {
       {empty && (
         <button
           type="button"
-          onClick={() => navigate('/search')}
+          onClick={() => setSosOpen(true)}
           className="mt-8 flex h-[60px] w-[calc(100%-44px)] max-w-[350px] items-center justify-center rounded-[50px] border border-black bg-blue text-base font-medium text-brown
                      transition hover:brightness-95 active:scale-[.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >
           都沒有我的遺失物！
         </button>
+      )}
+
+      {/* 「都沒有我的遺失物」選項彈窗，樣式照 ResultsPage 的同款彈窗（inner notfound-popup）。
+          這頁沒有比對條件(query/resolved)可以帶 —— 不是從填協尋單進來的，所以：
+          「開啟自動尋找並推播」導去 /search 從頭填（SubscribePage 沒有 category_id/date 會擋下），
+          「幫你發Threads的協尋文」可以直接進 /search/sos（那頁欄位都能手動填，不強制帶入） */}
+      {sosOpen && (
+        <Overlay onClose={() => setSosOpen(false)}>
+          <div role="dialog" aria-modal="true" aria-label="都沒有我的遺失物" className="relative box-border flex h-[380px] w-[calc(100vw-20px)] max-w-[305px] shrink-0 flex-col items-center rounded-[10px] bg-card pt-[49px] shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
+            <button
+              type="button"
+              onClick={() => setSosOpen(false)}
+              aria-label="關閉"
+              className="absolute left-3 top-[14px] h-[35px] w-[35px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+            >
+              <XmarkIcon className="h-[35px] w-[35px]" />
+            </button>
+            <div className="text-center text-2xl font-bold leading-6">都沒有我的遺失物！</div>
+            <div className="mt-8 flex w-[254px] max-w-[calc(100%-40px)] flex-col gap-5">
+              {[
+                { label: '開啟自動尋找並推播', tone: 'bg-blue', go: () => navigate('/search') },
+                { label: '幫你發Threads的協尋文', tone: 'bg-white', go: () => navigate('/search/sos') },
+                { label: '返回首頁', tone: 'bg-white', go: () => navigate('/', { replace: true }) },
+              ].map((b) => (
+                <button
+                  key={b.label}
+                  type="button"
+                  onClick={b.go}
+                  className={`box-border flex h-[70px] items-center justify-center rounded-[50px] border border-black text-base font-medium leading-4 text-brown ${b.tone}
+                              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown`}
+                >
+                  {b.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </Overlay>
       )}
     </div>
   )
