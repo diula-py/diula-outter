@@ -179,7 +179,9 @@ export default function MaskingModal({ file, docType, onCancel, onConfirm }) {
     masksRef.current = []; redraw(); setMaskCount(0)
   }
 
-  // 壓成 JPEG data URL，逐步降級直到塞得進 Firestore（1MB）
+  // 壓成 JPEG data URL，逐步降級直到塞得進 Firestore（1MB）。
+  // 回傳 scale：遮罩矩形的座標是在 main（原始裁切尺寸）上算的，縮放輸出圖片後
+  // 座標要跟著等比例換算，後端才能拿正確的座標去對真正送出的那張圖驗證範圍。
   function exportMaskedImage() {
     const main = previewRef.current
     for (const [maxSide, quality] of [[900, 0.7], [800, 0.6], [640, 0.5], [480, 0.4]]) {
@@ -189,16 +191,29 @@ export default function MaskingModal({ file, docType, onCancel, onConfirm }) {
       out.height = Math.round(main.height * scale)
       out.getContext('2d').drawImage(main, 0, 0, out.width, out.height)
       const url = out.toDataURL('image/jpeg', quality)
-      if (url.length <= MAX_IMAGE_CHARS) return url
+      if (url.length <= MAX_IMAGE_CHARS) return { url, scale }
     }
     return null
   }
 
   function confirmUpload() {
     if (!masksRef.current.length) { setStatus('請先遮蔽證件上的個人資料再上傳。'); return }
-    const image = exportMaskedImage()
-    if (!image) { setStatus('圖片壓縮後仍太大，請重新裁切成較小範圍。'); return }
-    onConfirm({ image, maskRegionCount: masksRef.current.length, manual: isManualRef.current })
+    const exported = exportMaskedImage()
+    if (!exported) { setStatus('圖片壓縮後仍太大，請重新裁切成較小範圍。'); return }
+    const { url: image, scale } = exported
+    // 把遮罩矩形換算成輸出圖片的座標送給後端：後端只驗「有沒有真的打碼」是靠這個，
+    // 之前整個後端只收 maskRegionCount 這個數字、內容完全不驗，填多大都收
+    // （見 diula-api 的 IdCardController，2026-11 補驗證）。
+    // 手動拖曳（onUp）可能是從右下往左上拉，w/h 會是負的；fillRect 畫起來沒差，
+    // 但送給後端前要轉正，不然「落在圖片範圍內」那條驗證會把 x/x+w 的大小搞反。
+    const regions = masksRef.current.map((m) => {
+      const x = Math.min(m.x, m.x + m.w), y = Math.min(m.y, m.y + m.h)
+      return {
+        x: Math.round(x * scale), y: Math.round(y * scale),
+        w: Math.round(Math.abs(m.w) * scale), h: Math.round(Math.abs(m.h) * scale),
+      }
+    })
+    onConfirm({ image, maskRegionCount: masksRef.current.length, manual: isManualRef.current, regions })
   }
 
   const suggest = autoPlaced
