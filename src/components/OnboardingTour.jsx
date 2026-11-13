@@ -4,10 +4,11 @@ import { useStatusBarColor } from '../lib/statusBarOverride'
 import { Backdrop } from './DialogKit'
 
 /**
- * 新手教學：全螢幕、可左右滑的卡片（2026-11 開會定案：草稿的「樣式 A」，底色用彈窗的米色）。
+ * 「第一個使用教學」：第一次登入後跳出的全螢幕、可左右滑的卡片（2026-11 開會定案：草稿的「樣式 A」，底色用彈窗的米色）。
+ * 之後另有「尋找使用教學」「拾獲使用教學」，跟這個分開。
  * 什麼時候跳出、看過紀錄怎麼存，見 OnboardingGate.jsx 與 lib/onboarding.js。
  *
- * 卡片順序 1→2→4→3（開會定案）。文案是暫定的，PM 之後會給最終版，改 CARDS 就好。
+ * 卡片順序 1→2→4→3（開會定案）。文案是 PM 2026-11-14 給的定稿；body 裡的 \n 會換行。
  * 鈴鐺是佔位圖示，美術之後會給動畫；放大鏡、小人是美術給的動畫 SVG
  * （CSS keyframes 寫在 SVG 裡，要用 <img> 載入才會動，見 diula_find_magnifier／diula_pick_stand 的 README）。
  *
@@ -38,13 +39,18 @@ function Blob({ children }) {
 
 const CARDS = [
   {
-    title: '歡迎加入 DiuLa!',
-    body: '一站式 AI 遺失物協尋平台。底部有「拾獲」「尋找」「個人」三個分頁。',
+    title: '歡迎加入DiuLa!',
+    // 「失物，」包成不換行，避免窄螢幕把「失物」拆成兩行（17 字寬時會斷成「找回失／物，」）
+    body: (
+      <>
+        一站式AI遺失物協尋平台{'\n'}在這裡，你能更快、更安心地找回<span className="whitespace-nowrap">失物，</span>也能幫助失主與失物重逢！
+      </>
+    ),
     art: <img src={asset('/icons/diula-logo-cropped.png')} alt="" className="w-[270px] land:w-[180px]" />,
   },
   {
     title: '東西不見了？',
-    body: '到「尋找」分頁拍一張照片，AI 幫你跨平台比對拾獲物。',
+    body: '到「尋找遺失物」一次查詢四大平台的拾獲物；還可以精準搜尋Threads上的協尋文。',
     art: (
       <Blob>
         {/* will-change-transform：讓放大鏡自己一個圖層。iPhone Safari 上它放在左右滑動的捲動容器裡，
@@ -56,12 +62,12 @@ const CARDS = [
   },
   {
     title: '還沒找到也別急',
-    body: '訂閱之後，五天內有新的相符物品，會用 LINE 或 Email 通知你。',
+    body: 'DiuLa!自動連續5日比對並通知你相符物品，也可以幫你匿名代發Threads協尋文！',
     art: <Blob><BellArt /></Blob>,
   },
   {
     title: '撿到東西？',
-    body: '到「拾獲」分頁拍照登記，分類 AI 會幫你填，失主就搜得到。',
+    body: '到「登錄拾獲物」3步完成通報，證件個資可以打碼！',
     art: (
       <Blob>
         {/* 直式圖（880×1220），用高度控制大小 */}
@@ -131,7 +137,7 @@ export default function OnboardingTour({ onClose }) {
               </div>
               <div className="flex flex-col items-center gap-[18px] land:items-start land:gap-3">
                 <h2 className="text-2xl font-bold leading-[1.3]">{card.title}</h2>
-                <p className="max-w-[17em] text-base font-normal leading-normal text-[#6b5440]">{card.body}</p>
+                <p className="max-w-[17em] whitespace-pre-line text-base font-normal leading-normal text-[#6b5440]">{card.body}</p>
               </div>
             </section>
           ))}
