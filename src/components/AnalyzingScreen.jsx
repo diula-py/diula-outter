@@ -1,4 +1,4 @@
-import { WandIcon } from './icons'
+import { WandSparkleIcon } from './icons'
 
 /**
  * AI 辨識過場（inner page-loading）：淺藍底，170 圓 (112,207)、進度條 290×15 (51,456)、
@@ -14,7 +14,7 @@ export default function AnalyzingScreen({ pct, error, onRetry, children }) {
     <div className="relative mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] overflow-hidden bg-[#CDDCF0] [--top:clamp(40px,calc((100dvh-var(--top-inset)-390px)*0.4481),207px)]
                     land:max-w-none land:[--top:16px]">
       <div className="absolute left-[calc(50%-84.5px)] top-[var(--top)] flex h-[170px] w-[170px] items-center justify-center rounded-full bg-card land:left-[calc(50%-60px)] land:h-[120px] land:w-[120px]">
-        <WandIcon className="h-20 w-20 land:h-14 land:w-14" />
+        <WandSparkleIcon className="h-20 w-20 land:h-14 land:w-14" />
       </div>
 
       {error ? (
