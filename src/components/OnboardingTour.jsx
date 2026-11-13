@@ -50,7 +50,7 @@ const CARDS = [
         {/* will-change-transform：讓放大鏡自己一個圖層。iPhone Safari 上它放在左右滑動的捲動容器裡，
             動畫重畫時會被切成好幾塊分別更新，鏡框中間出現一條錯位的接縫（首頁沒有捲動容器所以正常）。 */}
         <img src={asset('/icons/illustration-search.svg')} alt="" draggable={false}
-          className="h-[235px] w-[235px] select-none will-change-transform land:h-[108px] land:w-[108px]" />
+          className="h-[200px] w-[200px] select-none will-change-transform land:h-[92px] land:w-[92px]" />
       </Blob>
     ),
   },
@@ -66,7 +66,7 @@ const CARDS = [
       <Blob>
         {/* 直式圖（880×1220），用高度控制大小 */}
         <img src={asset('/icons/illustration-found.svg')} alt="" draggable={false}
-          className="h-[217px] w-auto select-none land:h-[100px]" />
+          className="h-[185px] w-auto select-none land:h-[85px]" />
       </Blob>
     ),
   },
