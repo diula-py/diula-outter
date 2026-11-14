@@ -9,7 +9,7 @@ import { WandSparkleIcon } from './icons'
  * - 垂直：整組（圓頂端 207 到提示文字底端約 597，共 390 高）的起點 --top 隨螢幕高度縮放，
  *   852 高時 (852 - 390) × 0.4481 ≈ 207；矮螢幕往上移、最少 40，提示文字才不會被切掉。
  */
-export default function AnalyzingScreen({ pct, error, onRetry, children }) {
+export default function AnalyzingScreen({ pct, error, errorLabel = 'AI 辨識失敗', onRetry, children }) {
   return (
     <div className="relative mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] overflow-hidden bg-[#CDDCF0] [--top:clamp(40px,calc((100dvh-var(--top-inset)-390px)*0.4481),207px)]
                     land:max-w-none land:[--top:16px]">
@@ -19,7 +19,7 @@ export default function AnalyzingScreen({ pct, error, onRetry, children }) {
 
       {error ? (
         <div className="absolute left-[max(20px,calc(50%-149.5px))] top-[calc(var(--top)+249px)] flex w-[min(299px,calc(100%-40px))] flex-col items-center gap-4 text-center land:top-[calc(var(--top)+140px)]">
-          <p className="text-[15px] leading-normal text-error">AI 辨識失敗：{error}</p>
+          <p className="text-[15px] leading-normal text-error">{errorLabel}：{error}</p>
           {onRetry && (
             <button
               type="button"

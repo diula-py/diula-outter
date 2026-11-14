@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, CircleCheckIcon } from '../components/icons'
+import AnalyzingScreen from '../components/AnalyzingScreen'
 import { addMyItem, updateMyItem } from '../lib/items'
 import { markLostHandled } from '../lib/handledLost'
 import { useAuth } from '../context/AuthContext'
@@ -19,11 +20,15 @@ export default function SubscribePage() {
   const q = state.query || {}
   const resolved = state.resolved || {}
   const results = state.results || []
+  // 「近2日遺失物快速看」的「開啟自動尋找並推播」：ConfirmTagsPage 比對完直接帶這面進來，
+  // 不給看表單、自動送出訂閱，送出中顯示跟 AI 辨識同款過場畫面，送出後一樣接成功頁。
+  const autoSubmit = !!state.autoSubmit
 
   // 通道依登入方式自動決定：LINE 登入 → LINE 推播（登入時已拿到 userId，電腦用 liff.login()
   // 網頁登入一樣會跳 LINE 取得 ID）；Google 登入 → Email（寄到登入帳號信箱）。不給手動選。
   const channel = user?.provider === 'line' ? 'line' : 'email'
   const email = user?.email || ''
+  const canSubmit = !!resolved.category_id && !!q.date
   const [status, setStatus] = useState('idle') // idle | submitting | success
   // 訂閱成功頁沒有 header、頂端是白底 → 狀態列色帶也改白（同登錄成功頁）；表單頁維持米色
   useStatusBarColor(status === 'success' ? '#ffffff' : null)
@@ -32,8 +37,23 @@ export default function SubscribePage() {
   const [subscribed, setSubscribed] = useState(null)
   // LINE 推播只送得到官方帳號好友；沒加的話後端會回 add_friend_url，成功頁給連結。
   const [addFriendUrl, setAddFriendUrl] = useState('')
+  // 自動送出中或剛失敗：true 時蓋掉表單畫面，顯示過場；成功的話會先被上面 status==='success' 擋下。
+  const [autoPending] = useState(autoSubmit && canSubmit)
+  const [autoPct, setAutoPct] = useState(0)
 
-  const canSubmit = !!resolved.category_id && !!q.date
+  useEffect(() => {
+    if (!autoPending) return
+    const grow = setInterval(() => setAutoPct((p) => Math.min(90, p + (90 - p) * 0.08 + 0.3)), 200)
+    return () => clearInterval(grow)
+  }, [autoPending])
+
+  // 掛載時若帶了 autoSubmit 就自動呼叫一次 submit()（下面定義），不用使用者按按鈕。
+  // 失敗的話 autoPending 維持 true、過場畫面照 AnalyzingScreen 的慣例原地顯示錯誤＋
+  // 「返回重試」(跟 AiAnalyzingPage 同款)，成功的話 status 會變 success，蓋過這個畫面。
+  useEffect(() => {
+    if (autoSubmit && canSubmit) submit()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function submit() {
     setError('')
@@ -138,6 +158,16 @@ export default function SubscribePage() {
           返回首頁
         </button>
       </div>
+    )
+  }
+
+  // 自動送出中（或剛失敗）：蓋掉表單，跟 AI 辨識同款過場畫面；失敗時「返回重試」直接重打一次，
+  // 不用使用者自己把表單填一遍（反正通知方式鎖死、沒有東西好填）。
+  if (autoPending) {
+    return (
+      <AnalyzingScreen pct={autoPct} error={error} errorLabel="開啟自動推播失敗" onRetry={submit}>
+        正在開啟自動尋找並推播…
+      </AnalyzingScreen>
     )
   }
 

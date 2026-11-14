@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { CalendarIcon, LocationIcon } from '../components/icons'
 import { FormHeader, FormPage, UploadBox, FormCard, FormRow, RegionField, SubmitButton, pillInput } from '../components/FormKit'
 import { todayStr } from '../lib/date'
@@ -9,6 +9,9 @@ import { useItemPhoto } from '../components/CropModal'
 
 export default function CrossSearchPage() {
   const navigate = useNavigate()
+  // 「近2日遺失物快速看」的「開啟自動尋找並推播」按鈕會帶 autoSubscribe:true 進來，
+  // 一路轉給 AiAnalyzingPage→ConfirmTagsPage，確認標籤送出後跳過比對結果頁直接開訂閱。
+  const { autoSubscribe } = useLocation().state || {}
   const fileRef = useRef(null)
 
   const [mode, setMode] = useState('image') // image | text
@@ -62,7 +65,7 @@ export default function CrossSearchPage() {
       return
     }
     navigate('/search/analyzing', {
-      state: { mode, date, place, base64Image, desc: isImage ? '' : desc.trim() },
+      state: { mode, date, place, base64Image, desc: isImage ? '' : desc.trim(), autoSubscribe },
     })
   }
 

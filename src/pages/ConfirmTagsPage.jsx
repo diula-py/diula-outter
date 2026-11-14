@@ -76,7 +76,13 @@ export default function ConfirmTagsPage() {
       const json = await res.json().catch(() => ({}))
       // 429 = 被限流（後端 MATCH_PER_IP_HOURLY），後端訊息是中文、會照用
       if (!res.ok) throw new HttpError(res.status, json.error)
-      navigate('/search/results', { state: { query: { date, place, tags }, base64Image: data.base64Image, lostId, ...json } })
+      // 從「近2日遺失物快速看」的「開啟自動尋找並推播」進來的：不給看比對結果頁，
+      // 直接帶著 /match 的結果（resolved/results）進訂閱頁、讓它自動送出訂閱。
+      if (data.autoSubscribe) {
+        navigate('/search/subscribe', { state: { query: { date, place, tags }, base64Image: data.base64Image, lostId, ...json, autoSubmit: true } })
+      } else {
+        navigate('/search/results', { state: { query: { date, place, tags }, base64Image: data.base64Image, lostId, ...json } })
+      }
     } catch (e) {
       setError(`比對失敗：${friendlyError(e)}`)
     } finally {

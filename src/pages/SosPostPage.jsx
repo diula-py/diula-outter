@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { CircleCheckIcon } from '../components/icons'
 import { DetailHeader } from '../components/DetailKit'
 import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
+import { UploadBox } from '../components/FormKit'
 import PhotoMaskModal from '../components/PhotoMaskModal'
+import { useItemPhoto } from '../components/CropModal'
 import { addMyItem, getMyItem, updateMyItem } from '../lib/items'
 import { markLostHandled } from '../lib/handledLost'
 import { friendlyError } from '../lib/errors'
@@ -11,6 +13,8 @@ import { useAuth } from '../context/AuthContext'
 import { submitSosPost } from '../lib/api'
 import { LOST_STATUS } from '../data/itemStatus'
 import { titleFromTags } from '../data/tagTaxonomy'
+import { todayStr } from '../lib/date'
+import { CITY_ORDER, TAIWAN_REGIONS } from '../data/taiwanRegions'
 
 // Threads 抓外部圖有下載逾時上限，原始手機照太大會 2207003（下載逾時）→ 先縮圖再送。
 function downscale(dataUrl, maxSide = 1280, quality = 0.82) {
@@ -54,10 +58,16 @@ export default function SosPostPage() {
 
   const [editedImage, setEditedImage] = useState(null) // 打碼後的圖（有的話優先用）
   const [maskOpen, setMaskOpen] = useState(false)
-  const displayImage = editedImage || postBase         // 預覽／送出都用這張
 
-  const date = q.date || ''    // 鎖死：來自比對條件
-  const place = q.place || ''   // 鎖死：來自比對條件
+  // 從「近2日遺失物快速看」直接進來的沒有 state.query，日期／地點改成能自己填；
+  // 從比對結果頁進來的（有 state.query）維持原樣鎖死，顯示比對當時填的條件。
+  const hasQuery = !!state.query
+  const [manualDate, setManualDate] = useState(todayStr())
+  const [manualCity, setManualCity] = useState('')
+  const [manualDistrict, setManualDistrict] = useState('')
+
+  const date = hasQuery ? (q.date || '') : manualDate
+  const place = hasQuery ? (q.place || '') : [manualCity, manualDistrict].filter(Boolean).join(' ')
 
   const [name, setName] = useState(titleFromTags(q.tags))
   const [detail, setDetail] = useState('') // 詳細遺失地點（選填）
@@ -68,6 +78,13 @@ export default function SosPostPage() {
   const [posted, setPosted] = useState(null)
   const [savedItem, setSavedItem] = useState(null) // 發文成功後存進「我的遺失物」的那一筆，成功彈窗帶去詳情頁用
   const [error, setError] = useState('')
+
+  // 「近2日遺失物快速看」的「幫你發Threads的協尋文」直接進這頁，沒有比對流程帶來的 base64Image，
+  // 表單頁補一個手動上傳框讓使用者自己選圖（有 postBase 的正常比對流程不用管，維持原樣不出現）。
+  const fileRef = useRef(null)
+  const { previewUrl: pickedPreviewUrl, cropped: pickedCropped, handlePhoto, recrop, modal: cropModal } = useItemPhoto()
+  const manualImage = postBase ? null : pickedPreviewUrl || null
+  const displayImage = editedImage || postBase || manualImage // 預覽／送出都用這張
 
   function goPreview() {
     setError('')
@@ -191,20 +208,66 @@ export default function SosPostPage() {
             照欄位填，系統會套用統一模版由 DiuLa! 官方帳號 發佈到 Threads 協尋，你的個人帳號不會露出。
           </div>
 
+          {/* 沒有比對流程帶來的照片（直接從「近2日遺失物快速看」進來）才讓使用者自己選一張 */}
+          {!postBase && (
+            <>
+              <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
+              <UploadBox
+                mt={20}
+                src={pickedPreviewUrl}
+                alt="預覽"
+                ariaLabel={pickedPreviewUrl ? '更換照片' : '上傳照片（選填）'}
+                onClick={() => fileRef.current?.click()}
+                onRecrop={pickedPreviewUrl ? recrop : undefined}
+                cropped={!!pickedCropped}
+              />
+            </>
+          )}
+
           <div className={`${label} mt-5 land:col-start-1`}>物品名稱</div>
           <div className={`${pill} mt-[10px] rounded-[10px] border border-black bg-input land:col-start-1`}>
             <input value={name} onChange={(e) => setName(e.target.value)} className={fieldInput} />
           </div>
 
           <div className={`${label} relative -left-px mt-[10px] land:col-start-1`}>遺失日期</div>
-          <div className={`${pill} mt-[14px] rounded-[10px] bg-input land:col-start-1`}>
-            <span className="opacity-70">{(date || '').replaceAll('-', '/') || '--'}</span>
-          </div>
+          {hasQuery ? (
+            <div className={`${pill} mt-[14px] rounded-[10px] bg-input land:col-start-1`}>
+              <span className="opacity-70">{(date || '').replaceAll('-', '/') || '--'}</span>
+            </div>
+          ) : (
+            <div className={`${pill} mt-[14px] rounded-[10px] border border-black bg-input land:col-start-1`}>
+              <input type="date" value={manualDate} onChange={(e) => setManualDate(e.target.value)} aria-label="遺失日期" className={fieldInput} />
+            </div>
+          )}
 
           <div className={`${label} mt-[10px] land:col-start-1`}>遺失地點</div>
-          <div className={`${pill} relative left-px mt-[14px] rounded-[10px] bg-input land:col-start-1`}>
-            <span className="truncate opacity-70">{place || '--'}</span>
-          </div>
+          {hasQuery ? (
+            <div className={`${pill} relative left-px mt-[14px] rounded-[10px] bg-input land:col-start-1`}>
+              <span className="truncate opacity-70">{place || '--'}</span>
+            </div>
+          ) : (
+            <div className="relative left-px mt-[14px] flex gap-[10px] land:col-start-1">
+              <select
+                value={manualCity}
+                onChange={(e) => { setManualCity(e.target.value); setManualDistrict('') }}
+                aria-label="遺失的縣市"
+                className="h-10 min-w-0 flex-1 rounded-[10px] border border-black bg-input px-[15px] text-xs font-normal text-brown outline-none"
+              >
+                <option value="">遺失的縣市</option>
+                {CITY_ORDER.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <select
+                value={manualDistrict}
+                onChange={(e) => setManualDistrict(e.target.value)}
+                disabled={!manualCity}
+                aria-label="遺失的地區"
+                className="h-10 min-w-0 flex-1 rounded-[10px] border border-black bg-input px-[15px] text-xs font-normal text-brown outline-none disabled:opacity-50"
+              >
+                <option value="">遺失的地區</option>
+                {(TAIWAN_REGIONS[manualCity] || []).map((d) => <option key={d} value={d}>{d}</option>)}
+              </select>
+            </div>
+          )}
 
           <div className={`${label} mt-[10px] land:col-start-2`}>詳細地點（選填）</div>
           <div className={`${pill} mt-[10px] rounded-[10px] border border-black bg-input land:col-start-2`}>
@@ -240,7 +303,7 @@ export default function SosPostPage() {
       {step === 'preview' && (
         <div className="flex flex-col gap-4 px-[26px] pt-5 land:mx-auto land:max-w-[708px] land:pt-3">
           <div className="rounded-[10px] bg-card p-4 text-xs font-medium leading-normal text-brown">
-            由 <b>DiuLa!官方帳號</b> 幫你把協尋資訊發到 Threads，擴大協尋範圍。貼文圖片將沿用比對尋找時上傳的圖片（有框選就用框內範圍）!
+            由 <b>DiuLa!官方帳號</b> 幫你把協尋資訊發到 Threads，擴大協尋範圍。貼文圖片將沿用你上傳的圖片（有框選就用框內範圍）!
             <b>會公開發到 Threads，發佈前可框住路人臉、車牌、地址等個資。</b>
             送出後會先經過審核，經小編確認沒問題才會正式發出，通過或退件都會通知你。
           </div>
@@ -281,14 +344,17 @@ export default function SosPostPage() {
         </div>
       )}
 
-      {/* 圖片打碼視窗（一律以貼文圖為底，重開＝從頭打碼，可還原） */}
-      {maskOpen && postBase && (
+      {/* 圖片打碼視窗（一律以貼文圖為底，重開＝從頭打碼，可還原）。
+          postBase（比對流程帶來的）優先，沒有的話用使用者在這頁自己選的 manualImage */}
+      {maskOpen && (postBase || manualImage) && (
         <PhotoMaskModal
-          src={postBase}
+          src={postBase || manualImage}
           onCancel={() => setMaskOpen(false)}
           onConfirm={(url) => { setEditedImage(url); setMaskOpen(false) }}
         />
       )}
+
+      {cropModal}
 
       {/* 發布成功彈窗（inner notfound-thread-success：300×251）：按鈕或關閉都到這件物品的詳情頁 */}
       {status === 'success' && (

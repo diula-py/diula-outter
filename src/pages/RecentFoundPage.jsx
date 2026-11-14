@@ -228,7 +228,7 @@ export default function RecentFoundPage() {
             <div className="text-center text-2xl font-bold leading-6">都沒有我的遺失物！</div>
             <div className="mt-8 flex w-[254px] max-w-[calc(100%-40px)] flex-col gap-5">
               {[
-                { label: '開啟自動尋找並推播', tone: 'bg-blue', go: () => navigate('/search') },
+                { label: '開啟自動尋找並推播', tone: 'bg-blue', go: () => navigate('/search', { state: { autoSubscribe: true } }) },
                 { label: '幫你發Threads的協尋文', tone: 'bg-white', go: () => navigate('/search/sos') },
                 { label: '返回首頁', tone: 'bg-white', go: () => navigate('/', { replace: true }) },
               ].map((b) => (
