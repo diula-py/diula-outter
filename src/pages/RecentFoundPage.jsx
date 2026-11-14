@@ -60,6 +60,8 @@ export default function RecentFoundPage() {
   const [subId, setSubId] = useState(null)
   const [items, setItems] = useState([])
   const [count, setCount] = useState(0)
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
   const [range, setRange] = useState(null)
   const [loadingCats, setLoadingCats] = useState(true)
   const [loadingItems, setLoadingItems] = useState(true)
@@ -92,12 +94,12 @@ export default function RecentFoundPage() {
   const topCats = useMemo(() => categories.filter((c) => c.level === 1), [categories])
   const subCats = useMemo(() => categories.filter((c) => c.parent_id === topId), [categories, topId])
 
-  // 2) 頁籤(頂層／次層)一變就重打一次清單
+  // 2) 頁籤(頂層／次層)或頁碼一變就重打一次清單
   useEffect(() => {
     if (topId == null) return
     let alive = true
     setLoadingItems(true)
-    const qs = new URLSearchParams({ top_category: topId })
+    const qs = new URLSearchParams({ top_category: topId, page })
     if (subId != null) qs.set('category_id', subId)
     apiFetch(flask(`/items/recent?${qs}`))
       .then(async (res) => {
@@ -109,18 +111,26 @@ export default function RecentFoundPage() {
         if (!alive) return
         setItems(json.items || [])
         setCount(json.count || 0)
+        setTotalPages(json.total_pages || 1)
         setRange({ start: json.window_start, end: json.window_end })
         setError('')
       })
       .catch((e) => { if (alive) setError(friendlyError(e)) })
       .finally(() => { if (alive) setLoadingItems(false) })
     return () => { alive = false }
-  }, [topId, subId])
+  }, [topId, subId, page])
 
+  // 換分類（頂層／次層）要跳回第 1 頁，不然留著上次的頁碼可能超過新分類的總頁數。
   function selectTop(id) {
     setTopId(id)
     const firstSub = categories.find((c) => c.parent_id === id)
     setSubId(firstSub?.id ?? null)
+    setPage(1)
+  }
+
+  function selectSub(id) {
+    setSubId(id)
+    setPage(1)
   }
 
   const loading = loadingCats || loadingItems
@@ -147,7 +157,7 @@ export default function RecentFoundPage() {
         <div className="mt-3 w-[calc(100%-44px)] max-w-[350px] rounded-[20px] bg-card px-3 py-2">
           <div className={`flex gap-[10px] overflow-x-auto ${scrollbarHidden}`}>
             {subCats.map((c) => (
-              <TabPill key={c.id} label={c.name} active={c.id === subId} onClick={() => setSubId(c.id)} small />
+              <TabPill key={c.id} label={c.name} active={c.id === subId} onClick={() => selectSub(c.id)} small />
             ))}
           </div>
         </div>
@@ -197,6 +207,26 @@ export default function RecentFoundPage() {
           )
         })}
       </div>
+
+      {/* 頁碼列：count 遠大於一頁顯示的筆數時才需要，只有 1 頁就不顯示（後端已經算好 total_pages）。
+          頁數不多(撈的候選池上限見後端 RECENT_ITEMS_RAW_LIMIT，最多十幾頁)，全部排出來、不做省略號。 */}
+      {totalPages > 1 && (
+        <div className="mt-5 flex w-[calc(100%-44px)] max-w-[350px] flex-wrap items-center justify-center gap-2">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => setPage(p)}
+              aria-current={p === page ? 'page' : undefined}
+              className={`flex h-9 min-w-9 shrink-0 items-center justify-center rounded-full px-2 text-sm text-brown
+                          ${p === page ? 'border-[1.5px] border-black bg-blue font-medium' : 'border border-black bg-input font-normal'}
+                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown`}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* 這批(頂層+次層篩選)完全沒有東西時，才出現的引導 CTA */}
       {empty && (
