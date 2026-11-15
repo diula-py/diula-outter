@@ -18,9 +18,11 @@ export default function DesktopTopNav() {
   const location = useLocation()
 
   return (
-    <header className="hidden w-full bg-[#F7F4E5] lg:flex lg:justify-center">
-      <div className="flex w-full max-w-[1536px] items-center justify-between px-10 py-6">
-        <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="h-6 opacity-80" />
+    <header className="hidden h-[78px] w-full bg-[#F7F4E5] lg:flex lg:justify-center">
+      <div className="flex w-full max-w-[1536px] items-center justify-between px-10">
+        {/* diula-logo.png 是正方形畫布、文字只佔中間一小條，直接設高度幾乎看不到字——
+            改用裁過的 diula-logo-cropped.png（跟 HomePage hero 插圖同一張），高度才吃得到。 */}
+        <img src={asset('/icons/diula-logo-cropped.png')} alt="DiuLa!" className="h-12" />
         <nav className="flex items-center gap-8">
           {NAV_ITEMS.map((item) => {
             const isActive = item.activePaths.includes(location.pathname)

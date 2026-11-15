@@ -35,7 +35,7 @@ export default function HomeTabPage({ title, items, hero }) {
   const online = useOnline()
   const [offlineNotice, setOfflineNotice] = useState('') // 離線時按到需要網路的功能 → 彈窗顯示功能名稱
 
-  const renderItem = (item) => {
+  const renderItem = (item, lgBorder = 'black') => {
     const blocked = item.needsOnline && !online
     return (
       <PillButton
@@ -44,6 +44,7 @@ export default function HomeTabPage({ title, items, hero }) {
         label={item.label}
         href={item.href}
         dimmed={blocked}
+        lgBorder={lgBorder}
         onClick={blocked ? () => setOfflineNotice(item.label) : item.to ? () => navigate(item.to) : undefined}
       />
     )
@@ -98,34 +99,44 @@ export default function HomeTabPage({ title, items, hero }) {
       <div className="hidden lg:flex lg:w-full lg:flex-col lg:items-center">
         <DesktopTopNav />
 
-        <section className="mx-auto mt-8 flex w-full max-w-[1440px] items-center gap-16 rounded-[40px] border border-brown bg-[#D2E1F5] p-16 box-border">
-          <div className="flex max-w-[1054px] flex-col items-start gap-6">
-            <h1 className="m-0 text-[32px] font-bold leading-tight text-brown">丟東西了嗎？交給 DiuLa! 幫你找回來。</h1>
-            <p className="m-0 max-w-[512px] text-lg leading-relaxed text-[#566475]">歡迎使用 DiuLa!，一站式遺失物協尋平台。不管是東西不見了，還是撿到別人的失物，我們都讓物歸原主這件事變得簡單又安心。</p>
-          </div>
-        </section>
+        {/* 照 Figma「首頁」CSS：頁面參考寬度 1280，Hero／雙卡片都是 1280 扣掉左右 48px
+            margin＝1184 寬，所以用同一個 max-w-[1280px] px-12 外層容器對齊兩段。 */}
+        <div className="mx-auto mt-10 w-full max-w-[1280px] px-12 box-border">
+          <section className="flex items-center gap-16 rounded-[40px] border border-brown bg-[#D2E1F5] p-16 box-border">
+            <div className="flex max-w-[1054px] flex-col items-start gap-6">
+              <h1 className="m-0 text-[32px] font-bold leading-[38px] tracking-[-0.64px] text-brown">丟東西了嗎？交給 DiuLa! 幫你找回來。</h1>
+              <p className="m-0 max-w-[512px] text-lg leading-[29px] text-[#566475]">歡迎使用 DiuLa!，一站式遺失物協尋平台。不管是東西不見了，還是撿到別人的失物，我們都讓物歸原主這件事變得簡單又安心。</p>
+              {/* 兩顆小膠囊：點了直接捲到下面對應的卡片 */}
+              <div className="flex items-center gap-6">
+                <a href="#desktop-find-card" className="rounded-full border border-brown bg-[#BA1A1A] px-6 py-[3.5px] text-sm font-semibold text-white no-underline">尋找遺失物</a>
+                <a href="#desktop-register-card" className="rounded-full border border-brown bg-[#F9F9F9] px-6 py-[3.5px] text-sm font-semibold text-[#1A1C1C] no-underline">登錄拾獲物</a>
+              </div>
+            </div>
+          </section>
+        </div>
 
-        {/* 兩張卡片 560 寬＋40 間距＝1160，容器扣掉左右 padding 要有 1160 才會並排；
-            比這個窄（1024~1279px 左右的桌機寬度）就靠 flex-wrap 自動疊成兩排，
-            跟 diula-inner 桌機版同一套做法。 */}
-        <div className="mx-auto mt-16 flex w-full max-w-[1320px] flex-wrap items-start justify-center gap-10 px-10 box-border">
-          <div className="flex w-[560px] max-w-full flex-col items-start gap-10 rounded-[48px] border border-black bg-paper p-16 box-border">
-            <div className="flex items-center gap-3">
-              <img src={asset('/icons/search.png')} alt="" className="h-8 w-8 object-contain" />
-              <h2 className="m-0 text-2xl font-normal text-brown">尋找遺失物</h2>
+        {/* 兩張卡片 560 寬＋64 間距＝1184，跟上面 Hero 同寬，所以在參考寬度 1280 時剛好並排、
+            滿版不留空；比這個窄（1024~1279px 左右的桌機寬度）就靠 flex-wrap 自動疊成兩排。 */}
+        <div className="mx-auto mt-16 w-full max-w-[1280px] px-12 box-border">
+          <div className="flex flex-wrap items-start justify-center gap-16">
+            <div id="desktop-find-card" className="flex w-[560px] max-w-full scroll-mt-24 flex-col items-start gap-10 rounded-[48px] border border-black bg-paper p-16 box-border">
+              <div className="flex items-center gap-3">
+                <img src={asset('/icons/search.png')} alt="" className="h-8 w-8 object-contain" />
+                <h2 className="m-0 text-2xl font-normal text-brown">尋找遺失物</h2>
+              </div>
+              <div className="flex w-full flex-col gap-6">
+                {FIND_ITEMS.map((item) => renderItem(item, 'black'))}
+              </div>
             </div>
-            <div className="flex w-full flex-col gap-6">
-              {FIND_ITEMS.map(renderItem)}
-            </div>
-          </div>
 
-          <div className="flex w-[560px] max-w-full flex-col items-start gap-10 rounded-[48px] border border-black bg-paper p-16 box-border">
-            <div className="flex items-center gap-3">
-              <img src={asset('/icons/address-card.png')} alt="" className="h-8 w-8 object-contain" />
-              <h2 className="m-0 text-2xl font-normal text-brown">登錄拾獲物</h2>
-            </div>
-            <div className="flex w-full flex-col gap-6">
-              {REGISTER_ITEMS.map(renderItem)}
+            <div id="desktop-register-card" className="flex w-[560px] max-w-full scroll-mt-24 flex-col items-start gap-10 rounded-[48px] border border-black bg-paper p-16 box-border">
+              <div className="flex items-center gap-3">
+                <img src={asset('/icons/address-card.png')} alt="" className="h-8 w-8 object-contain" />
+                <h2 className="m-0 text-2xl font-normal text-brown">登錄拾獲物</h2>
+              </div>
+              <div className="flex w-full flex-col gap-6">
+                {REGISTER_ITEMS.map((item) => renderItem(item, 'brown'))}
+              </div>
             </div>
           </div>
         </div>
