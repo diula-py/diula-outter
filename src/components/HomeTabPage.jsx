@@ -8,6 +8,7 @@ import DesktopFooter from './DesktopFooter'
 import { WireDialog, DialogTitle, DialogButton } from './DialogKit'
 import { useOnline } from '../lib/useOnline'
 import { asset } from '../lib/asset'
+import { FIND_ITEMS, REGISTER_ITEMS } from '../lib/homeMenuItems'
 
 /**
  * 底部「拾獲／尋找」兩個分頁共用的骨架。
@@ -16,20 +17,20 @@ import { asset } from '../lib/asset'
  * 不一樣，其餘（頂部 banner、AddFriendBanner、離線提示彈窗）完全相同，抽成這支共用——
  * 之後要幫兩頁加插圖卡片之類的裝飾，改這裡一次就蓋到兩頁。
  *
- * props: title（SectionTitle 文字）、items（PillButton 清單，格式同舊版 FIND_ITEMS/REGISTER_ITEMS）、
- *   hero（選填）——頂部插圖卡片：{ bg（底色）, image: { src, size, right, textRight }（插圖設計稿邊長、離右框距離、左邊文字最寬到哪；
+ * props: title（SectionTitle 文字）、items（PillButton 清單，格式同 lib/homeMenuItems 的
+ *   FIND_ITEMS/REGISTER_ITEMS）、hero（選填）——頂部插圖卡片：{ bg（底色）,
+ *   image: { src, size, right, textRight }（插圖設計稿邊長、離右框距離、左邊文字最寬到哪；
  *   窄螢幕卡片變窄時插圖跟著縮小，不壓到文字；垂直置中）, content（卡片左邊的文字 JSX）}。
  *
  * 2026-11 加的桌機版（lg:）：拿到正式 Figma 桌機設計稿後，上面這套手機版插圖
- * hero 在桌機整個換掉，改成「上方導覽列＋淺藍 Hero 文案區＋白色卡片」，跟個人頁
- * （ProfilePage）同一套視覺語言。桌機版只在這個分頁自己的卡片裡放這個分頁的按鈕
- * （不是把尋找／拾獲合併回同一頁——兩個分頁已經拆開，桌機版維持拆開、各自套一樣
- * 的版型，見 diula-inner-rwd 那次討論）。新增 props：
- *   desktopHero: { title, desc } —— 桌機 Hero 文案（手機版插圖 hero 的中文已經很長，
- *     桌機另外寫一版更適合寬螢幕閱讀的）
- *   cardIcon —— 卡片標題旁的圖示（跟其中一顆按鈕共用即可，不用另外設計新圖）
+ * hero 在桌機整個換掉，改成「上方導覽列＋淺藍 Hero 文案區＋白色卡片」。一開始桌機版
+ * 也維持拆開（這個分頁的卡片只放這個分頁的按鈕），但使用者後來定案：桌機版要把
+ * 「尋找遺失物」跟「登錄拾獲物」合併顯示在同一頁——手機版仍維持拆開成拾獲／尋找
+ * 兩個分頁（3 分頁 TabBar 不動）。所以桌機區塊改成直接 import FIND_ITEMS／
+ * REGISTER_ITEMS 畫兩張卡片，不吃 items/title 以外的 props，/ 和 /found 在桌機
+ * 寬度下會渲染出一模一樣的畫面。
  */
-export default function HomeTabPage({ title, items, hero, desktopHero, cardIcon }) {
+export default function HomeTabPage({ title, items, hero }) {
   const navigate = useNavigate()
   const online = useOnline()
   const [offlineNotice, setOfflineNotice] = useState('') // 離線時按到需要網路的功能 → 彈窗顯示功能名稱
@@ -92,27 +93,39 @@ export default function HomeTabPage({ title, items, hero, desktopHero, cardIcon 
         </section>
       </div>
 
-      {/* ======== 桌機（lg:）：照 2026-11 Figma 桌機設計稿，上方導覽列＋Hero＋單張卡片 ======== */}
+      {/* ======== 桌機（lg:）：照 2026-11 Figma 桌機設計稿，上方導覽列＋Hero＋雙卡片
+          （尋找遺失物／登錄拾獲物合併顯示在同一頁，不管是從 / 還是 /found 進來畫面都一樣） ======== */}
       <div className="hidden lg:flex lg:w-full lg:flex-col lg:items-center">
         <DesktopTopNav />
 
-        {desktopHero && (
-          <section className="mx-auto mt-8 flex w-full max-w-[1440px] items-center gap-16 rounded-[40px] border border-brown bg-[#D2E1F5] p-16 box-border">
-            <div className="flex max-w-[1054px] flex-col items-start gap-6">
-              <h1 className="m-0 text-[32px] font-bold leading-tight text-brown">{desktopHero.title}</h1>
-              <p className="m-0 max-w-[512px] text-lg leading-relaxed text-[#566475]">{desktopHero.desc}</p>
-            </div>
-          </section>
-        )}
+        <section className="mx-auto mt-8 flex w-full max-w-[1440px] items-center gap-16 rounded-[40px] border border-brown bg-[#D2E1F5] p-16 box-border">
+          <div className="flex max-w-[1054px] flex-col items-start gap-6">
+            <h1 className="m-0 text-[32px] font-bold leading-tight text-brown">丟東西了嗎？交給 DiuLa! 幫你找回來。</h1>
+            <p className="m-0 max-w-[512px] text-lg leading-relaxed text-[#566475]">歡迎使用 DiuLa!，一站式遺失物協尋平台。不管是東西不見了，還是撿到別人的失物，我們都讓物歸原主這件事變得簡單又安心。</p>
+          </div>
+        </section>
 
-        <div className="mx-auto mt-16 w-full max-w-[560px] px-12 box-border">
-          <div className="flex w-full flex-col items-start gap-10 rounded-[48px] border border-black bg-paper p-16 box-border">
+        {/* 兩張卡片 560 寬＋40 間距＝1160，容器扣掉左右 padding 要有 1160 才會並排；
+            比這個窄（1024~1279px 左右的桌機寬度）就靠 flex-wrap 自動疊成兩排，
+            跟 diula-inner 桌機版同一套做法。 */}
+        <div className="mx-auto mt-16 flex w-full max-w-[1320px] flex-wrap items-start justify-center gap-10 px-10 box-border">
+          <div className="flex w-[560px] max-w-full flex-col items-start gap-10 rounded-[48px] border border-black bg-paper p-16 box-border">
             <div className="flex items-center gap-3">
-              {cardIcon && <img src={cardIcon} alt="" className="h-8 w-8 object-contain" />}
-              <h2 className="m-0 text-2xl font-normal text-brown">{title}</h2>
+              <img src={asset('/icons/search.png')} alt="" className="h-8 w-8 object-contain" />
+              <h2 className="m-0 text-2xl font-normal text-brown">尋找遺失物</h2>
             </div>
             <div className="flex w-full flex-col gap-6">
-              {items.map(renderItem)}
+              {FIND_ITEMS.map(renderItem)}
+            </div>
+          </div>
+
+          <div className="flex w-[560px] max-w-full flex-col items-start gap-10 rounded-[48px] border border-black bg-paper p-16 box-border">
+            <div className="flex items-center gap-3">
+              <img src={asset('/icons/address-card.png')} alt="" className="h-8 w-8 object-contain" />
+              <h2 className="m-0 text-2xl font-normal text-brown">登錄拾獲物</h2>
+            </div>
+            <div className="flex w-full flex-col gap-6">
+              {REGISTER_ITEMS.map(renderItem)}
             </div>
           </div>
         </div>

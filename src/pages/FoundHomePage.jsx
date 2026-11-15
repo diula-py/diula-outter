@@ -1,24 +1,16 @@
 import HomeTabPage from '../components/HomeTabPage'
+import { REGISTER_ITEMS } from '../lib/homeMenuItems'
 import { asset } from '../lib/asset'
 
-// 「拾獲」分頁選單資料 —— 之後要改連結或加項目，改這裡就好。
-const REGISTER_ITEMS = [
-  { icon: asset('/icons/address-card.png'), label: '證件類遺失物登錄', to: '/register/id', needsOnline: true },
-  { icon: asset('/icons/clipboard-question.png'), label: '非證件類遺失物登錄', to: '/register/other' },
-]
-
 // 掛在底部 TabBar 的「拾獲」分頁（路由 '/found'）。2026-11 從合併版首頁拆出來，
-// 跟 HomePage（'/'，尋找分頁）共用 HomeTabPage 骨架。
+// 跟 HomePage（'/'，尋找分頁）共用 HomeTabPage 骨架，手機版維持拆開。
+// 2026-11 又定案：桌機版（lg:）兩個分頁要合併顯示在同一頁，見 HomeTabPage.jsx
+// 的 lg: 區塊——REGISTER_ITEMS 移到 lib/homeMenuItems.js 讓那邊也能直接拿來用。
 export default function FoundHomePage() {
   return (
     <HomeTabPage
       title="登錄拾獲物"
       items={REGISTER_ITEMS}
-      cardIcon={asset('/icons/address-card.png')}
-      desktopHero={{
-        title: '撿到東西了嗎？幫忙物歸原主只要幾步驟。',
-        desc: '登錄拾獲物品後，DiuLa! 會自動比對失主的協尋資訊，證件類物品打碼保護個資，讓你做好事也安心。',
-      }}
       hero={{
         bg: '#EAE9D5', // 設計稿：綠底
         image: { src: asset('/icons/illustration-found.svg'), size: 170, right: 3.5, textRight: 176.5 }, // 拿證件的小人（動畫：CSS keyframes 寫在 SVG 裡，要用 <img> 載入才會動；直式圖，在正方形框內 object-contain 置中）
