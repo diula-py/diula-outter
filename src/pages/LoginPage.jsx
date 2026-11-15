@@ -186,7 +186,7 @@ export default function LoginPage() {
         <div aria-hidden="true" className="pointer-events-none absolute -bottom-32 -right-16 h-[460px] w-[460px] rounded-full bg-[#D2E1F5] blur-3xl" />
 
         <header className="z-10 flex w-full max-w-[1536px] items-center px-10 py-8">
-          <img src={asset('/icons/diula-logo.png')} alt="DiuLa!" className="h-7 opacity-90" />
+          <img src={asset('/icons/diula-logo-cropped.png')} alt="DiuLa!" className="h-8" />
         </header>
 
         <div className="z-10 flex w-full flex-1 flex-col items-center justify-center gap-10 px-6 py-10">
