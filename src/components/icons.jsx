@@ -57,12 +57,11 @@ export function WandIcon(props) {
 /**
  * AI 辨識過場的魔法棒（2026-11）：形狀同 wand.png，改成 inline SVG 讓三顆星星可以分開閃爍
  * （動畫在 index.css 的 .diula-wand）。
- * 顏色：SVG 用 currentColor，跟著這裡的 text-navy（同 wand.png 的深藍）。
- * 之後 icon 全面換咖啡色時，把 text-navy 改成 text-brown 就好。
+ * 顏色：SVG 用 currentColor，跟著這裡的 text-brown（同 wand.png 的咖啡色）。
  */
 export function WandSparkleIcon({ className }) {
   return (
-    <svg className={`diula-wand text-navy ${className || ''}`} viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+    <svg className={`diula-wand text-brown ${className || ''}`} viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
       {/*!Font Awesome Free 7.3.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.*/}
       {/* 魔法棒（不動） */}
       <path d="M492 64C503 64 513.6 68.4 521.5 76.2L563.8 118.5C571.6 126.4 576 137 576 148C576 159 571.6 169.6 563.8 177.5L475.6 265.7L374.3 164.4L462.5 76.2C470.4 68.4 481 64 492 64zM76.2 462.5L340.4 198.3L441.7 299.6L177.5 563.8C169.6 571.6 159 576 148 576C137 576 126.4 571.6 118.5 563.8L76.2 521.5C68.4 513.6 64 503 64 492C64 481 68.4 470.4 76.2 462.5z" />
