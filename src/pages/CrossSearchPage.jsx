@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { CalendarIcon, LocationIcon } from '../components/icons'
+import { CalendarIcon, LocationIcon, ChevronLeftIcon, ChevronDownIcon } from '../components/icons'
 import { FormHeader, FormPage, UploadBox, FormCard, FormRow, RegionField, SubmitButton, pillInput } from '../components/FormKit'
+import DesktopTopNav from '../components/DesktopTopNav'
+import DesktopFooter from '../components/DesktopFooter'
+import { CITY_ORDER, TAIWAN_REGIONS } from '../data/taiwanRegions'
+import { asset } from '../lib/asset'
 import { todayStr } from '../lib/date'
 import { wakeAi, wakeFlask } from '../lib/api'
 import { downscale } from '../lib/image'
@@ -70,77 +74,207 @@ export default function CrossSearchPage() {
   }
 
   return (
-    <FormPage>
-      <FormHeader title="跨平台尋找遺失物" onBack={() => navigate(-1)} />
+    <>
+      {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
+      <div className="lg:hidden">
+        <FormPage>
+          <FormHeader title="跨平台尋找遺失物" onBack={() => navigate(-1)} />
 
-      {/* 圖片 / 文字 切換：168×46 米色膠囊，選中態是 76×40、圓角 42（inner Frame 48）；左右各留 4px，底塊中心才對齊按鈕中心 */}
-      <div className="relative mt-[25px] flex h-[46px] w-[168px] shrink-0 items-center rounded-[50px] bg-card land:col-span-full land:mt-0 land:justify-self-center">
-        <div
-          aria-hidden="true"
-          className={`absolute top-[3px] box-border h-[40px] w-[76px] rounded-[42px] border-[1.5px] border-black bg-input transition-[left] duration-300
-            ${mode === 'image' ? 'left-[4px]' : 'left-[88px]'}`}
-        />
-        {[
-          { key: 'image', label: '圖片' },
-          { key: 'text', label: '文字' },
-        ].map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            onClick={() => setMode(t.key)}
-            aria-pressed={mode === t.key}
-            className={`relative z-[1] flex-1 text-center text-xl text-brown
-              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
-              ${mode === t.key ? 'font-medium' : 'font-normal'}`}
-          >
-            {t.label}
-          </button>
-        ))}
+          {/* 圖片 / 文字 切換：168×46 米色膠囊，選中態是 76×40、圓角 42（inner Frame 48）；左右各留 4px，底塊中心才對齊按鈕中心 */}
+          <div className="relative mt-[25px] flex h-[46px] w-[168px] shrink-0 items-center rounded-[50px] bg-card land:col-span-full land:mt-0 land:justify-self-center">
+            <div
+              aria-hidden="true"
+              className={`absolute top-[3px] box-border h-[40px] w-[76px] rounded-[42px] border-[1.5px] border-black bg-input transition-[left] duration-300
+                ${mode === 'image' ? 'left-[4px]' : 'left-[88px]'}`}
+            />
+            {[
+              { key: 'image', label: '圖片' },
+              { key: 'text', label: '文字' },
+            ].map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                onClick={() => setMode(t.key)}
+                aria-pressed={mode === t.key}
+                className={`relative z-[1] flex-1 text-center text-xl text-brown
+                  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
+                  ${mode === t.key ? 'font-medium' : 'font-normal'}`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {/* 圖片模式：拍照上傳 / 文字模式：描述 */}
+          {mode === 'image' ? (
+            <>
+              <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
+              <UploadBox
+                mt={25}
+                src={previewUrl}
+                alt="預覽"
+                ariaLabel={previewUrl ? '更換照片' : '上傳照片'}
+                onClick={() => fileRef.current?.click()}
+                onRecrop={recrop}
+                cropped={!!cropped}
+              />
+            </>
+          ) : (
+            <div className="mt-[25px] box-border flex h-[200px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] border border-black bg-input p-5
+                            land:col-start-1 land:mt-0 land:h-[150px] land:w-full land:max-w-none">
+              <textarea
+                value={desc}
+                onChange={(e) => setDesc(e.target.value)}
+                placeholder="請在此處描述您遺失的物品"
+                className="h-full w-full resize-none border-none bg-transparent p-3 text-base font-medium leading-normal text-black outline-none placeholder:text-[#888]"
+              />
+            </div>
+          )}
+
+          <FormCard mt={25}>
+            <FormRow icon={<CalendarIcon className="h-[35px] w-[35px]" />}>
+              <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="遺失日期" className={pillInput} />
+            </FormRow>
+            <RegionField
+              icon={<LocationIcon className="h-[35px] w-[35px]" />}
+              prefix="遺失的"
+              city={placeCity} setCity={setPlaceCity}
+              district={placeDistrict} setDistrict={setPlaceDistrict}
+            />
+          </FormCard>
+
+          {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error land:col-start-2 land:mt-0 land:w-full land:max-w-none">{error}</p>}
+          <SubmitButton onClick={handleSubmit} disabled={submitting}>
+            {submitting ? '送出中…' : '填寫完成，AI 辨識產生標籤'}
+          </SubmitButton>
+        </FormPage>
       </div>
 
-      {/* 圖片模式：拍照上傳 / 文字模式：描述 */}
-      {mode === 'image' ? (
-        <>
-          <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
-          <UploadBox
-            mt={25}
-            src={previewUrl}
-            alt="預覽"
-            ariaLabel={previewUrl ? '更換照片' : '上傳照片'}
-            onClick={() => fileRef.current?.click()}
-            onRecrop={recrop}
-            cropped={!!cropped}
-          />
-        </>
-      ) : (
-        <div className="mt-[25px] box-border flex h-[200px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] border border-black bg-input p-5
-                        land:col-start-1 land:mt-0 land:h-[150px] land:w-full land:max-w-none">
-          <textarea
-            value={desc}
-            onChange={(e) => setDesc(e.target.value)}
-            placeholder="請在此處描述您遺失的物品"
-            className="h-full w-full resize-none border-none bg-transparent p-3 text-base font-medium leading-normal text-black outline-none placeholder:text-[#888]"
-          />
+      {/* ======== 桌機（lg:）：照 2026-11 Figma「尋找遺失物」表單頁 CSS。FormKit 共用元件是
+          手機寬度（340 欄），這裡不改 FormKit（會動到全站其他表單頁），改成這支自己寫一套
+          768 置中欄的桌機版，狀態／邏輯跟手機版共用（mode/photo/desc/date/place...）。 ======== */}
+      <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
+        <DesktopTopNav />
+
+        <div className="mx-auto flex w-full max-w-[768px] flex-col gap-10 px-6 pb-16 pt-10 box-border">
+          <div className="flex h-10 items-center gap-4">
+            <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
+              <ChevronLeftIcon className="h-[30px] w-[30px]" />
+            </button>
+            <h1 className="m-0 text-2xl font-normal text-[#2F1702]">尋找遺失物</h1>
+          </div>
+
+          <div className="flex w-full border-b border-[#D4C3B9]">
+            {[
+              { key: 'image', label: '圖片' },
+              { key: 'text', label: '文字' },
+            ].map((t) => (
+              <button
+                key={t.key}
+                type="button"
+                onClick={() => setMode(t.key)}
+                aria-pressed={mode === t.key}
+                className={`flex-1 border-b-2 pb-4 pt-4 text-center text-base
+                  ${mode === t.key ? 'border-[#2F1702] font-medium text-[#2F1702]' : 'border-transparent font-normal text-[#50453D]'}`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {mode === 'image' ? (
+            <>
+              <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
+              <div className="relative h-[300px] w-full overflow-hidden rounded-lg border border-black bg-white">
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  aria-label={previewUrl ? '更換照片' : '上傳照片'}
+                  className="flex h-full w-full items-center justify-center"
+                >
+                  {previewUrl ? (
+                    <img src={previewUrl} alt="預覽" className="h-full w-full object-contain" />
+                  ) : (
+                    <img src={asset('/icons/camera.png')} alt="上傳照片" className="h-10 w-10 object-contain" />
+                  )}
+                </button>
+                {previewUrl && cropped && (
+                  <span className="pointer-events-none absolute right-3 top-3 rounded-[6px] bg-[#D5EBD6] px-2 py-1 text-xs font-normal text-brown">已框選</span>
+                )}
+                {previewUrl && (
+                  <button
+                    type="button"
+                    onClick={recrop}
+                    className="absolute bottom-3 right-3 rounded-full border border-black bg-input px-3 py-1 text-xs font-normal text-brown transition hover:bg-[#ececec]"
+                  >
+                    {cropped ? '重新框選' : '框選物品'}
+                  </button>
+                )}
+              </div>
+            </>
+          ) : (
+            <textarea
+              value={desc}
+              onChange={(e) => setDesc(e.target.value)}
+              placeholder="請在此處描述您遺失的物品"
+              className="h-[300px] w-full resize-none rounded-lg border border-black bg-white p-4 text-base font-medium leading-normal text-black outline-none placeholder:text-[#888]"
+            />
+          )}
+
+          <div className="flex gap-4">
+            <div className="flex h-[58px] flex-1 items-center rounded-full border border-black bg-white px-4">
+              <select
+                value={placeCity}
+                onChange={(e) => { setPlaceCity(e.target.value); setPlaceDistrict('') }}
+                aria-label="遺失的縣市"
+                className="h-6 w-full appearance-none bg-transparent text-base text-[#1C1C13] outline-none"
+              >
+                <option value="">選擇縣市</option>
+                {CITY_ORDER.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <ChevronDownIcon className="pointer-events-none h-4 w-4 shrink-0 text-[#6B7280]" />
+            </div>
+            <div className="flex h-[58px] flex-1 items-center rounded-full border border-black bg-white px-4">
+              <select
+                value={placeDistrict}
+                onChange={(e) => setPlaceDistrict(e.target.value)}
+                disabled={!placeCity}
+                aria-label="遺失的地區"
+                className="h-6 w-full appearance-none bg-transparent text-base text-[#1C1C13] outline-none"
+              >
+                <option value="">選擇地區</option>
+                {(TAIWAN_REGIONS[placeCity] || []).map((d) => <option key={d} value={d}>{d}</option>)}
+              </select>
+              <ChevronDownIcon className="pointer-events-none h-4 w-4 shrink-0 text-[#6B7280]" />
+            </div>
+          </div>
+
+          <div className="flex h-[58px] w-full items-center justify-center rounded-full border border-black bg-white px-4">
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              aria-label="遺失日期"
+              className="h-6 w-full bg-transparent text-center text-base text-[#1C1C13] outline-none"
+            />
+          </div>
+
+          {error && <p className="m-0 text-sm leading-normal text-error">{error}</p>}
+
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={submitting}
+            className="flex h-20 w-full items-center justify-center rounded-full border-2 border-black bg-[#F7F4E5] text-xl text-brown transition hover:brightness-[.98] disabled:opacity-60"
+          >
+            {submitting ? '送出中…' : '填寫完成，AI 辨識產生標籤'}
+          </button>
         </div>
-      )}
 
-      <FormCard mt={25}>
-        <FormRow icon={<CalendarIcon className="h-[35px] w-[35px]" />}>
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="遺失日期" className={pillInput} />
-        </FormRow>
-        <RegionField
-          icon={<LocationIcon className="h-[35px] w-[35px]" />}
-          prefix="遺失的"
-          city={placeCity} setCity={setPlaceCity}
-          district={placeDistrict} setDistrict={setPlaceDistrict}
-        />
-      </FormCard>
+        <DesktopFooter />
+      </div>
 
-      {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error land:col-start-2 land:mt-0 land:w-full land:max-w-none">{error}</p>}
-      <SubmitButton onClick={handleSubmit} disabled={submitting}>
-        {submitting ? '送出中…' : '填寫完成，AI 辨識產生標籤'}
-      </SubmitButton>
       {cropModal}
-    </FormPage>
+    </>
   )
 }
