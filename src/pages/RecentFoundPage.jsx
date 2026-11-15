@@ -252,12 +252,14 @@ export default function RecentFoundPage() {
         </div>
       )}
 
-      {/* 這批(頂層+次層篩選)完全沒有東西時，才出現的引導 CTA */}
+      {/* 這批(頂層+次層篩選)完全沒有東西時，才出現的引導 CTA。mt-auto：外層是
+          min-h 撐滿畫面高度的 flex 直欄，內容短(像這個空清單)時會被推到畫面最下方，
+          內容長(清單本身夠長)時就跟著自然排版，不會硬要墊出額外空白。 */}
       {empty && (
         <button
           type="button"
           onClick={() => setSosOpen(true)}
-          className="mt-8 flex h-[60px] w-[calc(100%-44px)] max-w-[350px] items-center justify-center rounded-[50px] border border-black bg-blue text-base font-medium text-brown
+          className="mt-auto flex h-[60px] w-[calc(100%-44px)] max-w-[350px] shrink-0 items-center justify-center rounded-[50px] border border-black bg-blue text-base font-medium text-brown
                      transition hover:brightness-95 active:scale-[.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >
           都沒有我的遺失物！
