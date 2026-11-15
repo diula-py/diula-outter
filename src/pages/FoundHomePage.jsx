@@ -14,6 +14,11 @@ export default function FoundHomePage() {
     <HomeTabPage
       title="登錄拾獲物"
       items={REGISTER_ITEMS}
+      cardIcon={asset('/icons/address-card.png')}
+      desktopHero={{
+        title: '撿到東西了嗎？幫忙物歸原主只要幾步驟。',
+        desc: '登錄拾獲物品後，DiuLa! 會自動比對失主的協尋資訊，證件類物品打碼保護個資，讓你做好事也安心。',
+      }}
       hero={{
         bg: '#EAE9D5', // 設計稿：綠底
         image: { src: asset('/icons/illustration-found.svg'), size: 170, right: 3.5, textRight: 176.5 }, // 拿證件的小人（動畫：CSS keyframes 寫在 SVG 裡，要用 <img> 載入才會動；直式圖，在正方形框內 object-contain 置中）

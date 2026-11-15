@@ -21,6 +21,11 @@ export default function HomePage() {
     <HomeTabPage
       title="尋找遺失物"
       items={FIND_ITEMS}
+      cardIcon={asset('/icons/search.png')}
+      desktopHero={{
+        title: '丟東西了嗎？交給 DiuLa! 幫你找回來。',
+        desc: '歡迎使用 DiuLa!，一站式遺失物協尋平台。不管是東西不見了，還是撿到別人的失物，我們都讓物歸原主這件事變得簡單又安心。',
+      }}
       hero={{
         bg: 'rgba(252, 230, 183, 0.6)', // 設計稿：黃底
         image: { src: asset('/icons/illustration-search.svg'), size: 145, right: 11.5, textRight: 192 }, // 放大鏡插圖（動畫：CSS keyframes 寫在 SVG 裡，要用 <img> 載入才會動）
