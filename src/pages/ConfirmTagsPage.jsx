@@ -183,9 +183,8 @@ export default function ConfirmTagsPage() {
           <h1 className="m-0 text-2xl font-normal text-[#2F1702]">確認標籤</h1>
 
           {data.mode === 'text' ? (
-            <div className="flex min-h-[300px] w-full items-center gap-4 rounded-lg border border-black bg-card p-6">
-              <img src={asset('/icons/square-pen.png')} alt="" aria-hidden="true" className="h-10 w-10 shrink-0 object-contain" />
-              <div className="min-w-0 flex-1 break-words text-base font-normal leading-relaxed text-brown">{data.desc}</div>
+            <div className="min-h-[130px] w-full rounded-lg border border-black bg-white p-4">
+              <div className="w-full break-words text-base font-normal leading-relaxed text-[#492C13]">{data.desc}</div>
             </div>
           ) : (
             <div className="flex h-[300px] w-full items-center justify-center overflow-hidden rounded-lg border border-black bg-white">
