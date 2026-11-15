@@ -209,22 +209,46 @@ export default function RecentFoundPage() {
       </div>
 
       {/* 頁碼列：count 遠大於一頁顯示的筆數時才需要，只有 1 頁就不顯示（後端已經算好 total_pages）。
-          頁數不多(撈的候選池上限見後端 RECENT_ITEMS_RAW_LIMIT，最多十幾頁)，全部排出來、不做省略號。 */}
+          數字本身一排橫向可滑動（頁數多時不擠成兩行），加左右箭頭快速翻頁，照使用者給的參考樣式。 */}
       {totalPages > 1 && (
-        <div className="mt-5 flex w-[calc(100%-44px)] max-w-[350px] flex-wrap items-center justify-center gap-2">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-            <button
-              key={p}
-              type="button"
-              onClick={() => setPage(p)}
-              aria-current={p === page ? 'page' : undefined}
-              className={`flex h-9 min-w-9 shrink-0 items-center justify-center rounded-full px-2 text-sm text-brown
-                          ${p === page ? 'border-[1.5px] border-black bg-blue font-medium' : 'border border-black bg-input font-normal'}
-                          focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown`}
-            >
-              {p}
-            </button>
-          ))}
+        <div className="mt-5 flex w-[calc(100%-44px)] max-w-[350px] items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            aria-label="上一頁"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border border-black bg-input
+                       disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+          >
+            <ChevronLeftIcon className="h-4 w-4 text-brown" />
+          </button>
+
+          <div className={`flex min-w-0 flex-1 items-center justify-center gap-3 overflow-x-auto ${scrollbarHidden}`}>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setPage(p)}
+                aria-current={p === page ? 'page' : undefined}
+                className={`shrink-0 px-0.5 text-base
+                            ${p === page ? 'font-bold text-brown underline underline-offset-4' : 'font-normal text-brown/50'}
+                            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            aria-label="下一頁"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border border-black bg-input
+                       disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+          >
+            <ChevronLeftIcon className="h-4 w-4 -scale-x-100 text-brown" />
+          </button>
         </div>
       )}
 
