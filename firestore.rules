@@ -118,6 +118,17 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // 尋找／拾獲使用教學（聚光燈導覽）與頁面內小提示的看過紀錄（lib/tours.js，2026-11-16 新增）：
+    // 文件 id 是 Firebase uid，只能讀寫自己的，不能刪；欄位只收固定幾個名字，值一律 true。
+    // 新增教學或提示時，這裡的欄位清單要跟 lib/tours.js 的 SEEN_NAMES 一起改。
+    match /tour_seen/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create, update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['tour_find', 'tour_found', 'tip_tags_find', 'tip_tags_found', 'tip_not_mine_results', 'tip_not_mine_recent'])
+        && request.resource.data.values().hasOnly([true]);
+      allow delete: if false;
+    }
+
     // 證件登錄只走後端（Admin SDK），前端完全不碰。
     match /diula_id_card/{id} {
       allow read, write: if false;

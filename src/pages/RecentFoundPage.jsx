@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { DetailHeader } from '../components/DetailKit'
 import { ChevronLeftIcon, DiulaPinIcon, XmarkIcon } from '../components/icons'
 import { Overlay } from '../components/DialogKit'
+import OnceTip from '../components/OnceTip'
+import { TIP_NOT_MINE } from '../lib/tours'
 import { asset } from '../lib/asset'
 import { flask, apiFetch, wakeFlask } from '../lib/api'
 import { itemTitle } from '../lib/text'
@@ -259,12 +261,16 @@ export default function RecentFoundPage() {
         <button
           type="button"
           onClick={() => setSosOpen(true)}
+          data-tip="none-recent"
           className="mt-auto flex h-[60px] w-[calc(100%-44px)] max-w-[350px] shrink-0 items-center justify-center rounded-[50px] border border-black bg-blue text-base font-medium text-brown
                      transition hover:brightness-95 active:scale-[.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >
           都沒有我的遺失物！
         </button>
       )}
+
+      {/* 小提示：第一次看到「都沒有我的遺失物！」按鈕（近 2 日快速看一次；換分類不再出現） */}
+      <OnceTip name="tip_not_mine_recent" anchor="none-recent" show={empty && !sosOpen}>{TIP_NOT_MINE}</OnceTip>
 
       {/* 「都沒有我的遺失物」選項彈窗，樣式照 ResultsPage 的同款彈窗（inner notfound-popup）。
           這頁沒有比對條件(query/resolved)可以帶 —— 不是從填協尋單進來的，所以：

@@ -7,6 +7,8 @@ import DesktopFooter from '../components/DesktopFooter'
 import { CITY_ORDER, TAIWAN_REGIONS } from '../data/taiwanRegions'
 import { asset } from '../lib/asset'
 import TagPickerModal from '../components/TagPickerModal'
+import OnceTip from '../components/OnceTip'
+import { TIP_TAGS } from '../lib/tours'
 import { flask, apiFetch } from '../lib/api'
 import { todayStr } from '../lib/date'
 import { downscale } from '../lib/image'
@@ -140,7 +142,7 @@ export default function ConfirmTagsPage() {
           </p>
 
           {/* AI 標籤（可增刪）：340 寬、padding 20、標題 16/600（同 inner）、chip 高 30 */}
-          <div className="mt-5 box-border min-h-[98px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card p-5
+          <div data-tip="tags" className="mt-5 box-border min-h-[98px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card p-5
                           land:col-start-2 land:mt-0 land:w-full land:max-w-none">
             <div className="mb-[10px] text-base font-semibold text-brown">AI 標籤</div>
             <div className="flex flex-wrap gap-[10px]">
@@ -236,7 +238,7 @@ export default function ConfirmTagsPage() {
             系統會比對<b className="text-brown">遺失日前 5 天～後 30 天</b>內拾獲的失物
           </p>
 
-          <div className="box-border w-full rounded-[10px] border border-black bg-card p-6">
+          <div data-tip="tags" className="box-border w-full rounded-[10px] border border-black bg-card p-6">
             <div className="mb-3 text-xl font-semibold text-[#482B12]">AI 標籤</div>
             <div className="flex flex-wrap gap-3">
               {tags.map((tag) => (
@@ -273,6 +275,9 @@ export default function ConfirmTagsPage() {
       </div>
 
       <TagPickerModal open={pickerOpen} value={tags} onClose={() => setPickerOpen(false)} onConfirm={setTags} />
+
+      {/* 小提示：第一次進到確認標籤頁（尋找這邊一次，拾獲那邊另外一次） */}
+      <OnceTip name="tip_tags_find" anchor="tags" show={!pickerOpen}>{TIP_TAGS}</OnceTip>
     </>
   )
 }

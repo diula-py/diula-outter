@@ -10,6 +10,7 @@ export default function FoundHomePage() {
   return (
     <HomeTabPage
       title="登錄拾獲物"
+      tour="found"
       items={REGISTER_ITEMS}
       hero={{
         bg: '#EAE9D5', // 設計稿：綠底

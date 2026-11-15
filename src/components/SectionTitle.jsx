@@ -6,11 +6,10 @@ import { asset } from '../lib/asset'
  * （135 = 10 + 0 + 15 + 100 + 10）。換算成距內容欄：直條中心 10px、文字 25px。
  * 直條大小維持 outter 原本的 5×21 圓角（使用者指定保留，不改成設計稿的 5×30 直角）。
  *
- * 標題文字右邊 8px 放一個 20×20 問號鈕，之後點了要重新播放使用教學。
- * ⚠ 2026-11：使用教學頁還沒做，使用者指定「先沒有反應」——onHelp 沒傳就什麼都不做；
- *   教學做好後由 HomeTabPage 傳 onHelp 進來接上即可。
+ * 標題文字右邊 8px 放一個 20×20 問號鈕，點了重新播放這個分頁的使用教學（2026-11-16 接上）。
+ * onHelp：點問號要做的事；helpTour：問號鈕本身的 data-tour 值（拾獲使用教學最後一步會框它）。
  */
-export default function SectionTitle({ children, onHelp }) {
+export default function SectionTitle({ children, onHelp, helpTour }) {
   return (
     <h2 className="relative ml-[25px] flex h-5 items-center text-xl font-bold leading-5 text-brown">
       <span
@@ -21,6 +20,7 @@ export default function SectionTitle({ children, onHelp }) {
       <button
         type="button"
         onClick={onHelp}
+        data-tour={helpTour}
         aria-label="使用教學"
         className="back-hit relative ml-2 h-5 w-5 shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
       >
