@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, HouseIcon } from '../components/icons'
 import BackToTopButton from '../components/BackToTopButton'
+import OnceTip from '../components/OnceTip'
+import { TIP_NOT_MINE } from '../lib/tours'
 import { Overlay, WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import { XmarkIcon } from '../components/icons'
 import { itemTitle } from '../lib/text'
@@ -202,12 +204,16 @@ export default function ResultsPage() {
       {/* 回到頂部：在「都沒有我的物品」膠囊上方 15px */}
       <BackToTopButton bottomClass="bottom-[calc(95px+env(safe-area-inset-bottom))]" />
 
+      {/* 小提示：第一次看到「都沒有我的物品」按鈕（跨平台結果頁一次；換平台分頁不再出現） */}
+      <OnceTip name="tip_not_mine_results" anchor="none-results" show={showNotMine && !sosOpen && !homeConfirm}>{TIP_NOT_MINE}</OnceTip>
+
       {/* 都沒有我的物品：藍底膠囊 350×60（同其他主要膠囊）、陰影，浮在離視窗底部 20px（＋iOS 底部橫條安全區）。
           隱藏時淡出並往下 10px、不能點也不能用 Tab 選到；頁面底部留 100px，滑到底最後一張卡片不會被蓋住 */}
       <div className="pointer-events-none fixed bottom-[calc(20px+env(safe-area-inset-bottom))] left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[350px] -translate-x-1/2 justify-center land:bottom-[calc(10px+env(safe-area-inset-bottom))] land:max-w-[708px]">
         <button
           type="button"
           onClick={() => setSosOpen(true)}
+          data-tip="none-results"
           aria-hidden={!showNotMine}
           tabIndex={showNotMine ? 0 : -1}
           className={`box-border flex h-[60px] w-full items-center justify-center rounded-[50px] border border-black bg-blue text-base font-medium leading-4 text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)]

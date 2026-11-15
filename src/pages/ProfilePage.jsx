@@ -6,7 +6,6 @@ import DesktopTopNav from '../components/DesktopTopNav'
 import DesktopFooter from '../components/DesktopFooter'
 import { asset } from '../lib/asset'
 import { useAuth } from '../context/AuthContext'
-import { openOnboarding } from '../lib/onboarding'
 
 function MenuButton({ icon, label, onClick }) {
   return (
@@ -98,8 +97,8 @@ export default function ProfilePage() {
           <a href="https://about.diula.co" target="_blank" rel="noopener noreferrer" className="underline">
             關於DiuLa!
           </a>
-          {/* 新手教學重看入口（2026-11 定案：放在底部連結列，不加大按鈕，整頁才放得進一個畫面） */}
-          <button type="button" onClick={openOnboarding} className="underline">使用教學</button>
+          {/* 常見問題（2026-11-16 開會定案：原本的「使用教學」連結改成 FAQ，使用教學放在 FAQ 頁裡） */}
+          <button type="button" onClick={() => navigate('/faq')} className="underline">FAQ</button>
           <button type="button" onClick={() => navigate('/terms')} className="underline">服務條款</button>
           <button type="button" onClick={() => navigate('/privacy')} className="underline">隱私權政策</button>
         </div>
@@ -140,7 +139,7 @@ export default function ProfilePage() {
         </button>
         <div className="mt-6 flex gap-6 text-sm font-normal text-brown [&>*]:underline">
           <a href="https://about.diula.co" target="_blank" rel="noopener noreferrer">關於DiuLa!</a>
-          <button type="button" onClick={openOnboarding}>使用教學</button>
+          <button type="button" onClick={() => navigate('/faq')}>FAQ</button>
           <button type="button" onClick={() => navigate('/terms')}>服務條款</button>
           <button type="button" onClick={() => navigate('/privacy')}>隱私權政策</button>
         </div>

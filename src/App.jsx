@@ -26,6 +26,7 @@ import MyFoundPage from './pages/MyFoundPage'
 import MyFoundDetailPage from './pages/MyFoundDetailPage'
 import TermsPage from './pages/TermsPage'
 import PrivacyPage from './pages/PrivacyPage'
+import FaqPage from './pages/FaqPage'
 import MetroAttributionPage from './pages/MetroAttributionPage'
 import AdminSosPage from './pages/AdminSosPage'
 import OfflineBanner from './components/OfflineBanner'
@@ -87,6 +88,8 @@ export default function App() {
           <Route path="/register/confirm" element={<RegisterConfirmPage />} />
           <Route path="/register/success" element={<RegisterSuccessPage />} />
           <Route path="/register/other" element={<RegisterOtherPage />} />
+          {/* 個人頁底部「FAQ」連結的目的地；使用教學也從這裡重看 */}
+          <Route path="/faq" element={<FaqPage />} />
 
           {/* 協尋文人工審核的小後台。權限由後端的 ADMIN_OWNER_IDS 白名單判（非管理者一律 404），
               這裡只要求登入——前端藏路由擋不住任何人，也沒必要。 */}
