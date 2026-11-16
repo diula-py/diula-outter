@@ -6,7 +6,8 @@ import { findVisible } from '../lib/tours'
  * 2026-11-16 開會定案的樣式，草稿見 https://claude.ai/artifact/AaBMNLHsdni16bpPwXN9mN）。
  *
  * steps：[{ targets: ['find-cross'], title, body }]
- *   targets 是畫面上元素的 data-tour 值；給兩個就兩顆按鈕一起亮。
+ *   targets 是畫面上元素的 data-tour 值；給兩個就兩顆按鈕一起亮，加 merge: true 會合成一個亮區
+ *   （兩顆按鈕和中間的空隙一起框起來，2026-11-16 尋找使用教學第 3 步）。
  *   亮的範圍是按鈕的形狀（膠囊／圓形）再往外留一圈白邊（PAD），沒有框線（2026-11-16 使用者指定：
  *   不要虛線、也不要實線，但要留一點白邊）。
  *   畫面上找不到的步驟（例如桌機版沒有問號鈕）直接略過，進度「1 / N」也跟著少一步。
@@ -19,7 +20,7 @@ const SIDE = 16 // 泡泡離螢幕左右
 const BTN = 'box-border h-11 shrink-0 rounded-[50px] border border-black px-5 text-base font-medium text-brown ' +
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown'
 
-function measure(targets) {
+function measure(targets, merge) {
   const els = targets.map((id) => findVisible('data-tour', id)).filter(Boolean)
   if (els.length !== targets.length) return null
   const rs = els.map((el) => el.getBoundingClientRect())
@@ -33,6 +34,11 @@ function measure(targets) {
     const h = r.height + PAD * 2
     return { x: r.left - PAD, y: r.top - PAD, w, h, rx: Math.min(w, h) / 2 }
   })
+  if (merge && holes.length > 1) {
+    // 合成一個亮區：外框是全部按鈕加白邊的範圍，圓角沿用按鈕的圓角（不然整塊會變成一顆大膠囊）
+    const rx = Math.min(...holes.map((h) => h.rx))
+    return { left, top, width: right - left, height: bottom - top, els, holes: [{ x: left, y: top, w: right - left, h: bottom - top, rx }] }
+  }
   return { left, top, width: right - left, height: bottom - top, els, holes }
 }
 
@@ -65,7 +71,7 @@ export default function SpotlightTour({ steps, label, onClose }) {
 
   const place = useCallback(() => {
     if (!step) return
-    const m = measure(step.targets)
+    const m = measure(step.targets, step.merge)
     if (!m) return
     setHoles(m.holes)
     const br = bubbleRef.current?.getBoundingClientRect()

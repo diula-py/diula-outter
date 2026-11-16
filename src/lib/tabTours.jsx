@@ -31,6 +31,7 @@ export const TOURS = {
       },
       {
         targets: ['find-cross', 'find-recent'],
+        merge: true, // 兩顆按鈕一起框成一個亮區（2026-11-16 使用者指定）
         title: '還是找不到嗎？',
         body: '在這兩個功能內點擊「都沒有我的物品」就能開啟 5日持續自動尋找並推播，或請 DiuLa! 幫你在 Threads 發匿名協尋文。',
       },
