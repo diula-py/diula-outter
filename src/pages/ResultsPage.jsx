@@ -208,9 +208,6 @@ export default function ResultsPage() {
       {/* 回到頂部：在「都沒有我的物品」膠囊上方 15px */}
       <BackToTopButton bottomClass="bottom-[calc(95px+env(safe-area-inset-bottom))]" />
 
-      {/* 小提示：第一次看到「都沒有我的物品」按鈕（跨平台結果頁一次；換平台分頁不再出現） */}
-      <OnceTip name="tip_not_mine_results" anchor="none-results" show={showNotMine && !sosOpen && !homeConfirm}>{TIP_NOT_MINE}</OnceTip>
-
       {/* 都沒有我的物品：藍底膠囊 350×60（同其他主要膠囊）、陰影，浮在離視窗底部 20px（＋iOS 底部橫條安全區）。
           隱藏時淡出並往下 10px、不能點也不能用 Tab 選到；頁面底部留 100px，滑到底最後一張卡片不會被蓋住 */}
       <div className="pointer-events-none fixed bottom-[calc(20px+env(safe-area-inset-bottom))] left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[350px] -translate-x-1/2 justify-center land:bottom-[calc(10px+env(safe-area-inset-bottom))] land:max-w-[708px]">
@@ -284,6 +281,7 @@ export default function ResultsPage() {
           <button
             type="button"
             onClick={() => setSosOpen(true)}
+            data-tip="none-results"
             className="sticky top-10 z-[90] flex h-[100px] w-[100px] shrink-0 flex-col items-center justify-center rounded-full border border-black bg-[#D2E1F5] text-center text-sm font-medium leading-tight text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition hover:brightness-[.98]"
           >
             都沒有
@@ -356,6 +354,11 @@ export default function ResultsPage() {
 
       <DesktopFooter />
     </div>
+
+      {/* 小提示：第一次看到「都沒有我的物品」按鈕（跨平台結果頁一次；換平台分頁不再出現）。
+          anchor="none-results" 會自動挑手機版／桌機版兩個 data-tip="none-results" 裡
+          目前看得到的那個（見 OnceTip 的註解），不用放在某一個 lg: 區塊裡面。 */}
+      <OnceTip name="tip_not_mine_results" anchor="none-results" show={showNotMine && !sosOpen && !homeConfirm}>{TIP_NOT_MINE}</OnceTip>
 
       {/* 「都沒有我的物品」選項彈窗（照 Figma：305×380、陰影、X 35×35 在 (12,14)、
           標題 24/700 離頂端 49、按鈕 254×70 間距 20、第一顆離頂端 105、底部留 25） */}
