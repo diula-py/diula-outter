@@ -230,10 +230,9 @@ export default function ResultsPage() {
     <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
       <DesktopTopNav />
 
-      {/* flex-1 撐滿導覽列跟頁尾之間的空間：內容短（比如 0 筆結果）時，「都沒有我的物品」
-          會跟著 justify-between 貼齊這塊區域的下緣（頁尾正上方）；內容長要捲動時換 sticky
-          頂著，往下捲也不會超過這塊區域、蓋到頁尾。 */}
-      <div className="flex w-full flex-1 flex-col items-center justify-between">
+      {/* flex-1 撐滿導覽列跟頁尾之間的空間：內容短（比如 0 筆結果）時頁尾會跟著貼齊這塊
+          區域的下緣，不會內容一短就浮在半路。 */}
+      <div className="flex w-full flex-1 flex-col items-center">
       <div className="mx-auto w-full max-w-[1280px] px-10 pb-10 pt-10 box-border">
         <div className="flex items-center justify-between">
           <h1 className="m-0 text-2xl font-normal text-[#2F1702]">比對結果</h1>
@@ -247,29 +246,44 @@ export default function ResultsPage() {
           </button>
         </div>
 
-        {/* 來源分頁：照設計稿 4 顆膠囊，選中態 bg-card + 2px 框；DiuLa! 那顆用 logo 圖 */}
-        <div className="mt-8 flex gap-4">
-          {SOURCES.map((s) => {
-            const active = source === s.key
-            const isDiula = s.key === 'diula'
-            return (
-              <button
-                key={s.key}
-                type="button"
-                onClick={() => selectSource(s.key)}
-                aria-pressed={active}
-                aria-label={s.label}
-                className={`box-border flex h-14 min-w-[114px] items-center justify-center rounded-full px-10 text-base text-[#1C1C13]
-                  ${active ? 'border-2 border-black bg-card font-medium' : 'border border-black bg-[#F5F5F5] font-normal'}`}
-              >
-                {isDiula ? (
-                  <img src={asset('/icons/diula-logo-cropped.png')} alt="" aria-hidden="true" className="h-5 w-auto max-w-[60px] object-contain" />
-                ) : (
-                  s.label
-                )}
-              </button>
-            )
-          })}
+        {/* 來源分頁（照設計稿 4 顆膠囊，選中態 bg-card + 2px 框；DiuLa! 那顆用 logo 圖）
+            跟「都沒有我的物品」排同一列，按鈕貼右上角；sticky top-10 讓它在捲動結果清單
+            時持續貼在視窗頂端附近，跟手機版「捲到底才浮現」的邏輯不同——桌機版一開始
+            就看得到結果，不需要漸進揭露。 */}
+        <div className="mt-8 flex items-start justify-between">
+          <div className="flex gap-4">
+            {SOURCES.map((s) => {
+              const active = source === s.key
+              const isDiula = s.key === 'diula'
+              return (
+                <button
+                  key={s.key}
+                  type="button"
+                  onClick={() => selectSource(s.key)}
+                  aria-pressed={active}
+                  aria-label={s.label}
+                  className={`box-border flex h-14 min-w-[114px] items-center justify-center rounded-full px-10 text-base text-[#1C1C13]
+                    ${active ? 'border-2 border-black bg-card font-medium' : 'border border-black bg-[#F5F5F5] font-normal'}`}
+                >
+                  {isDiula ? (
+                    <img src={asset('/icons/diula-logo-cropped.png')} alt="" aria-hidden="true" className="h-5 w-auto max-w-[60px] object-contain" />
+                  ) : (
+                    s.label
+                  )}
+                </button>
+              )
+            })}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setSosOpen(true)}
+            className="sticky top-10 z-[90] flex h-[100px] w-[100px] shrink-0 flex-col items-center justify-center rounded-full border border-black bg-[#D2E1F5] text-center text-sm font-medium leading-tight text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition hover:brightness-[.98]"
+          >
+            都沒有
+            <br />
+            我的物品
+          </button>
         </div>
 
         {/* 結果清單：2 欄，卡片 160×160 縮圖＋文字＋chevron */}
@@ -331,22 +345,6 @@ export default function ResultsPage() {
             北捷遺失物資料來源
           </button>
         )}
-      </div>
-
-      {/* 都沒有我的物品：桌機改成右下角圓形按鈕，常駐顯示（不用手機版那套捲到第 7 筆才浮現的邏輯，
-          桌機畫面夠大，一開始就看得到結果，不需要漸進揭露）。sticky 不是 fixed——
-          內容短時跟著上面 justify-between 貼齊這塊區域下緣（頁尾正上方，不會疊到頁尾）；
-          內容長要捲動時 sticky 會頂著視窗底部，捲到底一樣會停在頁尾上面。 */}
-      <div className="mx-auto flex w-full max-w-[1280px] justify-end px-10 pb-10 box-border">
-        <button
-          type="button"
-          onClick={() => setSosOpen(true)}
-          className="sticky bottom-10 z-[90] flex h-[120px] w-[120px] shrink-0 flex-col items-center justify-center rounded-full border border-black bg-[#D2E1F5] text-center text-base font-medium leading-tight text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition hover:brightness-[.98]"
-        >
-          都沒有
-          <br />
-          我的物品
-        </button>
       </div>
       </div>
 
