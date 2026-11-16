@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { MagnifyingGlassIcon } from '../components/icons'
+import { MagnifyingGlassIcon, ChevronLeftIcon } from '../components/icons'
 import { FormHeader } from '../components/FormKit'
 import BackToTopButton from '../components/BackToTopButton'
+import DesktopTopNav from '../components/DesktopTopNav'
+import DesktopFooter from '../components/DesktopFooter'
 
 import { fetchThreadsPosts, getCachedThreadsPosts } from '../lib/api'
 import { normalizeIdWording } from '../lib/text'
@@ -17,11 +19,11 @@ import { LoadingInline } from '../components/LoadingScreen'
  * 4 天多就回 403（實測 47 筆：4.3～4.5 天），舊貼文的照片必然消失。
  * 捲到才載（lazy）。沒有圖、或連自家圖也掛了 → 藍底驚嘆號 logo（同比對結果頁的預設圖）。
  */
-function Thumb({ url }) {
+function Thumb({ url, size = 100 }) {
   const [broken, setBroken] = useState(false)
   const showImg = url && !broken
   return (
-    <div className="h-[100px] w-[100px] shrink-0 overflow-hidden rounded-[10px] bg-card">
+    <div className="shrink-0 overflow-hidden rounded-[10px] bg-card" style={{ height: size, width: size }}>
       {showImg ? (
         <img
           src={url}
@@ -65,9 +67,11 @@ export default function ThreadsSearchPage() {
   }, [posts, query])
 
   return (
-    // 沒有 AppLayout（無 TabBar），外框與底部留白（含 iOS safe-area）自己處理；
-    // 底部留 90px：滑到底時最後一張卡片不會被「回到頂部」圓鈕（離底 20、高 50）蓋住
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(90px+env(safe-area-inset-bottom))] land:max-w-none">
+    <>
+    {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
+    {/* 沒有 AppLayout（無 TabBar），外框與底部留白（含 iOS safe-area）自己處理；
+        底部留 90px：滑到底時最後一張卡片不會被「回到頂部」圓鈕（離底 20、高 50）蓋住 */}
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(90px+env(safe-area-inset-bottom))] land:max-w-none lg:hidden">
       <FormHeader title="Threads 尋找遺失物" onBack={() => navigate(-1)} />
 
       {/* 搜尋列（inner）：寬 calc(100% - 44px)、最大 340、高 46、圓角 10、padding 10 20、間距 10、icon 20×20 */}
@@ -108,5 +112,61 @@ export default function ThreadsSearchPage() {
       {/* 回到頂部：右下角、離底部 20px（這頁沒有底部膠囊） */}
       <BackToTopButton bottomClass="bottom-[calc(20px+env(safe-area-inset-bottom))]" />
     </div>
+
+    {/* ======== 桌機（lg:）：照 2026-11 Figma「Threads尋找遺失物」CSS。這頁是列表頁，
+        照同一套「接近全寬」版面（跟比對結果頁一樣），不是 768 置中窄欄。CSS 的卡片內容
+        （組織／地點／日期）是比對結果頁那個元件複製過來的，Threads 貼文實際上只有圖＋
+        一段文字，沒有那些結構化欄位，照手機版實際資料畫（圖＋內文），卡片外觀照抄新樣式。
+        CSS 另外畫了一顆「選擇日期」篩選鈕，手機版完全沒有日期篩選功能、也沒有對應的
+        state，照之前幾次的原則先不加——加了會是一個看起來能選但篩不出東西的假按鈕。 ======== */}
+    <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
+      <DesktopTopNav />
+
+      <div className="flex w-full flex-1 flex-col items-center">
+        <div className="mx-auto w-full max-w-[1280px] px-20 pb-16 pt-10 box-border">
+          <div className="flex items-center gap-4">
+            <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
+              <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
+            </button>
+            <h1 className="m-0 text-2xl font-normal text-[#2F1702]">Threads 尋找遺失物</h1>
+          </div>
+
+          <div className="mt-8 flex h-[74px] items-center gap-5 rounded-full border border-[#2F1702] bg-[#F5F5F5] px-6">
+            <MagnifyingGlassIcon className="h-5 w-5 shrink-0 text-[#2F1702]" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="搜尋 Threads 協尋文"
+              className="h-full min-w-0 flex-1 bg-transparent p-0 text-base text-[#2F1702] outline-none placeholder:text-[#50453D]"
+            />
+          </div>
+
+          <div className="mt-8 flex flex-col gap-5">
+            {state === 'loading' && <LoadingInline />}
+            {state === 'error' && <div className="py-5 text-center text-base leading-normal text-error">載入失敗，請檢查網路後再試一次</div>}
+            {state === 'offline' && <div className="py-5 text-center text-base leading-normal text-error">目前離線，尚未儲存 Threads 貼文，請連上網路後再試一次</div>}
+            {state === 'ready' && filtered.length === 0 && <div className="py-5 text-center text-lg opacity-60">目前尚無 Threads 協尋文</div>}
+
+            {state === 'ready' &&
+              filtered.map((p) => (
+                <Link
+                  key={p.id}
+                  to={`/search/threads/${p.id}`}
+                  state={{ post: p }}
+                  className="box-border flex w-full items-center gap-6 rounded-xl border border-black bg-[#F5F5F5] p-4 text-brown no-underline shadow-sm transition hover:brightness-[.98]"
+                >
+                  <Thumb url={p.image} size={128} />
+                  <div className="line-clamp-3 min-w-0 flex-1 text-lg leading-relaxed">{p.text || '（無內文）'}</div>
+                  <ChevronLeftIcon className="h-5 w-5 shrink-0 -scale-x-100" />
+                </Link>
+              ))}
+          </div>
+        </div>
+      </div>
+
+      <DesktopFooter />
+    </div>
+    </>
   )
 }
