@@ -115,7 +115,9 @@ export default function SpotlightTour({ steps, label, onClose }) {
   return (
     <div role="dialog" aria-modal="true" aria-label={label} className="fixed inset-0 z-[998]">
       {/* 變暗的遮罩（同時擋住後面的點擊）：只在按鈕的位置挖空 */}
-      <svg aria-hidden="true" className="absolute inset-0 h-full w-full">
+      {/* 高度多加 100lvh：iPhone 最底下（Home 橫條那段）不算在 inset-0 裡，不延伸會露出一條沒變暗的白邊（同 DialogKit 的 Backdrop）。
+          挖洞的座標是從畫面頂端算，往下延伸不影響位置。 */}
+      <svg aria-hidden="true" className="absolute left-0 top-0 h-[calc(100%+100lvh)] w-full">
         <defs>
           <mask id="spotlight-mask">
             <rect width="100%" height="100%" fill="#fff" />
