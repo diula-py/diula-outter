@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CalendarIcon, LocationIcon, PersonChalkboardIcon } from '../components/icons'
+import { CalendarIcon, LocationIcon, PersonChalkboardIcon, ChevronLeftIcon, ChevronDownIcon } from '../components/icons'
 import MaskingModal from '../components/MaskingModal'
 import { FormHeader, FormPage, UploadBox, FormCard, FormRow, RegionField, SubmitButton, pillInput } from '../components/FormKit'
 import TagPickerModal from '../components/TagPickerModal'
+import DesktopTopNav from '../components/DesktopTopNav'
+import DesktopFooter from '../components/DesktopFooter'
+import { CITY_ORDER, TAIWAN_REGIONS } from '../data/taiwanRegions'
+import { asset } from '../lib/asset'
 import { spring, apiFetch } from '../lib/api'
 import { getAuthHeaders } from '../lib/authToken'
 import { todayStr } from '../lib/date'
@@ -161,102 +165,248 @@ export default function RegisterIdPage() {
   }
 
   return (
-    <FormPage>
-      <FormHeader title="證件類遺失物登錄" onBack={() => navigate(-1)} />
+    <>
+    {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
+    <div className="lg:hidden">
+      <FormPage>
+        <FormHeader title="證件類遺失物登錄" onBack={() => navigate(-1)} />
 
-      {/* 證件類型分頁：4 顆 80×45 膠囊、間距 10、置中（inner page-12）；窄螢幕 4 顆平均縮小 */}
-      <div className="mt-5 flex w-full justify-center gap-[10px] px-5 land:col-span-full land:mt-0 land:[&>*]:h-10">
-        {ID_TYPES.map((t) => {
-          const active = type === t
-          return (
-            <button
-              key={t}
-              type="button"
-              onClick={() => {
-                setType(t)
-                if (t === '其他') setPickerOpen(true) // 點「其他」直接跳選擇彈窗
-                else setOtherType('')
-              }}
-              aria-pressed={active}
-              className={`flex h-[45px] w-20 min-w-0 items-center justify-center rounded-[50px] py-2 text-base text-brown
-                focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
-                ${active ? 'border-[1.5px] border-black bg-card font-bold' : 'border border-black bg-input font-normal'}`}
-            >
-              {t}
-            </button>
-          )
-        })}
-      </div>
+        {/* 證件類型分頁：4 顆 80×45 膠囊、間距 10、置中（inner page-12）；窄螢幕 4 顆平均縮小 */}
+        <div className="mt-5 flex w-full justify-center gap-[10px] px-5 land:col-span-full land:mt-0 land:[&>*]:h-10">
+          {ID_TYPES.map((t) => {
+            const active = type === t
+            return (
+              <button
+                key={t}
+                type="button"
+                onClick={() => {
+                  setType(t)
+                  if (t === '其他') setPickerOpen(true) // 點「其他」直接跳選擇彈窗
+                  else setOtherType('')
+                }}
+                aria-pressed={active}
+                className={`flex h-[45px] w-20 min-w-0 items-center justify-center rounded-[50px] py-2 text-base text-brown
+                  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
+                  ${active ? 'border-[1.5px] border-black bg-card font-bold' : 'border border-black bg-input font-normal'}`}
+              >
+                {t}
+              </button>
+            )
+          })}
+        </div>
 
-      {/* 「其他」已選的證件類型 → 顯示一顆可再點開重選的膠囊 */}
-      {type === '其他' && (
+        {/* 「其他」已選的證件類型 → 顯示一顆可再點開重選的膠囊 */}
+        {type === '其他' && (
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            className={`mt-[10px] w-fit rounded-[50px] px-4 py-1.5 text-xs font-normal transition land:col-start-1 land:mt-0 land:justify-self-center
+              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
+              ${otherType ? 'border-[1.5px] border-black bg-blue text-brown' : 'border border-black bg-white text-[#888]'}`}
+          >
+            {otherType || '選擇證件類型'}
+          </button>
+        )}
+
+        {/* 拍照上傳（點擊 → 選圖 → 打碼視窗） */}
+        <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
+        <UploadBox
+          mt={20}
+          src={maskedImage}
+          alt="已打碼證件"
+          ariaLabel={maskedImage ? '更換照片' : '上傳照片'}
+          onClick={() => fileRef.current?.click()}
+        />
+
+        <FormCard mt={20}>
+          <FormRow icon={<CalendarIcon className="h-[35px] w-[35px]" />}>
+            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="拾獲日期" className={pillInput} />
+          </FormRow>
+          <RegionField
+            icon={<LocationIcon className="h-[35px] w-[35px]" />}
+            prefix="拾獲的"
+            city={foundCity} setCity={setFoundCity}
+            district={foundDistrict} setDistrict={setFoundDistrict}
+          />
+          {/* 詳細地點列不放圖示，跟上一列的縣市／地區排在一起 */}
+          <FormRow typing>
+            <input type="text" value={foundDetail} onChange={(e) => setFoundDetail(e.target.value)} placeholder="拾獲的詳細地點" aria-label="拾獲的詳細地點" className={pillInput} />
+          </FormRow>
+          <FormRow icon={<PersonChalkboardIcon className="h-[35px] w-[35px]" />} typing>
+            <input type="text" value={sendTo} onChange={(e) => setSendTo(e.target.value)} placeholder="送往的詳細地點（例如：文山二分局）" aria-label="送往的詳細地點" className={pillInput} />
+          </FormRow>
+          <FormRow text="備註" typing>
+            <input type="text" value={note} onChange={(e) => setNote(e.target.value)} className={pillInput} />
+          </FormRow>
+        </FormCard>
+
+        {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error land:col-start-2 land:mt-0 land:w-full land:max-w-none">{error}</p>}
+        <SubmitButton onClick={handleSubmit} disabled={status === 'submitting'}>
+          {status === 'submitting' ? '送出中…' : '填寫完成，確認標籤'}
+        </SubmitButton>
+      </FormPage>
+    </div>
+
+    {/* ======== 桌機（lg:）：照 2026-11 Figma「證件類遺失物登錄」CSS。跟其他表單頁一樣
+        不動 FormKit，自己寫 768 置中欄，狀態/送出邏輯整頁共用。
+        CSS 少畫了「拾獲的詳細地點」這格（必填，handleSubmit 會擋）——應該是跟「送往的
+        地點」那格長得太像，Figma 漏放了一個，照手機版補回來，不然桌機版會送不出去。
+        送出鈕文字沿用手機版「填寫完成，確認標籤」：證件類不跑 AI 辨識（see code comment），
+        CSS 寫的「開始 AI 辨識產生標籤」應該是跟圖片搜尋頁共用同一個按鈕元件忘記改字。 ======== */}
+    <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
+      <DesktopTopNav />
+
+      <div className="mx-auto flex w-full max-w-[768px] flex-1 flex-col gap-8 px-6 pb-16 pt-10 box-border">
+        <div className="flex items-center gap-4">
+          <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
+            <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
+          </button>
+          <h1 className="m-0 text-2xl font-normal text-[#2F1702]">證件類遺失物登錄</h1>
+        </div>
+
+        <div className="flex gap-3">
+          {ID_TYPES.map((t) => {
+            const active = type === t
+            return (
+              <button
+                key={t}
+                type="button"
+                onClick={() => {
+                  setType(t)
+                  if (t === '其他') setPickerOpen(true)
+                  else setOtherType('')
+                }}
+                aria-pressed={active}
+                className={`flex h-[46px] items-center justify-center rounded-full px-8 text-base text-[#1C1C13] shadow-sm
+                  ${active ? 'border-2 border-[#2F1702] bg-card font-medium' : 'border border-[#2F1702] bg-[#F5F5F5] font-normal'}`}
+              >
+                {t}
+              </button>
+            )
+          })}
+        </div>
+
+        {type === '其他' && (
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            className={`w-fit rounded-full px-5 py-2 text-sm transition
+              ${otherType ? 'border-2 border-black bg-blue text-brown' : 'border border-black bg-white text-[#888]'}`}
+          >
+            {otherType || '選擇證件類型'}
+          </button>
+        )}
+
+        <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
         <button
           type="button"
-          onClick={() => setPickerOpen(true)}
-          className={`mt-[10px] w-fit rounded-[50px] px-4 py-1.5 text-xs font-normal transition land:col-start-1 land:mt-0 land:justify-self-center
-            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
-            ${otherType ? 'border-[1.5px] border-black bg-blue text-brown' : 'border border-black bg-white text-[#888]'}`}
+          onClick={() => fileRef.current?.click()}
+          aria-label={maskedImage ? '更換照片' : '上傳照片'}
+          className="flex h-[300px] w-full items-center justify-center overflow-hidden rounded-lg border border-black bg-white"
         >
-          {otherType || '選擇證件類型'}
+          {maskedImage ? (
+            <img src={maskedImage} alt="已打碼證件" className="h-full w-full object-contain" />
+          ) : (
+            <img src={asset('/icons/camera.png')} alt="" className="h-10 w-10 object-contain" />
+          )}
         </button>
-      )}
 
-      {/* 拍照上傳（點擊 → 選圖 → 打碼視窗） */}
-      <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
-      <UploadBox
-        mt={20}
-        src={maskedImage}
-        alt="已打碼證件"
-        ariaLabel={maskedImage ? '更換照片' : '上傳照片'}
-        onClick={() => fileRef.current?.click()}
-      />
+        <div className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-4">
+          <CalendarIcon className="h-5 w-5 shrink-0 text-[#6B7280]" />
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            aria-label="拾獲日期"
+            className="h-6 w-full bg-transparent px-3 text-base text-[#1C1C13] outline-none"
+          />
+        </div>
 
-      <FormCard mt={20}>
-        <FormRow icon={<CalendarIcon className="h-[35px] w-[35px]" />}>
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} aria-label="拾獲日期" className={pillInput} />
-        </FormRow>
-        <RegionField
-          icon={<LocationIcon className="h-[35px] w-[35px]" />}
-          prefix="拾獲的"
-          city={foundCity} setCity={setFoundCity}
-          district={foundDistrict} setDistrict={setFoundDistrict}
+        <div className="flex gap-4">
+          <div className="flex h-[58px] flex-1 items-center rounded-full border border-black bg-white px-4">
+            <select
+              value={foundCity}
+              onChange={(e) => { setFoundCity(e.target.value); setFoundDistrict('') }}
+              aria-label="拾獲的縣市"
+              className="h-6 w-full appearance-none bg-transparent text-base text-[#1C1C13] outline-none"
+            >
+              <option value="">選擇拾獲的縣市</option>
+              {CITY_ORDER.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <ChevronDownIcon className="pointer-events-none h-4 w-4 shrink-0 text-[#6B7280]" />
+          </div>
+          <div className="flex h-[58px] flex-1 items-center rounded-full border border-black bg-white px-4">
+            <select
+              value={foundDistrict}
+              onChange={(e) => setFoundDistrict(e.target.value)}
+              disabled={!foundCity}
+              aria-label="拾獲的地區"
+              className="h-6 w-full appearance-none bg-transparent text-base text-[#1C1C13] outline-none"
+            >
+              <option value="">選擇拾獲的地區</option>
+              {(TAIWAN_REGIONS[foundCity] || []).map((d) => <option key={d} value={d}>{d}</option>)}
+            </select>
+            <ChevronDownIcon className="pointer-events-none h-4 w-4 shrink-0 text-[#6B7280]" />
+          </div>
+        </div>
+
+        <input
+          type="text"
+          value={foundDetail}
+          onChange={(e) => setFoundDetail(e.target.value)}
+          placeholder="拾獲的詳細地點"
+          aria-label="拾獲的詳細地點"
+          className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-[#1C1C13] outline-none placeholder:text-[#1C1C13]"
         />
-        {/* 詳細地點列不放圖示，跟上一列的縣市／地區排在一起 */}
-        <FormRow typing>
-          <input type="text" value={foundDetail} onChange={(e) => setFoundDetail(e.target.value)} placeholder="拾獲的詳細地點" aria-label="拾獲的詳細地點" className={pillInput} />
-        </FormRow>
-        <FormRow icon={<PersonChalkboardIcon className="h-[35px] w-[35px]" />} typing>
-          <input type="text" value={sendTo} onChange={(e) => setSendTo(e.target.value)} placeholder="送往的詳細地點（例如：文山二分局）" aria-label="送往的詳細地點" className={pillInput} />
-        </FormRow>
-        <FormRow text="備註" typing>
-          <input type="text" value={note} onChange={(e) => setNote(e.target.value)} className={pillInput} />
-        </FormRow>
-      </FormCard>
 
-      {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error land:col-start-2 land:mt-0 land:w-full land:max-w-none">{error}</p>}
-      <SubmitButton onClick={handleSubmit} disabled={status === 'submitting'}>
-        {status === 'submitting' ? '送出中…' : '填寫完成，確認標籤'}
-      </SubmitButton>
-
-      {/* 打碼視窗 */}
-      {pendingFile && (
-        <MaskingModal
-          file={pendingFile}
-          docType={DOCTYPE_MAP[type]}
-          onCancel={() => setPendingFile(null)}
-          onConfirm={onMaskDone}
+        <input
+          type="text"
+          value={sendTo}
+          onChange={(e) => setSendTo(e.target.value)}
+          placeholder="選擇送往的地點（例如：文山二分局）"
+          aria-label="送往的詳細地點"
+          className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-[#1C1C13] outline-none placeholder:text-[#1C1C13]"
         />
-      )}
 
-      {/* 其他證件類型選擇彈窗（單選、只有其他證件那組） */}
-      <TagPickerModal
-        open={pickerOpen}
-        value={otherType ? [otherType] : []}
-        taxonomy={OTHER_DOC_TAXONOMY}
-        single
-        onClose={() => setPickerOpen(false)}
-        onConfirm={(arr) => setOtherType(arr[0] || '')}
+        <textarea
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder="備註（非必填）"
+          className="h-[106px] w-full resize-none rounded-lg border border-black bg-white p-4 text-base text-[#1C1C13] outline-none placeholder:text-[#50453D]"
+        />
+
+        {error && <p className="m-0 text-sm leading-normal text-error">{error}</p>}
+
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={status === 'submitting'}
+          className="flex h-20 w-full items-center justify-center rounded-full border-2 border-black bg-[#F7F4E5] text-xl text-brown transition hover:brightness-[.98] disabled:opacity-60"
+        >
+          {status === 'submitting' ? '送出中…' : '填寫完成，確認標籤'}
+        </button>
+      </div>
+
+      <DesktopFooter />
+    </div>
+
+    {/* 打碼視窗、其他證件類型選擇彈窗：fixed 置中彈窗，手機／桌機共用 */}
+    {pendingFile && (
+      <MaskingModal
+        file={pendingFile}
+        docType={DOCTYPE_MAP[type]}
+        onCancel={() => setPendingFile(null)}
+        onConfirm={onMaskDone}
       />
-    </FormPage>
+    )}
+    <TagPickerModal
+      open={pickerOpen}
+      value={otherType ? [otherType] : []}
+      taxonomy={OTHER_DOC_TAXONOMY}
+      single
+      onClose={() => setPickerOpen(false)}
+      onConfirm={(arr) => setOtherType(arr[0] || '')}
+    />
+    </>
   )
 }
