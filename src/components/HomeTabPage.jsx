@@ -9,6 +9,7 @@ import { WireDialog, DialogTitle, DialogButton } from './DialogKit'
 import { useOnline } from '../lib/useOnline'
 import { asset } from '../lib/asset'
 import { FIND_ITEMS, REGISTER_ITEMS } from '../lib/homeMenuItems'
+import { openTour } from '../lib/tours'
 
 /**
  * 底部「拾獲／尋找」兩個分頁共用的骨架。
@@ -20,7 +21,8 @@ import { FIND_ITEMS, REGISTER_ITEMS } from '../lib/homeMenuItems'
  * props: title（SectionTitle 文字）、items（PillButton 清單，格式同 lib/homeMenuItems 的
  *   FIND_ITEMS/REGISTER_ITEMS）、hero（選填）——頂部插圖卡片：{ bg（底色）,
  *   image: { src, size, right, textRight }（插圖設計稿邊長、離右框距離、左邊文字最寬到哪；
- *   窄螢幕卡片變窄時插圖跟著縮小，不壓到文字；垂直置中）, content（卡片左邊的文字 JSX）}。
+ *   窄螢幕卡片變窄時插圖跟著縮小，不壓到文字；垂直置中）, content（卡片左邊的文字 JSX）}、
+ *   tour（這個分頁的使用教學：'find' 或 'found'，標題旁的問號鈕點了會重看，見 lib/tabTours.jsx）。
  *
  * 2026-11 加的桌機版（lg:）：拿到正式 Figma 桌機設計稿後，上面這套手機版插圖
  * hero 在桌機整個換掉，改成「上方導覽列＋淺藍 Hero 文案區＋白色卡片」。一開始桌機版
@@ -30,7 +32,7 @@ import { FIND_ITEMS, REGISTER_ITEMS } from '../lib/homeMenuItems'
  * REGISTER_ITEMS 畫兩張卡片，不吃 items/title 以外的 props，/ 和 /found 在桌機
  * 寬度下會渲染出一模一樣的畫面。
  */
-export default function HomeTabPage({ title, items, hero }) {
+export default function HomeTabPage({ title, items, hero, tour }) {
   const navigate = useNavigate()
   const online = useOnline()
   const [offlineNotice, setOfflineNotice] = useState('') // 離線時按到需要網路的功能 → 彈窗顯示功能名稱
@@ -45,6 +47,7 @@ export default function HomeTabPage({ title, items, hero }) {
         href={item.href}
         dimmed={blocked}
         lgBorder={lgBorder}
+        tour={item.tour}
         onClick={blocked ? () => setOfflineNotice(item.label) : item.to ? () => navigate(item.to) : undefined}
       />
     )
@@ -87,7 +90,7 @@ export default function HomeTabPage({ title, items, hero }) {
         {/* 內容欄 350 寬（窄螢幕左右各留 20）。橫式矮螢幕把按鈕排成兩欄，不然只有兩顆按鈕
             堆疊起來也要捲動，違背 land: 本來要解決的問題。 */}
         <section className="mt-[25px] w-[calc(100%-40px)] max-w-[350px] land:mt-[18px] land:w-full land:max-w-[700px]">
-          <SectionTitle>{title}</SectionTitle>
+          <SectionTitle onHelp={tour ? () => openTour(tour) : undefined} helpTour={tour ? `${tour}-help` : undefined}>{title}</SectionTitle>
           <div className="mt-[15px] flex flex-col gap-5 land:grid land:grid-cols-2 land:items-stretch land:gap-4">
             {items.map(renderItem)}
           </div>

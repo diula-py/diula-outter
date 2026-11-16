@@ -10,6 +10,7 @@ export default function HomePage() {
   return (
     <HomeTabPage
       title="尋找遺失物"
+      tour="find"
       items={FIND_ITEMS}
       hero={{
         bg: 'rgba(252, 230, 183, 0.6)', // 設計稿：黃底

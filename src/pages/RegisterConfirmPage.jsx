@@ -6,6 +6,8 @@ import TagPickerModal from '../components/TagPickerModal'
 import DesktopTopNav from '../components/DesktopTopNav'
 import DesktopFooter from '../components/DesktopFooter'
 import { CITY_ORDER, TAIWAN_REGIONS } from '../data/taiwanRegions'
+import OnceTip from '../components/OnceTip'
+import { TIP_TAGS } from '../lib/tours'
 import { addMyItem } from '../lib/items'
 import { useAuth } from '../context/AuthContext'
 import { todayStr } from '../lib/date'
@@ -106,7 +108,7 @@ export default function RegisterConfirmPage() {
 
         {/* 標籤：340 寬、padding 20、標題 16/600、chip 高 30。
             證件類只顯示選好的證件別（不可增刪）；非證件類是 AI 標籤、可增刪 */}
-        <div className="mt-5 box-border min-h-[98px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card p-5
+        <div data-tip="tags" className="mt-5 box-border min-h-[98px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card p-5
                         land:col-start-2 land:mt-0 land:w-full land:max-w-none">
           <div className="mb-[10px] text-base font-semibold text-brown">{fixedTags || manualTags ? '標籤' : 'AI 標籤'}</div>
           <div className="flex flex-wrap gap-[10px]">
@@ -218,7 +220,7 @@ export default function RegisterConfirmPage() {
           className="h-[106px] w-full resize-none rounded-lg border border-black bg-white p-4 text-base text-[#1C1C13] outline-none placeholder:text-[#50453D]"
         />
 
-        <div className="box-border w-full rounded-[10px] border border-black bg-card p-6">
+        <div data-tip="tags" className="box-border w-full rounded-[10px] border border-black bg-card p-6">
           <div className="mb-3 text-xl font-semibold text-[#482B12]">{fixedTags || manualTags ? '標籤' : 'AI 標籤'}</div>
           <div className="flex flex-wrap gap-3">
             {tags.map((tag) => (
@@ -267,6 +269,11 @@ export default function RegisterConfirmPage() {
         onConfirm={setTags}
       />
     )}
+
+    {/* 小提示：只有 AI 標籤（可增刪）才出現；證件類、離線手動選的不出現。
+        anchor="tags" 會自動挑手機版／桌機版兩個 data-tip="tags" 裡目前看得到的那個
+        （見 OnceTip 的註解），這裡不用再分手機/桌機各放一份。 */}
+    <OnceTip name="tip_tags_found" anchor="tags" show={!fixedTags && !manualTags && !pickerOpen}>{TIP_TAGS}</OnceTip>
     </>
   )
 }

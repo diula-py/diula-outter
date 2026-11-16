@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, HouseIcon } from '../components/icons'
 import BackToTopButton from '../components/BackToTopButton'
+import OnceTip from '../components/OnceTip'
+import { TIP_NOT_MINE } from '../lib/tours'
 import { Overlay, WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import { XmarkIcon } from '../components/icons'
 import DesktopTopNav from '../components/DesktopTopNav'
@@ -212,6 +214,7 @@ export default function ResultsPage() {
         <button
           type="button"
           onClick={() => setSosOpen(true)}
+          data-tip="none-results"
           aria-hidden={!showNotMine}
           tabIndex={showNotMine ? 0 : -1}
           className={`box-border flex h-[60px] w-full items-center justify-center rounded-[50px] border border-black bg-blue text-base font-medium leading-4 text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)]
@@ -278,6 +281,7 @@ export default function ResultsPage() {
           <button
             type="button"
             onClick={() => setSosOpen(true)}
+            data-tip="none-results"
             className="sticky top-10 z-[90] flex h-[100px] w-[100px] shrink-0 flex-col items-center justify-center rounded-full border border-black bg-[#D2E1F5] text-center text-sm font-medium leading-tight text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition hover:brightness-[.98]"
           >
             都沒有
@@ -350,6 +354,11 @@ export default function ResultsPage() {
 
       <DesktopFooter />
     </div>
+
+      {/* 小提示：第一次看到「都沒有我的物品」按鈕（跨平台結果頁一次；換平台分頁不再出現）。
+          anchor="none-results" 會自動挑手機版／桌機版兩個 data-tip="none-results" 裡
+          目前看得到的那個（見 OnceTip 的註解），不用放在某一個 lg: 區塊裡面。 */}
+      <OnceTip name="tip_not_mine_results" anchor="none-results" show={showNotMine && !sosOpen && !homeConfirm}>{TIP_NOT_MINE}</OnceTip>
 
       {/* 「都沒有我的物品」選項彈窗（照 Figma：305×380、陰影、X 35×35 在 (12,14)、
           標題 24/700 離頂端 49、按鈕 254×70 間距 20、第一顆離頂端 105、底部留 25） */}

@@ -9,24 +9,12 @@ import { Backdrop } from './DialogKit'
  * 什麼時候跳出、看過紀錄怎麼存，見 OnboardingGate.jsx 與 lib/onboarding.js。
  *
  * 卡片順序 1→2→4→3（開會定案）。文案是 PM 2026-11-14 給的定稿；body 裡的 \n 會換行。
- * 鈴鐺是佔位圖示，美術之後會給動畫；放大鏡、小人是美術給的動畫 SVG
- * （CSS keyframes 寫在 SVG 裡，要用 <img> 載入才會動，見 diula_find_magnifier／diula_pick_stand 的 README）。
+ * 放大鏡、信封、小人都是美術給的動畫 SVG（2026-11-16：第三張原本的鈴鐺佔位圖換成信封動畫循環版）
+ * （CSS keyframes 寫在 SVG 裡，要用 <img> 載入才會動，見 diula_find_magnifier／diula_envelope／diula_pick_stand 的 README）。
  *
  * 按鈕比照彈窗的 DialogButton：60 高、圓角 50、1px 黑框、咖啡色字 20/500；
  * 「上一步」白底、「下一步／開始使用」藍底。
  */
-
-function BellArt() {
-  return (
-    <svg viewBox="0 0 64 64" fill="none" stroke="#492c13" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"
-      aria-hidden="true" className="h-32 w-32 land:h-16 land:w-16">
-      <path d="M20 44V30a12 12 0 0 1 24 0v14l4 5H16z" fill="#fff" />
-      <path d="M27 53a5 5 0 0 0 10 0" />
-      <path d="M32 12v6" />
-      <circle cx="47" cy="17" r="5" fill="#492c13" stroke="none" />
-    </svg>
-  )
-}
 
 // 淺藍圓底（設計稿草稿 210px，換算實際尺寸約 260）
 function Blob({ children }) {
@@ -63,7 +51,13 @@ const CARDS = [
   {
     title: '還沒找到也別急',
     body: 'DiuLa!自動連續5日比對並通知你相符物品，也可以幫你匿名代發Threads協尋文！',
-    art: <Blob><BellArt /></Blob>,
+    art: (
+      <Blob>
+        {/* 橫式圖（2110×1750），用寬度控制大小；跟放大鏡一樣放在左右滑動的捲動容器裡，加 will-change-transform 避免 iPhone 上動畫重畫出現接縫 */}
+        <img src={asset('/icons/illustration-envelope.svg')} alt="" draggable={false}
+          className="h-auto w-[200px] select-none will-change-transform land:w-[92px]" />
+      </Blob>
+    ),
   },
   {
     title: '撿到東西？',

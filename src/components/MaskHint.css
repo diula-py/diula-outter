@@ -1,0 +1,81 @@
+/* 打碼提示動畫（MaskHint.jsx）：一隻手在照片上按下、拖出一個矩形，示範「拖曳就能畫黑框」。
+   2026-11-16 使用者從配色比較稿（diula-mask-hint-compare.html）選了 C 版：
+   白色手＋棕色描邊（像滑鼠游標）＋柔和陰影；矩形是半透明深色＋白色虛線框，深淺照片上都看得到。 */
+.mask-hint {
+  --hint-w: 104px;        /* 拖曳距離（寬） */
+  --hint-h: 58px;         /* 拖曳距離（高） */
+  --hint-duration: 3.4s;  /* 一輪時間 */
+  position: absolute;
+  left: calc(50% - var(--hint-w) / 2 - 10px);
+  top: calc(50% - var(--hint-h) / 2 - 12px);
+  width: var(--hint-w);
+  height: var(--hint-h);
+  pointer-events: none;   /* 不擋住使用者拖曳 */
+}
+
+.mask-hint__box {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  border-radius: 3px;
+  background: rgba(20, 12, 6, 0.3);
+  border: 2px dashed rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  animation: mask-hint-box var(--hint-duration) infinite;
+}
+
+.mask-hint__hand {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 36px;
+  margin-left: -12.86px;            /* 讓指尖對準矩形右下角 */
+  margin-top: -4.5px;
+  transform-origin: 12.86px 4.5px;  /* 以指尖為中心縮放 */
+  animation: mask-hint-hand var(--hint-duration) infinite;
+}
+.mask-hint__hand svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 1.5px 3px rgba(0, 0, 0, 0.35));
+}
+.mask-hint__body {
+  fill: #fff;
+  stroke: #492c13;
+  stroke-width: 2.4;
+  stroke-linejoin: round;
+}
+.mask-hint__lines {
+  fill: none;
+  stroke: #492c13;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+
+@keyframes mask-hint-hand {
+  0%   { opacity: 0; transform: translate(0, 0) scale(1.08); }
+  10%  { opacity: 1; transform: translate(0, 0) scale(1.08); animation-timing-function: cubic-bezier(.45, 0, .55, 1); }
+  16%  { opacity: 1; transform: translate(0, 0) scale(.92);  animation-timing-function: cubic-bezier(.65, 0, .35, 1); }
+  60%  { opacity: 1; transform: translate(var(--hint-w), var(--hint-h)) scale(.92); animation-timing-function: cubic-bezier(.34, 1.56, .64, 1); }
+  68%  { opacity: 1; transform: translate(var(--hint-w), var(--hint-h)) scale(1); }
+  84%  { opacity: 1; transform: translate(var(--hint-w), var(--hint-h)) scale(1); }
+  94%, 100% { opacity: 0; transform: translate(var(--hint-w), var(--hint-h)) scale(1); }
+}
+@keyframes mask-hint-box {
+  0%, 15.9% { opacity: 0; width: 0; height: 0; }
+  16%  { opacity: 1; width: 0; height: 0; animation-timing-function: cubic-bezier(.65, 0, .35, 1); }
+  60%  { opacity: 1; width: var(--hint-w); height: var(--hint-h); }
+  84%  { opacity: 1; width: var(--hint-w); height: var(--hint-h); }
+  94%, 100% { opacity: 0; width: var(--hint-w); height: var(--hint-h); }
+}
+
+/* 系統開啟「減少動態效果」：不播動畫，直接停在拖好的樣子 */
+@media (prefers-reduced-motion: reduce) {
+  .mask-hint__hand, .mask-hint__box { animation: none; opacity: 1; }
+  .mask-hint__box { width: var(--hint-w); height: var(--hint-h); }
+  .mask-hint__hand { transform: translate(var(--hint-w), var(--hint-h)); }
+}

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import MaskHint from './MaskHint'
 import Cropper from 'cropperjs'
 import 'cropperjs/dist/cropper.css'
 import { Backdrop } from './DialogKit'
@@ -39,6 +40,8 @@ export default function MaskingModal({ file, docType, onCancel, onConfirm }) {
   const [status, setStatus] = useState('')
   const [maskCount, setMaskCount] = useState(0)
   const [autoPlaced, setAutoPlaced] = useState(false)
+  // 打碼提示動畫（MaskHint）：每次進到遮蔽個資都播，手指一碰照片就收起（2026-11-16 使用者指定）
+  const [showHint, setShowHint] = useState(true)
   const [imgUrl, setImgUrl] = useState('') // 需為 state：<img src> 才會真的更新
 
   const manualType = docType === 'student_id' || docType === 'other'
@@ -142,6 +145,7 @@ export default function MaskingModal({ file, docType, onCancel, onConfirm }) {
   }
   function onDown(e) {
     e.preventDefault()
+    setShowHint(false)
     const p = posFrom(e)
     drawRef.current = { drawing: true, x: p.x, y: p.y }
     overlayRef.current.setPointerCapture?.(e.pointerId)
@@ -257,6 +261,7 @@ export default function MaskingModal({ file, docType, onCancel, onConfirm }) {
                   className="absolute inset-0 h-full w-full touch-none"
                   style={{ cursor: 'crosshair' }}
                 />
+                {showHint && <MaskHint />}
               </div>
               <p className={`mt-2 text-xs leading-normal ${maskCount ? 'text-brown/70' : 'text-error'}`}>
                 {maskCount ? `已遮蔽 ${maskCount} 個區域（可拖曳新增、上一步移除）` : '尚未遮蔽任何區域，打碼後才能上傳'}

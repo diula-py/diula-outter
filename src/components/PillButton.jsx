@@ -5,7 +5,7 @@
  * 兩種用法：
  *   1. 內部路由 / 動作 → 傳 onClick（渲染成 <button>）
  *   2. 外部頁面連結   → 傳 href（渲染成 <a>，整頁跳轉、可中鍵開新分頁）
- * props: icon, label, onClick?, href?, external?, dimmed?
+ * props: icon, label, onClick?, href?, external?, dimmed?, tour?（聚光燈導覽用的 data-tour 值）
  * dimmed：看起來是停用的（變淡），但仍可以按——用來在離線時按到需要網路的功能，而不是完全沒反應。
  * 2026-11：原本試過加 primary 讓其中一顆變實色底當主要 CTA，使用者確認照設計稿的 CSS
  *   全部按鈕都同一個樣式，拿掉了（見 git log，這段 UI 討論沒有另外留文件記錄）。
@@ -35,13 +35,14 @@ function Inner({ icon, label }) {
   )
 }
 
-export default function PillButton({ icon, label, onClick, href, external, dimmed, lgBorder = 'black' }) {
+export default function PillButton({ icon, label, onClick, href, external, dimmed, lgBorder = 'black', tour }) {
   const className = `${BASE_CLASS} ${LG_BORDER_CLASS[lgBorder]}`
 
   if (href) {
     return (
       <a
         href={href}
+        data-tour={tour}
         className={className}
         {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
       >
@@ -51,7 +52,7 @@ export default function PillButton({ icon, label, onClick, href, external, dimme
   }
 
   return (
-    <button type="button" onClick={onClick} aria-disabled={dimmed || undefined} className={dimmed ? `${className} opacity-40` : className}>
+    <button type="button" onClick={onClick} data-tour={tour} aria-disabled={dimmed || undefined} className={dimmed ? `${className} opacity-40` : className}>
       <Inner icon={icon} label={label} />
     </button>
   )
