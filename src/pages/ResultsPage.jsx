@@ -236,7 +236,11 @@ export default function ResultsPage() {
     <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
       <DesktopTopNav />
 
-      <div className="mx-auto w-full max-w-[1280px] px-10 pb-24 pt-10 box-border">
+      {/* flex-1 撐滿導覽列跟頁尾之間的空間：內容短（比如 0 筆結果）時，「都沒有我的物品」
+          會跟著 justify-between 貼齊這塊區域的下緣（頁尾正上方）；內容長要捲動時換 sticky
+          頂著，往下捲也不會超過這塊區域、蓋到頁尾。 */}
+      <div className="flex w-full flex-1 flex-col items-center justify-between">
+      <div className="mx-auto w-full max-w-[1280px] px-10 pb-10 pt-10 box-border">
         <div className="flex items-center justify-between">
           <h1 className="m-0 text-2xl font-normal text-[#2F1702]">比對結果</h1>
           <button
@@ -335,17 +339,22 @@ export default function ResultsPage() {
         )}
       </div>
 
-      {/* 都沒有我的物品：桌機改成右下角固定圓形按鈕，常駐顯示（不用手機版那套捲到第 7 筆才浮現的邏輯，
-          桌機畫面夠大，一開始就看得到結果，不需要漸進揭露） */}
-      <button
-        type="button"
-        onClick={() => setSosOpen(true)}
-        className="fixed bottom-10 right-10 z-[90] flex h-[120px] w-[120px] flex-col items-center justify-center rounded-full border border-black bg-[#D2E1F5] text-center text-base font-medium leading-tight text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition hover:brightness-[.98]"
-      >
-        都沒有
-        <br />
-        我的物品
-      </button>
+      {/* 都沒有我的物品：桌機改成右下角圓形按鈕，常駐顯示（不用手機版那套捲到第 7 筆才浮現的邏輯，
+          桌機畫面夠大，一開始就看得到結果，不需要漸進揭露）。sticky 不是 fixed——
+          內容短時跟著上面 justify-between 貼齊這塊區域下緣（頁尾正上方，不會疊到頁尾）；
+          內容長要捲動時 sticky 會頂著視窗底部，捲到底一樣會停在頁尾上面。 */}
+      <div className="mx-auto flex w-full max-w-[1280px] justify-end px-10 pb-10 box-border">
+        <button
+          type="button"
+          onClick={() => setSosOpen(true)}
+          className="sticky bottom-10 z-[90] flex h-[120px] w-[120px] shrink-0 flex-col items-center justify-center rounded-full border border-black bg-[#D2E1F5] text-center text-base font-medium leading-tight text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition hover:brightness-[.98]"
+        >
+          都沒有
+          <br />
+          我的物品
+        </button>
+      </div>
+      </div>
 
       <DesktopFooter />
     </div>
