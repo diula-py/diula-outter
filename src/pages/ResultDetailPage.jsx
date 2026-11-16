@@ -1,5 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, CalendarIcon, LocationIcon, PersonChalkboardIcon, DiulaPinIcon } from '../components/icons'
+import DesktopTopNav from '../components/DesktopTopNav'
+import DesktopFooter from '../components/DesktopFooter'
 import { itemTitle } from '../lib/text'
 import { displayTags } from '../data/tagTaxonomy'
 
@@ -32,8 +34,10 @@ export default function ResultDetailPage() {
   const tags = displayTags([...(item.free_tags || []), ...(item.color || [])])
 
   return (
-    // 沒有 AppLayout（無 TabBar），外框與底部留白自己處理
-    <div className="mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] bg-paper pb-[calc(40px+env(safe-area-inset-bottom))] land:max-w-none">
+    <>
+    {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
+    {/* 沒有 AppLayout（無 TabBar），外框與底部留白自己處理 */}
+    <div className="mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] bg-paper pb-[calc(40px+env(safe-area-inset-bottom))] land:max-w-none lg:hidden">
       {/* Header */}
       <header className="safe-header relative rounded-b-[20px] bg-card [--header-h:80px] land:[--header-h:64px]">
         <div className="relative flex h-full items-center justify-center">
@@ -127,5 +131,90 @@ export default function ResultDetailPage() {
         )}
       </div>
     </div>
+
+    {/* ======== 桌機（lg:）：照 2026-11 Figma「遺失物詳情」CSS，768 置中欄＋純文字方框
+        （不是互動表單，所以地點/日期/備註都只是純顯示用的方框，不是輸入框）。
+        CSS 只畫了 DiuLa! 自家資料那個分支（地點拆兩個方框＋標籤卡），官方來源那支
+        （npa/metro/hsr，有內文＋外部連結按鈕）沒有設計稿，照同一套方框語言延伸。
+        標題沿用手機版用品名（itemTitle），CSS 裡寫的「尋找遺失物」應該又是從同一個
+        畫框複製忘記改。 ======== */}
+    <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
+      <DesktopTopNav />
+
+      <div className="mx-auto flex w-full max-w-[768px] flex-1 flex-col gap-10 px-6 pb-16 pt-10 box-border">
+        <div className="flex items-center gap-4">
+          <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
+            <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
+          </button>
+          <h1 className="m-0 max-w-[600px] truncate text-2xl font-normal text-[#2F1702]">{title}</h1>
+        </div>
+
+        <div className="flex h-[300px] w-full items-center justify-center overflow-hidden rounded-lg border border-black bg-white">
+          {item.image_ref && /^https?:\/\//.test(item.image_ref) ? (
+            <img src={item.image_ref} alt="" className="h-full w-full object-contain" />
+          ) : (
+            <Placeholder />
+          )}
+        </div>
+
+        {isDiula ? (
+          <>
+            <div className="flex gap-4">
+              <div className="flex h-[58px] flex-1 items-center rounded-[10px] border border-black bg-white px-4 text-base text-[#492C13]">
+                {item.city || '--'}
+              </div>
+              <div className="flex h-[58px] flex-1 items-center rounded-[10px] border border-black bg-white px-4 text-base text-[#492C13]">
+                {item.district || '--'}
+              </div>
+            </div>
+
+            <div className="flex h-[58px] w-full items-center justify-center rounded-[10px] border border-black bg-white px-4 text-base text-[#492C13]">
+              {fmtDate(item.found_date) || '--'}
+            </div>
+
+            <div className="min-h-[58px] w-full rounded-lg border border-black bg-white p-4 text-base text-[#50453D]">
+              {dropOff ? `送往：${dropOff}` : (item.holding_place || '--')}
+            </div>
+
+            {tags.length > 0 && (
+              <div className="box-border w-full rounded-[10px] border border-black bg-card p-6">
+                <div className="mb-3 text-xl font-semibold text-[#482B12]">標籤</div>
+                <div className="flex flex-wrap gap-3">
+                  {tags.map((t) => (
+                    <span key={t} className="rounded-[10px] border border-black bg-blue px-5 py-[10px] text-base text-[#482B12]">{t}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <div className="flex items-center gap-3">
+              <CalendarIcon className="h-6 w-6 shrink-0 text-navy" />
+              <span className="text-base text-brown">{fmtDate(item.found_date)}</span>
+            </div>
+            <div className="min-h-[200px] w-full whitespace-pre-wrap rounded-lg border border-black bg-white p-6 text-base leading-relaxed text-brown">
+              {item.description || '（無內文）'}
+              {place && `\n\n地點：${place}`}
+              {(item.holding_place || item.station) && `\n保管地：${item.holding_place || item.station}`}
+            </div>
+
+            {link && (
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-[70px] w-full items-center justify-center rounded-full border-2 border-black bg-card text-lg font-medium text-brown no-underline transition hover:brightness-[.98]"
+              >
+                {link.label}
+              </a>
+            )}
+          </>
+        )}
+      </div>
+
+      <DesktopFooter />
+    </div>
+    </>
   )
 }
