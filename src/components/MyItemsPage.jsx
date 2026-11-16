@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, CalendarIcon, MagnifyingGlassIcon } from './icons'
+import DesktopTopNav from './DesktopTopNav'
+import DesktopFooter from './DesktopFooter'
 import { listMyItems, getCachedMyItems } from '../lib/items'
 import { useAuth } from '../context/AuthContext'
 import { asset } from '../lib/asset'
@@ -15,9 +17,9 @@ import { LoadingInline } from './LoadingScreen'
  * 清單 340 寬、卡片間距 15，卡片 padding 10／gap 15／縮圖 100。
  */
 
-function Thumb({ img }) {
+function Thumb({ img, size = 100 }) {
   return (
-    <div className="flex h-[100px] w-[100px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-white">
+    <div className="flex shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-white" style={{ height: size, width: size }}>
       <img src={img || asset('/icons/logo2.png')} alt="" className={`h-full w-full ${img ? 'object-cover' : 'object-contain'}`} />
     </div>
   )
@@ -66,7 +68,9 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
   const note = 'p-5 text-center text-base leading-normal'
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[120px] land:max-w-none land:pb-[80px]">
+    <>
+    {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[120px] land:max-w-none land:pb-[80px] lg:hidden">
       {/* inner 的數值含狀態列（約 59px）。iPhone PWA（狀態列 59）跟原本一樣；
           LINE App／瀏覽器裡沒有狀態列（safe-area＝0），整組上移、不留狀態列的空白（返回鍵離頂端 30px）。 */}
       <header
@@ -140,5 +144,79 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
         ))}
       </div>
     </div>
+
+    {/* ======== 桌機（lg:）：照 2026-11 Figma「我的遺失物／我的拾獲物」CSS。跟比對結果頁、
+        Threads 尋找頁同一套「接近全寬」版面：搜尋列改大膠囊＋日期篩選鈕、清單改單欄、
+        卡片放大（縮圖 128px）。這支共用元件同時服務 MyLostPage／MyFoundPage，桌機版
+        也是改這裡一次就兩邊都套用。 ======== */}
+    <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
+      <DesktopTopNav />
+
+      <div className="flex w-full flex-1 flex-col items-center">
+        <div className="mx-auto w-full max-w-[1280px] px-20 pb-16 pt-10 box-border">
+          <div className="flex items-center gap-4">
+            <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
+              <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
+            </button>
+            <h1 className="m-0 text-2xl font-normal text-[#2F1702]">{title}</h1>
+          </div>
+
+          <div className="mt-8 flex gap-5">
+            <label className="relative flex h-[74px] w-[150px] shrink-0 items-center justify-center gap-2 rounded-full border border-[#2F1702] bg-card">
+              <CalendarIcon className="pointer-events-none h-5 w-5 text-[#2F1702]" />
+              <span className="pointer-events-none text-base text-[#2F1702]">選擇日期</span>
+              {dateFilter && <span className="pointer-events-none absolute right-5 top-5 h-2 w-2 rounded-full bg-error" />}
+              <input
+                type="date"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                aria-label="依日期篩選"
+                className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+              />
+            </label>
+            <div className="flex h-[74px] flex-1 items-center gap-3 rounded-full border border-[#2F1702] bg-[#F5F5F5] px-6">
+              <MagnifyingGlassIcon className="h-5 w-5 shrink-0 text-[#2F1702]" />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="搜尋"
+                className="h-full min-w-0 flex-1 bg-transparent p-0 text-base text-[#2F1702] outline-none placeholder:text-[#50453D]"
+              />
+            </div>
+          </div>
+
+          <div className="mt-8 flex flex-col gap-5">
+            {loading && <LoadingInline />}
+            {!loading && error && items.length === 0 && <p className="py-5 text-center text-base leading-normal text-error">{error}</p>}
+            {!loading && !(error && items.length === 0) && filtered.length === 0 && <p className="py-5 text-center text-lg leading-normal opacity-60">{emptyText}</p>}
+
+            {filtered.map((it) => (
+              <button
+                key={it.id}
+                type="button"
+                onClick={() => navigate(`${detailBase}/${it.id}`, { state: { item: it } })}
+                className="box-border flex w-full items-center gap-6 rounded-xl border border-black bg-[#F5F5F5] p-4 text-left text-brown shadow-sm transition hover:brightness-[.98]"
+              >
+                <Thumb img={it.image} size={128} />
+                <div className="flex min-w-0 flex-1 flex-col gap-1 overflow-hidden">
+                  <div className="-my-1 truncate py-1 text-sm font-bold">＃{String(it.id).toUpperCase()}</div>
+                  <div className="-my-1 truncate py-1 text-lg font-bold">{it.name || (it.tags || []).map((t) => `#${t}`).join(' ')}</div>
+                  <div className="text-sm font-normal">{(it.date || '').replaceAll('-', '/')}</div>
+                  {it.pending && <div className="text-sm font-medium text-[#8C8C8C]">待上傳</div>}
+                  {kind !== 'found' && it.status && (
+                    <div className="text-sm font-medium" style={{ color: statusColor(it.status) }}>{it.status}</div>
+                  )}
+                </div>
+                <ChevronLeftIcon className="h-5 w-5 shrink-0 -scale-x-100" />
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <DesktopFooter />
+    </div>
+    </>
   )
 }
