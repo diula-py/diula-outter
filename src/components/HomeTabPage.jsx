@@ -13,29 +13,41 @@ import { FIND_ITEMS, REGISTER_ITEMS } from '../lib/homeMenuItems'
 import { FIND_HERO, FOUND_HERO } from '../lib/homeHeroes'
 import { openTour } from '../lib/tours'
 
-/** 插圖卡片本體（350×190、1px 咖啡框、圓角 10）：手機版、桌機輪播都用這個，視覺要一模一樣。 */
-function HeroCard({ hero }) {
+/**
+ * 桌機版 Hero 卡片本體：維持原本桌機版的大尺寸（滿版寬、p-16、rounded-[40px]），
+ * 不是把手機版 350×190 的小卡片直接放大——那樣文字/插圖會整組擠在左上角。
+ * 插圖跟文案沿用手機版同一份資料（hero.image / hero.desktop），只是排版換成
+ * 大尺寸的左文右圖 flex，不是手機版那套絕對定位。
+ */
+function DesktopHeroSlide({ hero }) {
   return (
-    <div
-      className="relative h-[190px] w-full max-w-[350px] shrink-0 overflow-hidden rounded-[10px] border border-brown"
+    <section
+      className="flex w-full items-center gap-16 rounded-[40px] border border-brown p-16 box-border"
       style={{ background: hero.bg }}
     >
+      <div className="flex max-w-[600px] flex-1 flex-col items-start gap-5">
+        <h1 className="m-0 text-[32px] font-bold leading-[38px] tracking-[-0.64px] text-brown">
+          {hero.desktop.title.map((line, i) => (
+            <span key={i} className="block">{line}</span>
+          ))}
+        </h1>
+        <p className="m-0 text-lg leading-[29px] text-[#566475]">{hero.desktop.subtitle}</p>
+        <p className="m-0 text-sm leading-relaxed text-[#566475]">{hero.desktop.tagline}</p>
+      </div>
       <img
         src={hero.image.src}
         alt=""
         aria-hidden="true"
-        className="absolute top-1/2 aspect-square -translate-y-1/2 object-contain"
-        style={{ width: `min(${hero.image.size}px, calc(100% - ${hero.image.textRight + hero.image.right}px))`, right: hero.image.right }}
+        className="hidden h-[220px] w-[220px] shrink-0 object-contain sm:block"
       />
-      <div className="relative h-full text-brown">{hero.content}</div>
-    </div>
+    </section>
   )
 }
 
 /**
- * 桌機版 Hero 輪播（2026-11 定案：原本的大標題＋文案換掉，改成跟手機版一樣的
- * 插圖卡片，左右滑動切換「尋找」「拾獲」兩張）。用原生 scroll-snap 做，觸控板／
- * 觸控螢幕可以直接滑，滑鼠使用者則點左右箭頭或下面的圓點。
+ * 桌機版 Hero 輪播（2026-11 定案：維持原本桌機版 Hero 的大尺寸，但內容改成跟手機版
+ * 一樣的插圖主題，左右滑動切換「尋找」「拾獲」兩張）。用原生 scroll-snap 做，
+ * 觸控板／觸控螢幕可以直接滑，滑鼠使用者則點左右箭頭或下面的圓點。
  */
 function HeroCarousel({ heroes }) {
   const scrollerRef = useRef(null)
@@ -54,15 +66,15 @@ function HeroCarousel({ heroes }) {
   }
 
   return (
-    <div className="relative mx-auto w-full max-w-[480px]">
+    <div className="relative mx-auto w-full max-w-[1280px] px-12 box-border">
       <div
         ref={scrollerRef}
         onScroll={handleScroll}
         className="flex w-full snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {heroes.map((hero, i) => (
-          <div key={i} className="flex w-full shrink-0 snap-center justify-center">
-            <HeroCard hero={hero} />
+          <div key={i} className="w-full shrink-0 snap-center">
+            <DesktopHeroSlide hero={hero} />
           </div>
         ))}
       </div>
@@ -72,7 +84,7 @@ function HeroCarousel({ heroes }) {
         aria-label="上一張"
         onClick={() => goTo(Math.max(0, active - 1))}
         disabled={active === 0}
-        className="absolute left-0 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-brown bg-white text-brown shadow-sm transition disabled:opacity-0"
+        className="absolute left-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-brown bg-white text-brown shadow-sm transition disabled:opacity-0"
       >
         <ChevronLeftIcon className="h-5 w-5" />
       </button>
@@ -81,7 +93,7 @@ function HeroCarousel({ heroes }) {
         aria-label="下一張"
         onClick={() => goTo(Math.min(heroes.length - 1, active + 1))}
         disabled={active === heroes.length - 1}
-        className="absolute right-0 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-brown bg-white text-brown shadow-sm transition disabled:opacity-0"
+        className="absolute right-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-brown bg-white text-brown shadow-sm transition disabled:opacity-0"
       >
         <ChevronLeftIcon className="h-5 w-5 -scale-x-100" />
       </button>
@@ -192,11 +204,12 @@ export default function HomeTabPage({ title, items, hero, tour }) {
       <div className="hidden lg:flex lg:w-full lg:flex-col lg:items-center">
         <DesktopTopNav />
 
-        {/* 2026-11 定案：桌機版 Hero 不再用大標題＋文案，改成跟手機版一樣的插圖卡片，
+        {/* 2026-11 定案：桌機版 Hero 維持原本大尺寸，內容改成跟手機版一樣的插圖主題，
             可左右滑動切換「尋找」「拾獲」兩張（見 HeroCarousel）。 */}
         <div className="mt-10 w-full">
           <HeroCarousel heroes={[FIND_HERO, FOUND_HERO]} />
         </div>
+
 
         {/* 兩張卡片 560 寬＋64 間距＝1184，跟上面 Hero 同寬，所以在參考寬度 1280 時剛好並排、
             滿版不留空；比這個窄（1024~1279px 左右的桌機寬度）就靠 flex-wrap 自動疊成兩排。 */}
