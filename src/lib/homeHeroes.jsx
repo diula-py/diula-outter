@@ -13,6 +13,13 @@ export const FIND_HERO = {
       <p className="absolute left-[24.5px] top-[143px] text-xs font-normal leading-5">省時省力｜自動尋找｜擴大協尋</p>
     </>
   ),
+  // 桌機版輪播用：跟手機版一樣的插圖／文案，但排版換成大尺寸的 flex（原本手機版
+  // content 是絕對定位、照 350×190 的小卡片調的，放大會整組擠在左上角，要另外排）。
+  desktop: {
+    title: ['東西不見了', '別擔心'],
+    subtitle: '是你與失物重逢的捷徑',
+    tagline: '省時省力｜自動尋找｜擴大協尋',
+  },
 }
 
 // 「拾獲」手機版插圖 hero：FoundHomePage.jsx 用它當 hero，桌機版合併頁的輪播也用同一份。
@@ -27,4 +34,9 @@ export const FOUND_HERO = {
       <p className="absolute left-[24.5px] top-[129px] text-xs font-normal leading-4">證件個資打碼，保護失主隱私<br />登錄物品後送交鄰近機關單位</p>
     </>
   ),
+  desktop: {
+    title: ['拾獲物品', '輕鬆快速登錄'],
+    subtitle: '做好事，也將收穫好事！',
+    tagline: '證件個資打碼，保護失主隱私，登錄物品後送交鄰近機關單位',
+  },
 }
