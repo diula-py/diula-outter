@@ -6,6 +6,8 @@ import OnceTip from '../components/OnceTip'
 import { TIP_NOT_MINE } from '../lib/tours'
 import { Overlay, WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import { XmarkIcon } from '../components/icons'
+import DesktopTopNav from '../components/DesktopTopNav'
+import DesktopFooter from '../components/DesktopFooter'
 import { itemTitle } from '../lib/text'
 import { asset } from '../lib/asset'
 import { useLeaveIfHandled, markLostHandled } from '../lib/handledLost'
@@ -24,11 +26,11 @@ const SHOW_AT = 7
 const fmtDate = (s) => (s ? String(s).slice(0, 10).replaceAll('-', '/') : '')
 
 // 沒有圖（北捷／高鐵一律沒有；警政署、DiuLa! 部分沒有）或圖載入失敗 → 藍底驚嘆號 logo（同我的遺失物列表的預設圖）
-function ResultThumb({ src }) {
+function ResultThumb({ src, size = 100 }) {
   const [broken, setBroken] = useState(false)
   const ok = src && /^https?:\/\//.test(src) && !broken
   return (
-    <div className="h-[100px] w-[100px] shrink-0 overflow-hidden rounded-[10px] bg-card">
+    <div className="shrink-0 overflow-hidden rounded-[10px] bg-card" style={{ height: size, width: size }}>
       {ok ? (
         <img src={src} alt="" className="h-full w-full object-cover" onError={() => setBroken(true)} />
       ) : (
@@ -90,7 +92,9 @@ export default function ResultsPage() {
   if (!location.state) return <Navigate to="/" replace />
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(100px+env(safe-area-inset-bottom))] land:max-w-none">
+    <>
+    {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(100px+env(safe-area-inset-bottom))] land:max-w-none lg:hidden">
       {/* Header 80px：標題＋右上角「回首頁」（先跳確認彈窗）；沒有返回鍵（inner page-06） */}
       <header className="safe-header relative z-10 w-full shrink-0 rounded-b-[20px] bg-card [--header-h:80px] land:[--header-h:64px]">
         <div className="relative flex h-full items-center justify-center">
@@ -223,6 +227,128 @@ export default function ResultsPage() {
           都沒有我的物品
         </button>
       </div>
+    </div>
+
+    {/* ======== 桌機（lg:）：照 2026-11 Figma「比對結果」CSS。這頁是列表／資料格，
+        不是表單，所以不走 768 置中欄那套——內容跟手機版橫式一樣貼齊左右 32~40px，
+        比對卡片 2 欄排版儘量用滿寬度。狀態與邏輯（source/list/sosOpen/homeConfirm...）
+        整頁共用。 ======== */}
+    <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
+      <DesktopTopNav />
+
+      <div className="mx-auto w-full max-w-[1280px] px-10 pb-24 pt-10 box-border">
+        <div className="flex items-center justify-between">
+          <h1 className="m-0 text-2xl font-normal text-[#2F1702]">比對結果</h1>
+          <button
+            type="button"
+            onClick={() => setHomeConfirm(true)}
+            aria-label="回首頁"
+            className="flex h-[30px] w-[30px] items-center justify-center"
+          >
+            <HouseIcon className="h-[30px] w-[30px]" />
+          </button>
+        </div>
+
+        {/* 來源分頁：照設計稿 4 顆膠囊，選中態 bg-card + 2px 框；DiuLa! 那顆用 logo 圖 */}
+        <div className="mt-8 flex gap-4">
+          {SOURCES.map((s) => {
+            const active = source === s.key
+            const isDiula = s.key === 'diula'
+            return (
+              <button
+                key={s.key}
+                type="button"
+                onClick={() => selectSource(s.key)}
+                aria-pressed={active}
+                aria-label={s.label}
+                className={`box-border flex h-14 min-w-[114px] items-center justify-center rounded-full px-10 text-base text-[#1C1C13]
+                  ${active ? 'border-2 border-black bg-card font-medium' : 'border border-black bg-[#F5F5F5] font-normal'}`}
+              >
+                {isDiula ? (
+                  <img src={asset('/icons/diula-logo-cropped.png')} alt="" aria-hidden="true" className="h-5 w-auto max-w-[60px] object-contain" />
+                ) : (
+                  s.label
+                )}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* 結果清單：2 欄，卡片 160×160 縮圖＋文字＋chevron */}
+        <div className="mt-8 grid grid-cols-2 gap-6">
+          {list.length === 0 && (
+            <div className="col-span-2 box-border w-full rounded-[10px] border border-black bg-input px-6 py-10 text-center text-base font-medium leading-normal opacity-70">
+              {source === 'diula' ? (
+                <>
+                  目前站內尚無符合標籤的拾獲物，
+                  <br />
+                  DiuLa! 會持續為您比對。
+                  <br />
+                  您也可以點擊下方「都沒有我的物品」
+                  <br />
+                  開啟自動推播或發佈協尋文。
+                </>
+              ) : (
+                '此來源沒有相符的結果'
+              )}
+            </div>
+          )}
+
+          {list.map((r) => {
+            const it = r.item || {}
+            const lines = [
+              itemTitle(it),
+              [[it.city, it.district].filter(Boolean).join(''), it.location_detail].filter(Boolean).join(' '),
+              it.holding_place || it.station,
+              it.dropLocation && `送往：${[it.dropLocation, it.dropLocation_detail].filter(Boolean).join(' ')}`,
+              fmtDate(it.found_date),
+            ].filter(Boolean)
+            return (
+              <button
+                key={it.external_id || r.id}
+                type="button"
+                onClick={() => navigate(`/search/results/${it.external_id || r.id}`, { state: { item: it } })}
+                className="box-border flex items-center gap-6 rounded-[10px] border border-black bg-[#F5F5F5] p-[30px] text-left text-brown transition hover:brightness-[.98]"
+              >
+                <ResultThumb src={it.image_ref} size={160} />
+                <div className="flex min-w-0 flex-1 flex-col gap-2">
+                  {lines.map((l, i) => (
+                    <div key={i} className={i === 0 ? 'truncate text-xl text-[#2F1702]' : 'truncate text-sm font-normal text-[#50453D]'}>
+                      {l}
+                    </div>
+                  ))}
+                </div>
+                <ChevronLeftIcon className="h-5 w-5 shrink-0 -scale-x-100" />
+              </button>
+            )
+          })}
+        </div>
+
+        {source === 'metro' && (
+          <button
+            type="button"
+            onClick={() => navigate('/attribution/metro')}
+            className="mt-6 text-sm font-medium text-brown underline"
+          >
+            北捷遺失物資料來源
+          </button>
+        )}
+      </div>
+
+      {/* 都沒有我的物品：桌機改成右下角固定圓形按鈕，常駐顯示（不用手機版那套捲到第 7 筆才浮現的邏輯，
+          桌機畫面夠大，一開始就看得到結果，不需要漸進揭露） */}
+      <button
+        type="button"
+        onClick={() => setSosOpen(true)}
+        className="fixed bottom-10 right-10 z-[90] flex h-[120px] w-[120px] flex-col items-center justify-center rounded-full border border-black bg-[#D2E1F5] text-center text-base font-medium leading-tight text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition hover:brightness-[.98]"
+      >
+        都沒有
+        <br />
+        我的物品
+      </button>
+
+      <DesktopFooter />
+    </div>
 
       {/* 「都沒有我的物品」選項彈窗（照 Figma：305×380、陰影、X 35×35 在 (12,14)、
           標題 24/700 離頂端 49、按鈕 254×70 間距 20、第一顆離頂端 105、底部留 25） */}
@@ -271,6 +397,6 @@ export default function ResultsPage() {
           <DialogButton left={170} top={146} width={90} tone="blue" onClick={() => setHomeConfirm(false)}>否</DialogButton>
         </WireDialog>
       )}
-    </div>
+    </>
   )
 }
