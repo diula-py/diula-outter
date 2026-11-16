@@ -1,15 +1,105 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import SectionTitle from './SectionTitle'
 import PillButton from './PillButton'
 import AddFriendBanner from './AddFriendBanner'
 import DesktopTopNav from './DesktopTopNav'
 import DesktopFooter from './DesktopFooter'
+import { ChevronLeftIcon } from './icons'
 import { WireDialog, DialogTitle, DialogButton } from './DialogKit'
 import { useOnline } from '../lib/useOnline'
 import { asset } from '../lib/asset'
 import { FIND_ITEMS, REGISTER_ITEMS } from '../lib/homeMenuItems'
+import { FIND_HERO, FOUND_HERO } from '../lib/homeHeroes'
 import { openTour } from '../lib/tours'
+
+/** 插圖卡片本體（350×190、1px 咖啡框、圓角 10）：手機版、桌機輪播都用這個，視覺要一模一樣。 */
+function HeroCard({ hero }) {
+  return (
+    <div
+      className="relative h-[190px] w-full max-w-[350px] shrink-0 overflow-hidden rounded-[10px] border border-brown"
+      style={{ background: hero.bg }}
+    >
+      <img
+        src={hero.image.src}
+        alt=""
+        aria-hidden="true"
+        className="absolute top-1/2 aspect-square -translate-y-1/2 object-contain"
+        style={{ width: `min(${hero.image.size}px, calc(100% - ${hero.image.textRight + hero.image.right}px))`, right: hero.image.right }}
+      />
+      <div className="relative h-full text-brown">{hero.content}</div>
+    </div>
+  )
+}
+
+/**
+ * 桌機版 Hero 輪播（2026-11 定案：原本的大標題＋文案換掉，改成跟手機版一樣的
+ * 插圖卡片，左右滑動切換「尋找」「拾獲」兩張）。用原生 scroll-snap 做，觸控板／
+ * 觸控螢幕可以直接滑，滑鼠使用者則點左右箭頭或下面的圓點。
+ */
+function HeroCarousel({ heroes }) {
+  const scrollerRef = useRef(null)
+  const [active, setActive] = useState(0)
+
+  function goTo(i) {
+    const el = scrollerRef.current
+    if (!el) return
+    el.scrollTo({ left: i * el.clientWidth, behavior: 'smooth' })
+  }
+
+  function handleScroll() {
+    const el = scrollerRef.current
+    if (!el || !el.clientWidth) return
+    setActive(Math.round(el.scrollLeft / el.clientWidth))
+  }
+
+  return (
+    <div className="relative mx-auto w-full max-w-[480px]">
+      <div
+        ref={scrollerRef}
+        onScroll={handleScroll}
+        className="flex w-full snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {heroes.map((hero, i) => (
+          <div key={i} className="flex w-full shrink-0 snap-center justify-center">
+            <HeroCard hero={hero} />
+          </div>
+        ))}
+      </div>
+
+      <button
+        type="button"
+        aria-label="上一張"
+        onClick={() => goTo(Math.max(0, active - 1))}
+        disabled={active === 0}
+        className="absolute left-0 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-brown bg-white text-brown shadow-sm transition disabled:opacity-0"
+      >
+        <ChevronLeftIcon className="h-5 w-5" />
+      </button>
+      <button
+        type="button"
+        aria-label="下一張"
+        onClick={() => goTo(Math.min(heroes.length - 1, active + 1))}
+        disabled={active === heroes.length - 1}
+        className="absolute right-0 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-brown bg-white text-brown shadow-sm transition disabled:opacity-0"
+      >
+        <ChevronLeftIcon className="h-5 w-5 -scale-x-100" />
+      </button>
+
+      <div className="mt-4 flex justify-center gap-2">
+        {heroes.map((_, i) => (
+          <button
+            key={i}
+            type="button"
+            aria-label={`第 ${i + 1} 張`}
+            onClick={() => goTo(i)}
+            className={`h-2 w-2 rounded-full transition ${active === i ? 'bg-brown' : 'bg-brown/25'}`}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
 
 /**
  * 底部「拾獲／尋找」兩個分頁共用的骨架。
@@ -102,20 +192,10 @@ export default function HomeTabPage({ title, items, hero, tour }) {
       <div className="hidden lg:flex lg:w-full lg:flex-col lg:items-center">
         <DesktopTopNav />
 
-        {/* 照 Figma「首頁」CSS：頁面參考寬度 1280，Hero／雙卡片都是 1280 扣掉左右 48px
-            margin＝1184 寬，所以用同一個 max-w-[1280px] px-12 外層容器對齊兩段。 */}
-        <div className="mx-auto mt-10 w-full max-w-[1280px] px-12 box-border">
-          <section className="flex items-center gap-16 rounded-[40px] border border-brown bg-[#D2E1F5] p-16 box-border">
-            <div className="flex max-w-[1054px] flex-col items-start gap-6">
-              <h1 className="m-0 text-[32px] font-bold leading-[38px] tracking-[-0.64px] text-brown">丟東西了嗎？交給 DiuLa! 幫你找回來。</h1>
-              <p className="m-0 max-w-[512px] text-lg leading-[29px] text-[#566475]">歡迎使用 DiuLa!，一站式遺失物協尋平台。不管是東西不見了，還是撿到別人的失物，我們都讓物歸原主這件事變得簡單又安心。</p>
-              {/* 兩顆小膠囊：點了直接捲到下面對應的卡片 */}
-              <div className="flex items-center gap-6">
-                <a href="#desktop-find-card" className="rounded-full border border-brown bg-[#BA1A1A] px-6 py-[3.5px] text-sm font-semibold text-white no-underline">尋找遺失物</a>
-                <a href="#desktop-register-card" className="rounded-full border border-brown bg-[#F9F9F9] px-6 py-[3.5px] text-sm font-semibold text-[#1A1C1C] no-underline">登錄拾獲物</a>
-              </div>
-            </div>
-          </section>
+        {/* 2026-11 定案：桌機版 Hero 不再用大標題＋文案，改成跟手機版一樣的插圖卡片，
+            可左右滑動切換「尋找」「拾獲」兩張（見 HeroCarousel）。 */}
+        <div className="mt-10 w-full">
+          <HeroCarousel heroes={[FIND_HERO, FOUND_HERO]} />
         </div>
 
         {/* 兩張卡片 560 寬＋64 間距＝1184，跟上面 Hero 同寬，所以在參考寬度 1280 時剛好並排、
