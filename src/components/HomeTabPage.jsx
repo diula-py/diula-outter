@@ -227,7 +227,7 @@ export default function HomeTabPage({ title, items, hero, tour }) {
 
             <div id="desktop-register-card" className="flex w-[560px] max-w-full scroll-mt-24 flex-col items-start gap-10 rounded-[48px] border border-black bg-paper p-16 box-border">
               <div className="flex items-center gap-3">
-                <img src={asset('/icons/address-card.png')} alt="" className="h-8 w-8 object-contain" />
+                <img src={asset('/icons/hand.png')} alt="" className="h-8 w-8 object-contain" />
                 <h2 className="m-0 text-2xl font-normal text-brown">登錄拾獲物</h2>
               </div>
               <div className="flex w-full flex-col gap-6">
