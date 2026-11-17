@@ -258,20 +258,19 @@ export default function RecentFoundPage() {
         </div>
       )}
 
-      {/* 這批(頂層+次層篩選)完全沒有東西時，才出現的引導 CTA。mt-auto：外層是
-          min-h 撐滿畫面高度的 flex 直欄，內容短(像這個空清單)時會被推到畫面最下方，
+      {/* 引導 CTA：不管這批篩選有沒有資料都顯示（使用者自己的遺失物不一定會出現在
+          「全站近 2 日」這批裡，所以不能只在空清單時才給入口）。mt-auto：外層是
+          min-h 撐滿畫面高度的 flex 直欄，內容短時會被推到畫面最下方，
           內容長(清單本身夠長)時就跟著自然排版，不會硬要墊出額外空白。 */}
-      {empty && (
-        <button
-          type="button"
-          onClick={() => setSosOpen(true)}
-          data-tip="none-recent"
-          className="mt-auto flex h-[60px] w-[calc(100%-44px)] max-w-[350px] shrink-0 items-center justify-center rounded-[50px] border border-black bg-blue text-base font-medium text-brown
-                     transition hover:brightness-95 active:scale-[.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-        >
-          都沒有我的遺失物！
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={() => setSosOpen(true)}
+        data-tip="none-recent"
+        className="mt-auto flex h-[60px] w-[calc(100%-44px)] max-w-[350px] shrink-0 items-center justify-center rounded-[50px] border border-black bg-blue text-base font-medium text-brown
+                   transition hover:brightness-95 active:scale-[.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+      >
+        都沒有我的遺失物！
+      </button>
     </div>
 
     {/* ======== 桌機（lg:）：這頁沒有拿到 Figma 稿，排版照已經定案的桌機清單頁骨架做
@@ -394,19 +393,17 @@ export default function RecentFoundPage() {
           </div>
         )}
 
-        {/* 這批完全沒有東西時才出現的引導 CTA */}
-        {empty && (
-          <div className="mt-10 flex justify-center">
-            <button
-              type="button"
-              onClick={() => setSosOpen(true)}
-              data-tip="none-recent"
-              className="flex h-[60px] w-full max-w-[350px] items-center justify-center rounded-[50px] border border-black bg-blue text-base font-medium text-brown transition hover:brightness-95"
-            >
-              都沒有我的遺失物！
-            </button>
-          </div>
-        )}
+        {/* 引導 CTA：不管這批有沒有資料都顯示，理由同手機版上面的註解 */}
+        <div className="mt-10 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setSosOpen(true)}
+            data-tip="none-recent"
+            className="flex h-[60px] w-full max-w-[350px] items-center justify-center rounded-[50px] border border-black bg-blue text-base font-medium text-brown transition hover:brightness-95"
+          >
+            都沒有我的遺失物！
+          </button>
+        </div>
       </div>
       </div>
 
@@ -414,9 +411,10 @@ export default function RecentFoundPage() {
     </div>
 
     {/* 小提示：第一次看到「都沒有我的遺失物！」按鈕（近 2 日快速看一次；換分類不再出現）。
+        按鈕現在不管有沒有資料都會顯示，所以提示也不再綁 empty。
         anchor="none-recent" 會自動挑手機版／桌機版兩個 data-tip="none-recent" 裡
         目前看得到的那個，不用放在某一個 lg: 區塊裡面。 */}
-    <OnceTip name="tip_not_mine_recent" anchor="none-recent" show={empty && !sosOpen}>{TIP_NOT_MINE}</OnceTip>
+    <OnceTip name="tip_not_mine_recent" anchor="none-recent" show={!loading && !sosOpen}>{TIP_NOT_MINE}</OnceTip>
 
     {/* 「都沒有我的遺失物」選項彈窗，樣式照 ResultsPage 的同款彈窗（inner notfound-popup）。
         這頁沒有比對條件(query/resolved)可以帶 —— 不是從填協尋單進來的，所以：
