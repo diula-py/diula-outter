@@ -13,7 +13,7 @@ import OnboardingGate from '../components/OnboardingGate'
 export default function AppLayout() {
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col bg-paper land:max-w-none lg:max-w-none lg:min-h-screen">
-      <main className="flex-1">
+      <main className="flex flex-1 flex-col">
         <Outlet />
       </main>
 

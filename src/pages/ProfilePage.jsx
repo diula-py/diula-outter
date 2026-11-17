@@ -40,9 +40,9 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="flex flex-col items-center lg:block">
+    <div className="flex flex-1 flex-col items-center lg:block">
       {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
-      <div className="flex w-full flex-col items-center
+      <div className="flex flex-1 w-full flex-col items-center
                       land:grid land:grid-cols-[repeat(2,minmax(0,340px))] land:content-start land:items-start land:justify-center land:gap-x-7
                       lg:hidden">
         {/* 藍色 header 100px + logo 106×35，跟尋找／拾獲分頁同一套（設計稿 Group 17），切換分頁不跳動 */}
@@ -93,7 +93,10 @@ export default function ProfilePage() {
         >
           登出
         </button>
-        <div className="mt-[30px] flex text-[10px] font-normal leading-[10px] text-brown [&>*]:w-20 [&>*]:text-center land:col-start-1 land:row-start-4 land:mt-1 land:justify-self-center">
+        {/* 底部連結：mt-auto 讓手機直向(上面那層已改 min-h-full 撐滿畫面)在內容短時
+            貼到 TabBar 正上方，不會跟登出按鈕之間留一大截空白；橫放(land:)維持原本
+            排版用 grid 第 4 列定位，不受影響。 */}
+        <div className="mt-auto flex pt-[30px] text-[10px] font-normal leading-[10px] text-brown [&>*]:w-20 [&>*]:text-center land:col-start-1 land:row-start-4 land:mt-1 land:pt-0 land:justify-self-center">
           <a href="https://about.diula.co" target="_blank" rel="noopener noreferrer" className="underline">
             關於DiuLa!
           </a>
