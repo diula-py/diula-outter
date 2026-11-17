@@ -9,6 +9,7 @@ export default function DesktopFooter() {
       <div className="flex w-full max-w-[1280px] flex-wrap items-center justify-between gap-6 px-8 py-12">
         <img src={asset('/icons/diula-logo-cropped.png')} alt="DiuLa!" className="h-5 opacity-80" />
         <nav className="flex flex-wrap gap-6">
+          <Link to="/faq" className="text-sm font-medium text-brown opacity-80">FAQ</Link>
           <Link to="/privacy" className="text-sm font-medium text-brown opacity-80">隱私權政策</Link>
           <Link to="/terms" className="text-sm font-medium text-brown opacity-80">服務條款</Link>
           <a href="https://about.diula.co" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-brown opacity-80">關於我們</a>

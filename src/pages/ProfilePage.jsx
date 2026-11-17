@@ -140,13 +140,8 @@ export default function ProfilePage() {
         >
           登出
         </button>
-        <div className="mt-6 flex gap-6 text-sm font-normal text-brown [&>*]:underline">
-          <a href="https://about.diula.co" target="_blank" rel="noopener noreferrer">關於DiuLa!</a>
-          <button type="button" onClick={() => navigate('/faq')}>FAQ</button>
-          <button type="button" onClick={() => navigate('/terms')}>服務條款</button>
-          <button type="button" onClick={() => navigate('/privacy')}>隱私權政策</button>
-        </div>
-
+        {/* 底下這排連結拿掉：DesktopFooter 本來就有隱私權政策／服務條款／關於我們，
+            兩排疊在一起是重複資訊，FAQ 改併進 DesktopFooter 裡（見該檔案）。 */}
         <DesktopFooter />
       </div>
 
