@@ -12,7 +12,9 @@ export default function DesktopFooter() {
           <Link to="/faq" className="text-sm font-medium text-brown opacity-80">FAQ</Link>
           <Link to="/privacy" className="text-sm font-medium text-brown opacity-80">隱私權政策</Link>
           <Link to="/terms" className="text-sm font-medium text-brown opacity-80">服務條款</Link>
-          <a href="https://about.diula.co" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-brown opacity-80">關於我們</a>
+          <a href="https://about.diula.co" target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-brown opacity-80">關於DiuLa!</a>
+          {/* 聯絡我們：跟條款／隱私權政策裡「聯絡方式」條文同一個信箱，不是另開一個管道 */}
+          <a href="mailto:diula.112ics@gmail.com" className="text-sm font-medium text-brown opacity-80">聯絡我們</a>
         </nav>
         <span className="text-sm font-medium text-brown">© 2026 DiuLa! 一站式遺失物AI協尋平台. All rights reserved.</span>
       </div>
