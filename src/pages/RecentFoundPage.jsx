@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { DetailHeader } from '../components/DetailKit'
 import { ChevronLeftIcon, DiulaPinIcon, XmarkIcon } from '../components/icons'
 import { Overlay } from '../components/DialogKit'
+import DesktopTopNav from '../components/DesktopTopNav'
+import DesktopFooter from '../components/DesktopFooter'
 import OnceTip from '../components/OnceTip'
 import { TIP_NOT_MINE } from '../lib/tours'
 import { asset } from '../lib/asset'
@@ -15,11 +17,11 @@ const fmtDate = (s) => (s ? String(s).slice(0, 10).replaceAll('-', '/') : '')
 
 // 跟 ResultsPage 的 ResultThumb／ProfilePage 原本的 MatchThumb 同邏輯：
 // image_ref 不是 https 網址（本機路徑、空字串、北捷高鐵一律沒有）就用預設圖。
-function ItemThumb({ src }) {
+function ItemThumb({ src, size = 100 }) {
   const [broken, setBroken] = useState(false)
   const ok = src && /^https?:\/\//.test(src) && !broken
   return (
-    <div className="flex h-[100px] w-[100px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-white">
+    <div className="flex shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-white" style={{ height: size, width: size }}>
       {ok
         ? <img src={src} alt="" className="h-full w-full object-cover" onError={() => setBroken(true)} />
         : <img src={asset('/icons/logo2.png')} alt="" className="h-full w-full object-contain" />}
@@ -140,9 +142,11 @@ export default function RecentFoundPage() {
   const note = 'p-5 text-center text-base leading-normal opacity-70'
 
   return (
-    // 沒有 AppLayout（無 TabBar）——跟 ResultsPage／MyItemsPage 同樣的理由：
-    // 這是從尋找頁按鈕點進來的子頁，不是分頁本身，用返回鍵回去就好。
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-10 land:max-w-none">
+    <>
+    {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
+    {/* 沒有 AppLayout（無 TabBar）——跟 ResultsPage／MyItemsPage 同樣的理由：
+        這是從尋找頁按鈕點進來的子頁，不是分頁本身，用返回鍵回去就好。 */}
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-10 land:max-w-none lg:hidden">
       <DetailHeader title="近 2 日遺失物快速看" onBack={() => navigate(-1)} height={80} titleTop={40} backLeft={22} backTop={35} backSize={30} />
 
       {/* 頂層分類頁籤：橫向可滑動（跟 src/data/tagTaxonomy.js 的 14 大類一一對應） */}
@@ -268,46 +272,188 @@ export default function RecentFoundPage() {
           都沒有我的遺失物！
         </button>
       )}
+    </div>
 
-      {/* 小提示：第一次看到「都沒有我的遺失物！」按鈕（近 2 日快速看一次；換分類不再出現） */}
-      <OnceTip name="tip_not_mine_recent" anchor="none-recent" show={empty && !sosOpen}>{TIP_NOT_MINE}</OnceTip>
+    {/* ======== 桌機（lg:）：這頁沒有拿到 Figma 稿，排版照已經定案的桌機清單頁骨架做
+        （DesktopTopNav＋1280 置中欄＋DesktopFooter，卡片樣式同 ResultsPage 桌機版）：
+        頂層/次層分類頁籤橫向排、結果 2 欄卡片、分頁同手機版邏輯。狀態/資料
+        （topCats/subCats/items/...）整頁共用，這裡只是另一套排版。 ======== */}
+    <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
+      <DesktopTopNav />
 
-      {/* 「都沒有我的遺失物」選項彈窗，樣式照 ResultsPage 的同款彈窗（inner notfound-popup）。
-          這頁沒有比對條件(query/resolved)可以帶 —— 不是從填協尋單進來的，所以：
-          「開啟自動尋找並推播」導去 /search 從頭填（SubscribePage 沒有 category_id/date 會擋下），
-          「幫你發Threads的協尋文」可以直接進 /search/sos（那頁欄位都能手動填，不強制帶入） */}
-      {sosOpen && (
-        <Overlay onClose={() => setSosOpen(false)}>
-          <div role="dialog" aria-modal="true" aria-label="都沒有我的遺失物" className="relative box-border flex h-[380px] w-[calc(100vw-20px)] max-w-[305px] shrink-0 flex-col items-center rounded-[10px] bg-card pt-[49px] shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
-            <button
-              type="button"
-              onClick={() => setSosOpen(false)}
-              aria-label="關閉"
-              className="absolute left-3 top-[14px] h-[35px] w-[35px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-            >
-              <XmarkIcon className="h-[35px] w-[35px]" />
-            </button>
-            <div className="text-center text-2xl font-bold leading-6">都沒有我的遺失物！</div>
-            <div className="mt-8 flex w-[254px] max-w-[calc(100%-40px)] flex-col gap-5">
-              {[
-                { label: '開啟自動尋找並推播', tone: 'bg-blue', go: () => navigate('/search', { state: { autoSubscribe: true } }) },
-                { label: '幫你發Threads的協尋文', tone: 'bg-white', go: () => navigate('/search/sos') },
-                { label: '返回首頁', tone: 'bg-white', go: () => navigate('/', { replace: true }) },
-              ].map((b) => (
-                <button
-                  key={b.label}
-                  type="button"
-                  onClick={b.go}
-                  className={`box-border flex h-[70px] items-center justify-center rounded-[50px] border border-black text-base font-medium leading-4 text-brown ${b.tone}
-                              focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown`}
-                >
-                  {b.label}
-                </button>
+      <div className="flex w-full flex-1 flex-col items-center">
+      <div className="mx-auto w-full max-w-[1280px] px-10 pb-10 pt-10 box-border">
+        <div className="flex items-center gap-4">
+          <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
+            <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
+          </button>
+          <h1 className="m-0 text-2xl font-normal text-[#2F1702]">近 2 日遺失物快速看</h1>
+        </div>
+
+        {/* 頂層分類頁籤 */}
+        {!!topCats.length && (
+          <div className="mt-8 flex flex-wrap gap-3">
+            {topCats.map((c) => (
+              <TabPill key={c.id} label={c.name} active={c.id === topId} onClick={() => selectTop(c.id)} />
+            ))}
+          </div>
+        )}
+
+        {/* 次層分類：選中頂層底下的細分類 */}
+        {!!subCats.length && (
+          <div className="mt-4 w-full rounded-[20px] bg-card px-4 py-3">
+            <div className="flex flex-wrap gap-3">
+              {subCats.map((c) => (
+                <TabPill key={c.id} label={c.name} active={c.id === subId} onClick={() => selectSub(c.id)} small />
               ))}
             </div>
           </div>
-        </Overlay>
-      )}
+        )}
+
+        {/* 日期區間 + 篩選條件下的總筆數 */}
+        {range && (
+          <div className="mt-6 flex items-center justify-between text-sm text-brown">
+            <span>{fmtDate(range.start)} ~{fmtDate(range.end)}</span>
+            <span className="font-medium">共 {count} 筆</span>
+          </div>
+        )}
+
+        {/* 結果清單：2 欄，卡片 160×160 縮圖＋文字＋chevron，同 ResultsPage 桌機版卡片樣式 */}
+        <div className="mt-6 grid grid-cols-2 gap-6">
+          {loading && <p className="col-span-2 py-10 text-center text-base opacity-70">載入中...</p>}
+          {!loading && error && <p className="col-span-2 py-10 text-center text-base opacity-70">{error}</p>}
+
+          {empty && (
+            <div className="col-span-2 flex flex-col items-center gap-4 py-16">
+              <DiulaPinIcon className="h-[72px] w-[33px] opacity-80" />
+              <div className="flex flex-col items-center gap-1 text-center">
+                <p className="text-lg font-bold text-brown">目前無遺失物</p>
+                <p className="text-sm font-medium text-brown">換個分類看看，或到「跨平台尋找遺失物」搜尋更多</p>
+              </div>
+            </div>
+          )}
+
+          {items.map((x) => {
+            const it = x.item || {}
+            return (
+              <button
+                key={x.id}
+                type="button"
+                onClick={() => navigate(`/search/results/${x.id}`, { state: { item: it } })}
+                className="box-border flex items-center gap-6 rounded-[10px] border border-black bg-[#F5F5F5] p-[30px] text-left text-brown transition hover:brightness-[.98]"
+              >
+                <ItemThumb src={it.image_ref} size={160} />
+                <div className="flex min-w-0 flex-1 flex-col gap-2">
+                  <div className="truncate text-xl text-[#2F1702]">{itemTitle(it) || x.category_name || '拾獲物'}</div>
+                  <div className="truncate text-sm font-normal text-[#50453D]">
+                    {[SOURCE_LABEL[it.source], fmtDate(it.found_date)].filter(Boolean).join(' ')}
+                  </div>
+                </div>
+                <ChevronLeftIcon className="h-5 w-5 shrink-0 -scale-x-100" />
+              </button>
+            )
+          })}
+        </div>
+
+        {/* 頁碼列 */}
+        {totalPages > 1 && (
+          <div className="mt-8 flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              aria-label="上一頁"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border border-black bg-input disabled:opacity-30"
+            >
+              <ChevronLeftIcon className="h-4 w-4 text-brown" />
+            </button>
+
+            <div className="flex min-w-0 flex-1 items-center justify-center gap-3 overflow-x-auto">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setPage(p)}
+                  aria-current={p === page ? 'page' : undefined}
+                  className={`shrink-0 px-0.5 text-base ${p === page ? 'font-bold text-brown underline underline-offset-4' : 'font-normal text-brown/50'}`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              aria-label="下一頁"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border border-black bg-input disabled:opacity-30"
+            >
+              <ChevronLeftIcon className="h-4 w-4 -scale-x-100 text-brown" />
+            </button>
+          </div>
+        )}
+
+        {/* 這批完全沒有東西時才出現的引導 CTA */}
+        {empty && (
+          <div className="mt-10 flex justify-center">
+            <button
+              type="button"
+              onClick={() => setSosOpen(true)}
+              data-tip="none-recent"
+              className="flex h-[60px] w-full max-w-[350px] items-center justify-center rounded-[50px] border border-black bg-blue text-base font-medium text-brown transition hover:brightness-95"
+            >
+              都沒有我的遺失物！
+            </button>
+          </div>
+        )}
+      </div>
+      </div>
+
+      <DesktopFooter />
     </div>
+
+    {/* 小提示：第一次看到「都沒有我的遺失物！」按鈕（近 2 日快速看一次；換分類不再出現）。
+        anchor="none-recent" 會自動挑手機版／桌機版兩個 data-tip="none-recent" 裡
+        目前看得到的那個，不用放在某一個 lg: 區塊裡面。 */}
+    <OnceTip name="tip_not_mine_recent" anchor="none-recent" show={empty && !sosOpen}>{TIP_NOT_MINE}</OnceTip>
+
+    {/* 「都沒有我的遺失物」選項彈窗，樣式照 ResultsPage 的同款彈窗（inner notfound-popup）。
+        這頁沒有比對條件(query/resolved)可以帶 —— 不是從填協尋單進來的，所以：
+        「開啟自動尋找並推播」導去 /search 從頭填（SubscribePage 沒有 category_id/date 會擋下），
+        「幫你發Threads的協尋文」可以直接進 /search/sos（那頁欄位都能手動填，不強制帶入） */}
+    {sosOpen && (
+      <Overlay onClose={() => setSosOpen(false)}>
+        <div role="dialog" aria-modal="true" aria-label="都沒有我的遺失物" className="relative box-border flex h-[380px] w-[calc(100vw-20px)] max-w-[305px] shrink-0 flex-col items-center rounded-[10px] bg-card pt-[49px] shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
+          <button
+            type="button"
+            onClick={() => setSosOpen(false)}
+            aria-label="關閉"
+            className="absolute left-3 top-[14px] h-[35px] w-[35px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+          >
+            <XmarkIcon className="h-[35px] w-[35px]" />
+          </button>
+          <div className="text-center text-2xl font-bold leading-6">都沒有我的遺失物！</div>
+          <div className="mt-8 flex w-[254px] max-w-[calc(100%-40px)] flex-col gap-5">
+            {[
+              { label: '開啟自動尋找並推播', tone: 'bg-blue', go: () => navigate('/search', { state: { autoSubscribe: true } }) },
+              { label: '幫你發Threads的協尋文', tone: 'bg-white', go: () => navigate('/search/sos') },
+              { label: '返回首頁', tone: 'bg-white', go: () => navigate('/', { replace: true }) },
+            ].map((b) => (
+              <button
+                key={b.label}
+                type="button"
+                onClick={b.go}
+                className={`box-border flex h-[70px] items-center justify-center rounded-[50px] border border-black text-base font-medium leading-4 text-brown ${b.tone}
+                            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown`}
+              >
+                {b.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </Overlay>
+    )}
+    </>
   )
 }
