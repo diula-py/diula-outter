@@ -172,7 +172,7 @@ export default function ResultDetailPage() {
               {fmtDate(item.found_date) || '--'}
             </div>
 
-            <div className="min-h-[58px] w-full rounded-lg border border-black bg-white p-4 text-base text-brown/70">
+            <div className="min-h-[58px] w-full rounded-lg border border-black bg-white p-4 text-base text-brown">
               {dropOff ? `送往：${dropOff}` : (item.holding_place || '--')}
             </div>
 

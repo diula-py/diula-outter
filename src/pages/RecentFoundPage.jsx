@@ -378,7 +378,7 @@ export default function RecentFoundPage() {
                 <ItemThumb src={it.image_ref} size={160} />
                 <div className="flex min-w-0 flex-1 flex-col gap-2">
                   <div className="truncate text-xl text-brown">{itemTitle(it) || x.category_name || '拾獲物'}</div>
-                  <div className="truncate text-sm font-normal text-brown/70">
+                  <div className="truncate text-sm font-normal text-brown/80">
                     {[SOURCE_LABEL[it.source], fmtDate(it.found_date)].filter(Boolean).join(' ')}
                   </div>
                 </div>
@@ -458,7 +458,7 @@ export default function RecentFoundPage() {
     {/* 「都沒有我的遺失物」選項彈窗，樣式照 ResultsPage 的同款彈窗（inner notfound-popup）。
         這頁沒有比對條件(query/resolved)可以帶 —— 不是從填協尋單進來的，所以：
         「開啟自動尋找並推播」導去 /search 從頭填（SubscribePage 沒有 category_id/date 會擋下），
-        「幫你發Threads的協尋文」可以直接進 /search/sos（那頁欄位都能手動填，不強制帶入） */}
+        「幫我在Threads發協尋文」可以直接進 /search/sos（那頁欄位都能手動填，不強制帶入） */}
     {sosOpen && (
       <Overlay onClose={() => setSosOpen(false)}>
         <div role="dialog" aria-modal="true" aria-label="都沒有我的遺失物" className="relative box-border flex h-[380px] w-[calc(100vw-20px)] max-w-[305px] shrink-0 flex-col items-center rounded-[10px] bg-card pt-[49px] shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
@@ -474,7 +474,7 @@ export default function RecentFoundPage() {
           <div className="mt-8 flex w-[254px] max-w-[calc(100%-40px)] flex-col gap-5">
             {[
               { label: '開啟自動尋找並推播', tone: 'bg-blue', go: () => navigate('/search', { state: { autoSubscribe: true } }) },
-              { label: '幫你發Threads的協尋文', tone: 'bg-white', go: () => navigate('/search/sos') },
+              { label: '幫我在Threads發協尋文', tone: 'bg-white', go: () => navigate('/search/sos') },
               { label: '返回首頁', tone: 'bg-white', go: () => navigate('/', { replace: true }) },
             ].map((b) => (
               <button
