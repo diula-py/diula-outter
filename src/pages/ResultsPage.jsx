@@ -247,7 +247,7 @@ export default function ResultsPage() {
       <div className="flex w-full flex-1 flex-col items-center">
       <div className="mx-auto w-full max-w-[1280px] px-10 pb-10 pt-10 box-border">
         <div className="flex items-center justify-between">
-          <h1 className="m-0 text-2xl font-normal text-[#2F1702]">比對結果</h1>
+          <h1 className="m-0 text-2xl font-normal text-brown">比對結果</h1>
           <button
             type="button"
             onClick={() => setHomeConfirm(true)}
@@ -270,7 +270,7 @@ export default function ResultsPage() {
                 onClick={() => selectSource(s.key)}
                 aria-pressed={active}
                 aria-label={s.label}
-                className={`box-border flex h-14 min-w-[114px] items-center justify-center rounded-full px-10 text-base text-[#1C1C13]
+                className={`box-border flex h-14 min-w-[114px] items-center justify-center rounded-full px-10 text-base text-brown
                   ${active ? 'border-2 border-black bg-card font-medium' : 'border border-black bg-[#F5F5F5] font-normal'}`}
               >
                 {isDiula ? (
@@ -322,7 +322,7 @@ export default function ResultsPage() {
                 <ResultThumb src={it.image_ref} size={160} />
                 <div className="flex min-w-0 flex-1 flex-col gap-2">
                   {lines.map((l, i) => (
-                    <div key={i} className={i === 0 ? 'truncate text-xl text-[#2F1702]' : 'truncate text-sm font-normal text-[#50453D]'}>
+                    <div key={i} className={i === 0 ? 'truncate text-xl text-brown' : 'truncate text-sm font-normal text-brown/70'}>
                       {l}
                     </div>
                   ))}

@@ -367,7 +367,7 @@ export default function SosPostPage() {
           >
             <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
           </button>
-          <h1 className="m-0 text-2xl font-normal text-[#2F1702]">幫你發Threads的協尋文</h1>
+          <h1 className="m-0 text-2xl font-normal text-brown">幫你發Threads的協尋文</h1>
         </div>
 
         {/* 步驟一：填表單 */}
@@ -415,11 +415,11 @@ export default function SosPostPage() {
               onChange={(e) => setName(e.target.value)}
               placeholder="物品名稱"
               aria-label="物品名稱"
-              className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-[#1C1C13] outline-none"
+              className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-brown outline-none"
             />
 
             {hasQuery ? (
-              <div className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-[#1C1C13] opacity-70">
+              <div className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-brown opacity-70">
                 {(date || '').replaceAll('-', '/') || '--'}
               </div>
             ) : (
@@ -429,13 +429,13 @@ export default function SosPostPage() {
                   value={manualDate}
                   onChange={(e) => setManualDate(e.target.value)}
                   aria-label="遺失日期"
-                  className="h-6 w-full bg-transparent text-base text-[#1C1C13] outline-none"
+                  className="h-6 w-full bg-transparent text-base text-brown outline-none"
                 />
               </div>
             )}
 
             {hasQuery ? (
-              <div className="flex h-[58px] w-full items-center truncate rounded-full border border-black bg-white px-6 text-base text-[#1C1C13] opacity-70">
+              <div className="flex h-[58px] w-full items-center truncate rounded-full border border-black bg-white px-6 text-base text-brown opacity-70">
                 {place || '--'}
               </div>
             ) : (
@@ -445,7 +445,7 @@ export default function SosPostPage() {
                     value={manualCity}
                     onChange={(e) => { setManualCity(e.target.value); setManualDistrict('') }}
                     aria-label="遺失的縣市"
-                    className="h-6 w-full appearance-none bg-transparent text-base text-[#1C1C13] outline-none"
+                    className="h-6 w-full appearance-none bg-transparent text-base text-brown outline-none"
                   >
                     <option value="">遺失的縣市</option>
                     {CITY_ORDER.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -458,7 +458,7 @@ export default function SosPostPage() {
                     onChange={(e) => setManualDistrict(e.target.value)}
                     disabled={!manualCity}
                     aria-label="遺失的地區"
-                    className="h-6 w-full appearance-none bg-transparent text-base text-[#1C1C13] outline-none disabled:opacity-50"
+                    className="h-6 w-full appearance-none bg-transparent text-base text-brown outline-none disabled:opacity-50"
                   >
                     <option value="">遺失的地區</option>
                     {(TAIWAN_REGIONS[manualCity] || []).map((d) => <option key={d} value={d}>{d}</option>)}
@@ -474,7 +474,7 @@ export default function SosPostPage() {
               onChange={(e) => setDetail(e.target.value)}
               placeholder="詳細地點（選填，如：世新山洞口、景美站2號出口）"
               aria-label="詳細地點"
-              className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-[#1C1C13] outline-none placeholder:text-[#50453D]"
+              className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-brown outline-none placeholder:text-[#888]"
             />
 
             <input
@@ -483,7 +483,7 @@ export default function SosPostPage() {
               onChange={(e) => setNote(e.target.value)}
               placeholder="備註（選填，如：對我很有紀念意義，謝謝大家幫忙留意）"
               aria-label="備註"
-              className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-[#1C1C13] outline-none placeholder:text-[#50453D]"
+              className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-brown outline-none placeholder:text-[#888]"
             />
 
             {error && <p className="m-0 text-sm leading-normal text-error">{error}</p>}

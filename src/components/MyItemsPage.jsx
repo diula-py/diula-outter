@@ -158,13 +158,13 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
             <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
               <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
             </button>
-            <h1 className="m-0 text-2xl font-normal text-[#2F1702]">{title}</h1>
+            <h1 className="m-0 text-2xl font-normal text-brown">{title}</h1>
           </div>
 
           <div className="mt-8 flex gap-5">
             <label className="relative flex h-[74px] w-[150px] shrink-0 items-center justify-center gap-2 rounded-full border border-[#2F1702] bg-card">
-              <CalendarIcon className="pointer-events-none h-5 w-5 text-[#2F1702]" />
-              <span className="pointer-events-none text-base text-[#2F1702]">選擇日期</span>
+              <CalendarIcon className="pointer-events-none h-5 w-5 text-brown" />
+              <span className="pointer-events-none text-base text-brown">選擇日期</span>
               {dateFilter && <span className="pointer-events-none absolute right-5 top-5 h-2 w-2 rounded-full bg-error" />}
               <input
                 type="date"
@@ -175,13 +175,13 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
               />
             </label>
             <div className="flex h-[74px] flex-1 items-center gap-3 rounded-full border border-[#2F1702] bg-[#F5F5F5] px-6">
-              <MagnifyingGlassIcon className="h-5 w-5 shrink-0 text-[#2F1702]" />
+              <MagnifyingGlassIcon className="h-5 w-5 shrink-0 text-brown" />
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="搜尋"
-                className="h-full min-w-0 flex-1 bg-transparent p-0 text-base text-[#2F1702] outline-none placeholder:text-[#50453D]"
+                className="h-full min-w-0 flex-1 bg-transparent p-0 text-base text-brown outline-none placeholder:text-[#888]"
               />
             </div>
           </div>

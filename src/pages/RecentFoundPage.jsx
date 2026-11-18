@@ -320,7 +320,7 @@ export default function RecentFoundPage() {
           <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
             <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
           </button>
-          <h1 className="m-0 text-2xl font-normal text-[#2F1702]">近 2 日遺失物快速看</h1>
+          <h1 className="m-0 text-2xl font-normal text-brown">近 2 日遺失物快速看</h1>
         </div>
 
         {/* 頂層分類頁籤 */}
@@ -377,8 +377,8 @@ export default function RecentFoundPage() {
               >
                 <ItemThumb src={it.image_ref} size={160} />
                 <div className="flex min-w-0 flex-1 flex-col gap-2">
-                  <div className="truncate text-xl text-[#2F1702]">{itemTitle(it) || x.category_name || '拾獲物'}</div>
-                  <div className="truncate text-sm font-normal text-[#50453D]">
+                  <div className="truncate text-xl text-brown">{itemTitle(it) || x.category_name || '拾獲物'}</div>
+                  <div className="truncate text-sm font-normal text-brown/70">
                     {[SOURCE_LABEL[it.source], fmtDate(it.found_date)].filter(Boolean).join(' ')}
                   </div>
                 </div>

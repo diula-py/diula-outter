@@ -150,7 +150,7 @@ export default function RegisterConfirmPage() {
       <DesktopTopNav />
 
       <div className="mx-auto flex w-full max-w-[768px] flex-1 flex-col gap-8 px-6 pb-16 pt-10 box-border">
-        <h1 className="m-0 text-2xl font-normal text-[#2F1702]">確認標籤</h1>
+        <h1 className="m-0 text-2xl font-normal text-brown">確認標籤</h1>
 
         <div className="flex h-[300px] w-full items-center justify-center overflow-hidden rounded-lg border border-black bg-white">
           {item.image && <img src={item.image} alt="" className="h-full w-full object-contain" />}
@@ -163,7 +163,7 @@ export default function RegisterConfirmPage() {
             value={date}
             onChange={(e) => setDate(e.target.value)}
             aria-label="拾獲日期"
-            className="h-6 w-full bg-transparent px-3 text-base text-[#1C1C13] outline-none"
+            className="h-6 w-full bg-transparent px-3 text-base text-brown outline-none"
           />
         </div>
 
@@ -173,7 +173,7 @@ export default function RegisterConfirmPage() {
               value={city}
               onChange={(e) => { setCity(e.target.value); setDistrict('') }}
               aria-label="拾獲的縣市"
-              className="h-6 w-full appearance-none bg-transparent text-base text-[#1C1C13] outline-none"
+              className="h-6 w-full appearance-none bg-transparent text-base text-brown outline-none"
             >
               <option value="">選擇拾獲的縣市</option>
               {CITY_ORDER.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -186,7 +186,7 @@ export default function RegisterConfirmPage() {
               onChange={(e) => setDistrict(e.target.value)}
               disabled={!city}
               aria-label="拾獲的地區"
-              className="h-6 w-full appearance-none bg-transparent text-base text-[#1C1C13] outline-none"
+              className="h-6 w-full appearance-none bg-transparent text-base text-brown outline-none"
             >
               <option value="">選擇拾獲的地區</option>
               {(TAIWAN_REGIONS[city] || []).map((d) => <option key={d} value={d}>{d}</option>)}
@@ -201,7 +201,7 @@ export default function RegisterConfirmPage() {
           onChange={(e) => setFoundDetail(e.target.value)}
           placeholder="拾獲的詳細地點"
           aria-label="拾獲的詳細地點"
-          className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-[#1C1C13] outline-none placeholder:text-[#1C1C13]"
+          className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-brown outline-none placeholder:text-[#888]"
         />
 
         <input
@@ -210,21 +210,21 @@ export default function RegisterConfirmPage() {
           onChange={(e) => setSendTo(e.target.value)}
           placeholder="送往的詳細地點（例如：文山二分局）"
           aria-label="送往的詳細地點"
-          className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-[#1C1C13] outline-none placeholder:text-[#1C1C13]"
+          className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-brown outline-none placeholder:text-[#888]"
         />
 
         <textarea
           value={remark}
           onChange={(e) => setRemark(e.target.value)}
           placeholder="備註（非必填）"
-          className="h-[106px] w-full resize-none rounded-lg border border-black bg-white p-4 text-base text-[#1C1C13] outline-none placeholder:text-[#50453D]"
+          className="h-[106px] w-full resize-none rounded-lg border border-black bg-white p-4 text-base text-brown outline-none placeholder:text-[#888]"
         />
 
         <div data-tip="tags" className="box-border w-full rounded-[10px] border border-black bg-card p-6">
-          <div className="mb-3 text-xl font-semibold text-[#482B12]">{fixedTags || manualTags ? '標籤' : 'AI 標籤'}</div>
+          <div className="mb-3 text-xl font-semibold text-brown">{fixedTags || manualTags ? '標籤' : 'AI 標籤'}</div>
           <div className="flex flex-wrap gap-3">
             {tags.map((tag) => (
-              <div key={tag} className="box-border inline-flex h-[50px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-black bg-blue px-5 py-[10px] text-base font-normal text-[#482B12]">
+              <div key={tag} className="box-border inline-flex h-[50px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-black bg-blue px-5 py-[10px] text-base font-normal text-brown">
                 {tag}
                 {!fixedTags && (
                   <button type="button" onClick={() => setTags((prev) => prev.filter((x) => x !== tag))} aria-label={`移除 ${tag}`} className="ml-1 text-lg font-bold">×</button>
@@ -235,7 +235,7 @@ export default function RegisterConfirmPage() {
               <button
                 type="button"
                 onClick={() => setPickerOpen(true)}
-                className="box-border inline-flex h-[50px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-black bg-white px-5 py-[10px] text-base font-normal text-[#482B12]"
+                className="box-border inline-flex h-[50px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-black bg-white px-5 py-[10px] text-base font-normal text-brown"
               >
                 <PlusIcon className="h-[15px] w-[15px] shrink-0" />
                 新增
@@ -250,7 +250,7 @@ export default function RegisterConfirmPage() {
           type="button"
           onClick={handleSubmit}
           disabled={busy}
-          className="flex h-20 w-full items-center justify-center gap-3 rounded-full border-2 border-black bg-card text-xl text-[#1C1C13] transition hover:brightness-[.98] disabled:opacity-60"
+          className="flex h-20 w-full items-center justify-center gap-3 rounded-full border-2 border-black bg-card text-xl text-brown transition hover:brightness-[.98] disabled:opacity-60"
         >
           <CircleCheckIcon className="h-10 w-10 shrink-0" />
           {busy ? '正在寫入中...' : '確認標籤，完成登錄'}
