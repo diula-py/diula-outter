@@ -5,6 +5,8 @@ import { ChevronLeftIcon, CalendarIcon, DiulaPinIcon } from '../components/icons
 import { fetchThreadsPosts } from '../lib/api'
 import { asset } from '../lib/asset'
 import { LoadingInline } from '../components/LoadingScreen'
+import DesktopTopNav from '../components/DesktopTopNav'
+import DesktopFooter from '../components/DesktopFooter'
 
 // post_date 是 UTC（例如 2026-10-09T22:42:52.000Z），直接切前 10 個字，台灣清晨的貼文會少一天。
 // 先換成本地時間再取年月日（同 lib/date.js 的做法）。
@@ -43,8 +45,10 @@ export default function ThreadsPostDetail() {
   const showImg = post?.image && !imgBroken
 
   return (
-    // 沒有 AppLayout（無 TabBar），外框與底部留白（含 iOS safe-area）自己處理
-    <div className="mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] bg-paper pb-[calc(40px+env(safe-area-inset-bottom))] land:max-w-none">
+    <>
+    {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
+    {/* 沒有 AppLayout（無 TabBar），外框與底部留白（含 iOS safe-area）自己處理 */}
+    <div className="mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] bg-paper pb-[calc(40px+env(safe-area-inset-bottom))] land:max-w-none lg:hidden">
       {/* Header */}
       <header className="safe-header relative rounded-b-[20px] bg-card [--header-h:80px] land:[--header-h:64px]">
         <div className="relative flex h-full items-center justify-center">
@@ -116,5 +120,65 @@ export default function ThreadsPostDetail() {
         </div>
       )}
     </div>
+
+    {/* ======== 桌機（lg:）：跟 ThreadsSearchPage 同款桌機骨架（這頁沒有 Figma 稿），
+        768 置中欄（單篇詳情，不用清單頁的 1280），圖片/內文卡/連結列照手機版內容。 ======== */}
+    <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
+      <DesktopTopNav />
+
+      <div className="mx-auto flex w-full max-w-[768px] flex-1 flex-col gap-8 px-6 pb-16 pt-10 box-border">
+        <div className="flex items-center gap-4">
+          <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
+            <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
+          </button>
+          <h1 className="m-0 text-2xl font-normal text-[#2F1702]">Threads 尋找遺失物</h1>
+        </div>
+
+        {state === 'loading' && <LoadingInline />}
+        {state === 'error' && <p className="py-10 text-center text-base leading-normal text-error">找不到這則貼文</p>}
+
+        {state === 'ready' && post && (
+          <>
+            <div className="flex h-[300px] w-full items-center justify-center overflow-hidden rounded-lg border border-black bg-[#e7e3d5]">
+              {showImg ? (
+                <img
+                  src={post.image}
+                  alt=""
+                  decoding="async"
+                  referrerPolicy="no-referrer"
+                  className="h-full w-full object-cover"
+                  onError={() => setImgBroken(true)}
+                />
+              ) : (
+                <DiulaPinIcon className="h-20 w-20" />
+              )}
+            </div>
+
+            <div className="flex flex-col gap-4 rounded-lg bg-card p-6">
+              <div className="flex items-center gap-3">
+                <CalendarIcon className="h-7 w-7 text-navy" />
+                <span className="text-base text-brown">{fmtDate(post.post_date)}</span>
+              </div>
+              <span className="text-lg font-medium text-brown">內文</span>
+              <div className="min-h-[120px] whitespace-pre-wrap rounded-lg bg-white p-5 text-base leading-relaxed text-brown">
+                {post.text || '（無內文）'}
+              </div>
+            </div>
+
+            {post.url && (
+              <a href={post.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 no-underline">
+                <img src={asset('/icons/threads.png')} alt="Threads" className="h-10 w-10 shrink-0 object-contain" />
+                <div className="flex h-14 min-w-0 flex-1 items-center rounded-full border border-black bg-white px-6">
+                  <span className="min-w-0 flex-1 truncate text-base text-brown underline underline-offset-2">{post.url}</span>
+                </div>
+              </a>
+            )}
+          </>
+        )}
+      </div>
+
+      <DesktopFooter />
+    </div>
+    </>
   )
 }

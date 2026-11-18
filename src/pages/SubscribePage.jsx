@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ChevronLeftIcon, CircleCheckIcon } from '../components/icons'
 import AnalyzingScreen from '../components/AnalyzingScreen'
+import DesktopTopNav from '../components/DesktopTopNav'
+import DesktopFooter from '../components/DesktopFooter'
 import { addMyItem, updateMyItem } from '../lib/items'
 import { markLostHandled } from '../lib/handledLost'
 import { useAuth } from '../context/AuthContext'
@@ -172,7 +174,9 @@ export default function SubscribePage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col bg-paper pb-10 land:max-w-none">
+    <>
+    {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col bg-paper pb-10 land:max-w-none lg:hidden">
       <header className="safe-header relative rounded-b-[20px] bg-card [--header-h:80px] land:[--header-h:64px]">
         <div className="relative flex h-full items-center justify-center">
           <button type="button" onClick={() => navigate(-1)} aria-label="返回"
@@ -226,5 +230,67 @@ export default function SubscribePage() {
         </button>
       </div>
     </div>
+
+    {/* ======== 桌機（lg:）：這頁沒有 Figma 稿，照其他表單頁同款桌機骨架
+        （DesktopTopNav＋768 置中欄＋DesktopFooter）做。通知方式一樣鎖死（跟著登入方式），
+        不給手動選；比對條件摘要／通知方式左右並排，善用桌機寬度。 ======== */}
+    <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
+      <DesktopTopNav />
+
+      <div className="mx-auto flex w-full max-w-[768px] flex-1 flex-col gap-8 px-6 pb-16 pt-10 box-border">
+        <div className="flex items-center gap-4">
+          <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
+            <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
+          </button>
+          <h1 className="m-0 text-2xl font-normal text-[#2F1702]">自動尋找並推播</h1>
+        </div>
+
+        <p className="m-0 text-base leading-relaxed text-brown/70">
+          這次沒找到沒關係！訂閱後，<b className="text-brown">五日內</b>有新符合條件的失物進來，我們就主動通知你。
+        </p>
+
+        <div className="flex gap-6">
+          <div className="flex flex-1 flex-col gap-2 rounded-lg bg-card p-6 text-base text-brown">
+            <p className="m-0"><span className="text-brown/60">類別：</span>{resolved.category_name || '（未知）'}</p>
+            <p className="m-0"><span className="text-brown/60">遺失日：</span>{(q.date || '').replaceAll('-', '/') || '—'}</p>
+            <p className="m-0"><span className="text-brown/60">地點：</span>{q.place || '—'}</p>
+            <p className="m-0 truncate"><span className="text-brown/60">標籤：</span>{(q.tags || []).join('、') || '—'}</p>
+          </div>
+
+          <div className="flex flex-1 flex-col">
+            <p className="mb-3 text-base font-medium text-brown">通知方式</p>
+            <div className="flex h-14 items-center justify-center rounded-full border-2 border-black bg-card text-base font-medium text-brown">
+              {channel === 'line' ? 'LINE 推播' : 'Email'}
+            </div>
+            <p className="mt-3 text-sm leading-relaxed text-brown/70">
+              {channel === 'line'
+                ? '你用 LINE 登入，會由丟拉的 LINE 官方帳號推播給你（需為官方帳號好友，還沒加的話訂閱完成後會給你連結）。'
+                : '你用 Google 登入，通知會寄到你登入帳號的信箱。'}
+            </p>
+            {channel === 'email' && (
+              <input type="email" value={email} readOnly aria-label="通知信箱"
+                className="mt-3 w-full rounded-full border border-black bg-input px-4 text-sm text-brown outline-none h-[46px]" />
+            )}
+          </div>
+        </div>
+
+        {error && <p className="m-0 text-sm leading-normal text-error">{error}</p>}
+
+        <button
+          type="button"
+          onClick={submit}
+          disabled={status === 'submitting'}
+          className="flex h-20 w-full items-center justify-center gap-3 rounded-full border border-black bg-blue text-xl text-brown transition hover:brightness-[.98] disabled:opacity-60"
+        >
+          <CircleCheckIcon className="h-9 w-9 shrink-0 text-brown" />
+          {status === 'submitting'
+            ? (subscribed ? '存檔中…' : '訂閱中…')
+            : (subscribed ? '重試存檔' : '開啟自動推播')}
+        </button>
+      </div>
+
+      <DesktopFooter />
+    </div>
+    </>
   )
 }

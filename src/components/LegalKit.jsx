@@ -1,7 +1,16 @@
-/** 服務條款／隱私權政策頁的共用版型：80px 米色標頭（返回鍵）＋ 一般捲動內文 ＋ 回到頂部鈕。登入前後都看得到。 */
+/** 服務條款／隱私權政策／北捷顯名聲明頁的共用版型：80px 米色標頭（返回鍵）＋ 一般捲動內文
+ * ＋ 回到頂部鈕。登入前後都看得到。
+ *
+ * 2026-11 加的桌機版（lg:）：這三頁都沒有 Figma 稿，純文字內容本身不分斷點，
+ * 所以不用像表單頁那樣另外畫一套排版——只是換成 DesktopTopNav＋768 置中欄＋
+ * DesktopFooter 的桌機骨架，children 原封不動重用。改這裡一次就蓋到 TermsPage／
+ * PrivacyPage／MetroAttributionPage 三頁。 */
 import { useNavigate, useLocation } from 'react-router-dom'
 import { FormHeader } from './FormKit'
 import BackToTopButton from './BackToTopButton'
+import DesktopTopNav from './DesktopTopNav'
+import DesktopFooter from './DesktopFooter'
+import { ChevronLeftIcon } from './icons'
 
 export function LegalPage({ title, updatedAt, children }) {
   const navigate = useNavigate()
@@ -10,7 +19,9 @@ export function LegalPage({ title, updatedAt, children }) {
   const goBack = () => (location.key === 'default' ? navigate('/login', { replace: true }) : navigate(-1))
 
   return (
-    <div className="flex min-h-[calc(100dvh-var(--top-inset))] flex-col items-center">
+    <>
+    {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
+    <div className="flex min-h-[calc(100dvh-var(--top-inset))] flex-col items-center lg:hidden">
       <FormHeader title={title} onBack={goBack} />
       <article className="w-full max-w-[393px] px-6 pb-12 pt-6 text-sm leading-relaxed text-black">
         {children}
@@ -19,6 +30,28 @@ export function LegalPage({ title, updatedAt, children }) {
       {/* 底部沒有其他按鈕，位置同 Threads 尋找遺失物頁 */}
       <BackToTopButton bottomClass="bottom-[calc(20px+env(safe-area-inset-bottom))]" />
     </div>
+
+    {/* ======== 桌機（lg:） ======== */}
+    <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
+      <DesktopTopNav />
+
+      <div className="mx-auto flex w-full max-w-[768px] flex-1 flex-col gap-6 px-6 pb-16 pt-10 box-border">
+        <div className="flex items-center gap-4">
+          <button type="button" onClick={goBack} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
+            <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
+          </button>
+          <h1 className="m-0 text-2xl font-normal text-[#2F1702]">{title}</h1>
+        </div>
+
+        <article className="text-base leading-relaxed text-black">
+          {children}
+          {updatedAt && <p className="mt-8 text-sm opacity-60">最後更新日期：{updatedAt}</p>}
+        </article>
+      </div>
+
+      <DesktopFooter />
+    </div>
+    </>
   )
 }
 

@@ -1,9 +1,11 @@
 import { useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { CircleCheckIcon } from '../components/icons'
+import { CircleCheckIcon, ChevronLeftIcon, ChevronDownIcon } from '../components/icons'
 import { DetailHeader } from '../components/DetailKit'
 import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import { UploadBox } from '../components/FormKit'
+import DesktopTopNav from '../components/DesktopTopNav'
+import DesktopFooter from '../components/DesktopFooter'
 import PhotoMaskModal from '../components/PhotoMaskModal'
 import { useItemPhoto } from '../components/CropModal'
 import { addMyItem, getMyItem, updateMyItem } from '../lib/items'
@@ -14,6 +16,7 @@ import { submitSosPost } from '../lib/api'
 import { LOST_STATUS } from '../data/itemStatus'
 import { titleFromTags } from '../data/tagTaxonomy'
 import { todayStr } from '../lib/date'
+import { asset } from '../lib/asset'
 import { CITY_ORDER, TAIWAN_REGIONS } from '../data/taiwanRegions'
 
 // Threads 抓外部圖有下載逾時上限，原始手機照太大會 2207003（下載逾時）→ 先縮圖再送。
@@ -187,8 +190,10 @@ export default function SosPostPage() {
   const fieldInput = 'h-5 w-full bg-transparent p-0 text-xs font-normal leading-5 text-brown outline-none placeholder:text-[#888]'
 
   return (
-    // 沒有 AppLayout（無 TabBar），外框與底部留白（含 iOS safe-area）自己處理
-    <div className="mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] bg-paper pb-[calc(24px+env(safe-area-inset-bottom))] land:max-w-none">
+    <>
+    {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
+    {/* 沒有 AppLayout（無 TabBar），外框與底部留白（含 iOS safe-area）自己處理 */}
+    <div className="mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] bg-paper pb-[calc(24px+env(safe-area-inset-bottom))] land:max-w-none lg:hidden">
       <DetailHeader
         title="幫你發Threads的協尋文"
         onBack={() => (step === 'preview' ? setStep('form') : navigate(-1))}
@@ -343,37 +348,237 @@ export default function SosPostPage() {
           </button>
         </div>
       )}
-
-      {/* 圖片打碼視窗（一律以貼文圖為底，重開＝從頭打碼，可還原）。
-          postBase（比對流程帶來的）優先，沒有的話用使用者在這頁自己選的 manualImage */}
-      {maskOpen && (postBase || manualImage) && (
-        <PhotoMaskModal
-          src={postBase || manualImage}
-          onCancel={() => setMaskOpen(false)}
-          onConfirm={(url) => { setEditedImage(url); setMaskOpen(false) }}
-        />
-      )}
-
-      {cropModal}
-
-      {/* 發布成功彈窗（inner notfound-thread-success：300×251）：按鈕或關閉都到這件物品的詳情頁 */}
-      {status === 'success' && (
-        <WireDialog height={251} onClose={goToDetail} label="Threads串文已發佈">
-          <DialogTitle top={87} width={246} lineHeight={22}>Threads串文已發佈!</DialogTitle>
-          <DialogButton left={41} top={146} width={214} tone="blue" onClick={goToDetail}>查看我的遺失物</DialogButton>
-        </WireDialog>
-      )}
-
-      {/* 送審中彈窗：AI 沒把握時改由人工確認，這時還沒發出去，別說「已發佈」誤導使用者 */}
-      {status === 'pending' && (
-        <WireDialog height={251} onClose={goToDetail} label="協尋文已送出審核">
-          <DialogTitle top={72} width={246} lineHeight={22}>協尋文已送出審核</DialogTitle>
-          <p className="absolute left-[27px] top-[112px] w-[246px] text-center text-xs leading-normal text-brown">
-            通過後會由官方帳號發佈，並通知你。
-          </p>
-          <DialogButton left={41} top={146} width={214} tone="blue" onClick={goToDetail}>查看我的遺失物</DialogButton>
-        </WireDialog>
-      )}
     </div>
+
+    {/* ======== 桌機（lg:）：這頁沒有 Figma 稿，照 RegisterOtherPage 同款桌機表單骨架
+        （DesktopTopNav＋768 置中欄＋DesktopFooter）做，欄位/文案跟手機版一致；
+        hasQuery 鎖死的日期/地點改成唯讀的白底框（不能編輯）而不是 input。
+        步驟一／二（表單／預覽）的切換邏輯跟手機版共用同一個 step 狀態。 ======== */}
+    <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
+      <DesktopTopNav />
+
+      <div className="mx-auto flex w-full max-w-[768px] flex-1 flex-col gap-8 px-6 pb-16 pt-10 box-border">
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => (step === 'preview' ? setStep('form') : navigate(-1))}
+            aria-label="返回"
+            className="flex h-[30px] w-[30px] shrink-0 items-center justify-center"
+          >
+            <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
+          </button>
+          <h1 className="m-0 text-2xl font-normal text-[#2F1702]">幫你發Threads的協尋文</h1>
+        </div>
+
+        {/* 步驟一：填表單 */}
+        {step === 'form' && (
+          <div className="flex w-full flex-col gap-8">
+            <div className="box-border w-full rounded-lg bg-card p-4 text-sm leading-relaxed text-brown">
+              照欄位填，系統會套用統一模版由 DiuLa! 官方帳號 發佈到 Threads 協尋，你的個人帳號不會露出。
+            </div>
+
+            {!postBase && (
+              <>
+                <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
+                <div className="relative h-[300px] w-full overflow-hidden rounded-lg border border-black bg-white">
+                  <button
+                    type="button"
+                    onClick={() => fileRef.current?.click()}
+                    aria-label={pickedPreviewUrl ? '更換照片' : '上傳照片（選填）'}
+                    className="flex h-full w-full items-center justify-center"
+                  >
+                    {pickedPreviewUrl ? (
+                      <img src={pickedPreviewUrl} alt="預覽" className="h-full w-full object-contain" />
+                    ) : (
+                      <img src={asset('/icons/camera.png')} alt="" className="h-10 w-10 object-contain" />
+                    )}
+                  </button>
+                  {pickedPreviewUrl && pickedCropped && (
+                    <span className="pointer-events-none absolute right-3 top-3 rounded-[6px] bg-[#D5EBD6] px-2 py-1 text-xs font-normal text-brown">已框選</span>
+                  )}
+                  {pickedPreviewUrl && (
+                    <button
+                      type="button"
+                      onClick={recrop}
+                      className="absolute bottom-3 right-3 rounded-full border border-black bg-input px-3 py-1 text-xs font-normal text-brown transition hover:bg-[#ececec]"
+                    >
+                      {pickedCropped ? '重新框選' : '框選物品'}
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
+
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="物品名稱"
+              aria-label="物品名稱"
+              className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-[#1C1C13] outline-none"
+            />
+
+            {hasQuery ? (
+              <div className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-[#1C1C13] opacity-70">
+                {(date || '').replaceAll('-', '/') || '--'}
+              </div>
+            ) : (
+              <div className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6">
+                <input
+                  type="date"
+                  value={manualDate}
+                  onChange={(e) => setManualDate(e.target.value)}
+                  aria-label="遺失日期"
+                  className="h-6 w-full bg-transparent text-base text-[#1C1C13] outline-none"
+                />
+              </div>
+            )}
+
+            {hasQuery ? (
+              <div className="flex h-[58px] w-full items-center truncate rounded-full border border-black bg-white px-6 text-base text-[#1C1C13] opacity-70">
+                {place || '--'}
+              </div>
+            ) : (
+              <div className="flex gap-4">
+                <div className="flex h-[58px] flex-1 items-center rounded-full border border-black bg-white px-4">
+                  <select
+                    value={manualCity}
+                    onChange={(e) => { setManualCity(e.target.value); setManualDistrict('') }}
+                    aria-label="遺失的縣市"
+                    className="h-6 w-full appearance-none bg-transparent text-base text-[#1C1C13] outline-none"
+                  >
+                    <option value="">遺失的縣市</option>
+                    {CITY_ORDER.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  <ChevronDownIcon className="pointer-events-none h-4 w-4 shrink-0 text-[#6B7280]" />
+                </div>
+                <div className="flex h-[58px] flex-1 items-center rounded-full border border-black bg-white px-4">
+                  <select
+                    value={manualDistrict}
+                    onChange={(e) => setManualDistrict(e.target.value)}
+                    disabled={!manualCity}
+                    aria-label="遺失的地區"
+                    className="h-6 w-full appearance-none bg-transparent text-base text-[#1C1C13] outline-none disabled:opacity-50"
+                  >
+                    <option value="">遺失的地區</option>
+                    {(TAIWAN_REGIONS[manualCity] || []).map((d) => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                  <ChevronDownIcon className="pointer-events-none h-4 w-4 shrink-0 text-[#6B7280]" />
+                </div>
+              </div>
+            )}
+
+            <input
+              type="text"
+              value={detail}
+              onChange={(e) => setDetail(e.target.value)}
+              placeholder="詳細地點（選填，如：世新山洞口、景美站2號出口）"
+              aria-label="詳細地點"
+              className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-[#1C1C13] outline-none placeholder:text-[#50453D]"
+            />
+
+            <input
+              type="text"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="備註（選填，如：對我很有紀念意義，謝謝大家幫忙留意）"
+              aria-label="備註"
+              className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-[#1C1C13] outline-none placeholder:text-[#50453D]"
+            />
+
+            {error && <p className="m-0 text-sm leading-normal text-error">{error}</p>}
+
+            <button
+              type="button"
+              onClick={goPreview}
+              className="flex h-20 w-full items-center justify-center gap-3 rounded-full border-2 border-black bg-[#F7F4E5] text-xl text-brown transition hover:brightness-[.98]"
+            >
+              <CircleCheckIcon className="h-10 w-10 shrink-0" />
+              填寫完成!查看貼文預覽
+            </button>
+          </div>
+        )}
+
+        {/* 步驟二：貼文預覽 + 圖片預覽 + 實際發佈 */}
+        {step === 'preview' && (
+          <div className="flex flex-col gap-6">
+            <div className="rounded-lg bg-card p-6 text-base leading-relaxed text-brown">
+              由 <b>DiuLa!官方帳號</b> 幫你把協尋資訊發到 Threads，擴大協尋範圍。貼文圖片將沿用你上傳的圖片（有框選就用框內範圍）!
+              <b>會公開發到 Threads，發佈前可框住路人臉、車牌、地址等個資。</b>
+              送出後會先經過審核，經小編確認沒問題才會正式發出，通過或退件都會通知你。
+            </div>
+
+            <div>
+              <p className="mb-2 text-base font-medium text-brown">貼文預覽</p>
+              <pre className="whitespace-pre-wrap rounded-lg bg-input p-6 font-sans text-base leading-relaxed text-brown">{text}</pre>
+            </div>
+
+            {displayImage && (
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <p className="text-base font-medium text-brown">圖片預覽</p>
+                  <button
+                    type="button"
+                    onClick={() => setMaskOpen(true)}
+                    className="rounded-full border border-black bg-input px-4 py-2 text-sm font-normal text-brown transition hover:bg-[#ececec]"
+                  >
+                    {editedImage ? '重新打碼' : '為圖片打碼'}
+                  </button>
+                </div>
+                <img src={displayImage} alt="協尋照片" className="w-full rounded-lg object-cover" />
+              </div>
+            )}
+
+            {error && <p className="m-0 text-sm leading-normal text-error">{error}</p>}
+
+            <button
+              type="button"
+              onClick={submit}
+              disabled={status === 'submitting'}
+              className="flex h-20 w-full items-center justify-center gap-3 rounded-full border border-black bg-card text-xl text-brown transition hover:bg-[#eee8d7] disabled:opacity-50"
+            >
+              <CircleCheckIcon className="h-9 w-9 shrink-0 text-brown" />
+              {status === 'submitting'
+                ? (posted ? '存檔中…' : '審核中…')
+                : (posted ? '重試存檔' : '確認!送出審核')}
+            </button>
+          </div>
+        )}
+      </div>
+
+      <DesktopFooter />
+    </div>
+
+    {/* 圖片打碼視窗（一律以貼文圖為底，重開＝從頭打碼，可還原）。
+        postBase（比對流程帶來的）優先，沒有的話用使用者在這頁自己選的 manualImage */}
+    {maskOpen && (postBase || manualImage) && (
+      <PhotoMaskModal
+        src={postBase || manualImage}
+        onCancel={() => setMaskOpen(false)}
+        onConfirm={(url) => { setEditedImage(url); setMaskOpen(false) }}
+      />
+    )}
+
+    {cropModal}
+
+    {/* 發布成功彈窗（inner notfound-thread-success：300×251）：按鈕或關閉都到這件物品的詳情頁 */}
+    {status === 'success' && (
+      <WireDialog height={251} onClose={goToDetail} label="Threads串文已發佈">
+        <DialogTitle top={87} width={246} lineHeight={22}>Threads串文已發佈!</DialogTitle>
+        <DialogButton left={41} top={146} width={214} tone="blue" onClick={goToDetail}>查看我的遺失物</DialogButton>
+      </WireDialog>
+    )}
+
+    {/* 送審中彈窗：AI 沒把握時改由人工確認，這時還沒發出去，別說「已發佈」誤導使用者 */}
+    {status === 'pending' && (
+      <WireDialog height={251} onClose={goToDetail} label="協尋文已送出審核">
+        <DialogTitle top={72} width={246} lineHeight={22}>協尋文已送出審核</DialogTitle>
+        <p className="absolute left-[27px] top-[112px] w-[246px] text-center text-xs leading-normal text-brown">
+          通過後會由官方帳號發佈，並通知你。
+        </p>
+        <DialogButton left={41} top={146} width={214} tone="blue" onClick={goToDetail}>查看我的遺失物</DialogButton>
+      </WireDialog>
+    )}
+    </>
   )
 }

@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { CalendarIcon, LocationIcon, PersonChalkboardIcon } from '../components/icons'
+import { CalendarIcon, LocationIcon, PersonChalkboardIcon, ChevronLeftIcon } from '../components/icons'
 import { DeleteConfirmModal, DeleteSuccessModal } from '../components/DialogKit'
 import { DetailHeader, DetailImage, InfoBox, InfoRow, TagsBox, DeleteButton } from '../components/DetailKit'
+import DesktopTopNav from '../components/DesktopTopNav'
+import DesktopFooter from '../components/DesktopFooter'
 import { removeMyItem } from '../lib/items'
 import { titleFromTags } from '../data/tagTaxonomy'
+import { asset } from '../lib/asset'
 
 export default function MyFoundDetailPage() {
   const navigate = useNavigate()
@@ -46,7 +49,9 @@ export default function MyFoundDetailPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[100px] land:grid land:max-w-none land:grid-cols-[repeat(2,minmax(0,340px))] land:content-start land:items-start land:justify-center land:gap-x-7 land:gap-y-3 land:[grid-auto-flow:row_dense] land:pb-6">
+    <>
+    {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[100px] land:grid land:max-w-none land:grid-cols-[repeat(2,minmax(0,340px))] land:content-start land:items-start land:justify-center land:gap-x-7 land:gap-y-3 land:[grid-auto-flow:row_dense] land:pb-6 lg:hidden">
       {/* Header 109px：標題 top:70、返回鍵 35×35 在 (26,62)（page-19 比 page-16 高） */}
       <DetailHeader title={item.name} onBack={() => navigate(-1)} height={109} titleTop={70} backLeft={25} backTop={62} backSize={35} />
 
@@ -75,9 +80,79 @@ export default function MyFoundDetailPage() {
       {/* 拾獲物沒有「我找到了」：失主找回不是拾獲者自己按的，拾獲物只有「保管中」一種狀態 */}
       {/* 刪除此筆資料（標籤區下方 20px） */}
       <DeleteButton onClick={() => setDialog('delete')} />
-
-      {dialog === 'delete' && <DeleteConfirmModal busy={busy} onCancel={() => setDialog(null)} onConfirm={deleteItem} />}
-      {dialog === 'deleted' && <DeleteSuccessModal onConfirm={() => navigate('/my/found', { replace: true })} />}
     </div>
+
+    {/* ======== 桌機（lg:）：照 MyLostDetailPage 同款桌機骨架（這頁沒有 Figma 稿）——
+        不動共用的 DetailKit，自己寫 768 置中欄，狀態/動作邏輯整頁共用。拾獲物沒有
+        狀態徽章、沒有「我找到了」，地點資料是已經組好前綴的單一字串（拾獲地點：…／
+        送往：…），所以不像 MyLostDetailPage 拆城市/其餘兩欄，整行放一個白框。 ======== */}
+    <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
+      <DesktopTopNav />
+
+      <div className="mx-auto flex w-full max-w-[768px] flex-1 flex-col gap-8 px-6 pb-16 pt-10 box-border">
+        <div className="flex items-center gap-4">
+          <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
+            <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
+          </button>
+          <h1 className="m-0 max-w-[460px] truncate text-2xl font-normal text-[#2F1702]">{item.name}</h1>
+        </div>
+
+        <div className="flex h-[300px] w-full items-center justify-center overflow-hidden rounded-lg border border-black bg-white">
+          {item.img ? (
+            <img src={item.img} alt="" className="h-full w-full object-contain" />
+          ) : (
+            <img src={asset('/icons/logo2.png')} alt="" className="h-full w-full object-contain" />
+          )}
+        </div>
+
+        <div className="flex h-[58px] w-full items-center rounded-[10px] border border-black bg-white px-4 text-base text-[#1C1C13]">
+          {item.date}
+        </div>
+
+        <div className="flex h-[58px] w-full items-center rounded-[10px] border border-black bg-white px-4 text-base text-[#1C1C13]">
+          {item.place}
+        </div>
+
+        <div className="flex h-[58px] w-full items-center rounded-[10px] border border-black bg-white px-4 text-base text-[#1C1C13]">
+          {item.dropLocation}
+        </div>
+
+        <div className="flex h-[58px] w-full items-center rounded-[10px] border border-black bg-white px-4 text-base text-[#482B12]">
+          {item.code}
+        </div>
+
+        {item.remark && item.remark !== '--' && (
+          <div className="box-border w-full rounded-[10px] bg-card p-6 text-base leading-relaxed text-brown">
+            <div className="mb-2 text-xl font-semibold text-[#482B12]">備註</div>
+            {item.remark}
+          </div>
+        )}
+
+        {item.tags.length > 0 && (
+          <div className="box-border w-full rounded-[10px] border border-black bg-card p-6">
+            <div className="mb-3 text-xl font-semibold text-[#482B12]">標籤</div>
+            <div className="flex flex-wrap gap-3">
+              {item.tags.map((t) => (
+                <div key={t} className="rounded-[10px] bg-white px-5 py-[10px] text-base text-[#482B12]">{t}</div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <button
+          type="button"
+          onClick={() => setDialog('delete')}
+          className="h-12 w-[160px] self-center rounded-full border border-[#C4C4C4] bg-white text-sm font-bold text-[#C4C4C4]"
+        >
+          刪除此筆資料
+        </button>
+      </div>
+
+      <DesktopFooter />
+    </div>
+
+    {dialog === 'delete' && <DeleteConfirmModal busy={busy} onCancel={() => setDialog(null)} onConfirm={deleteItem} />}
+    {dialog === 'deleted' && <DeleteSuccessModal onConfirm={() => navigate('/my/found', { replace: true })} />}
+    </>
   )
 }
