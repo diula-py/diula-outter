@@ -146,7 +146,7 @@ export default function ResultDetailPage() {
           <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
             <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
           </button>
-          <h1 className="m-0 max-w-[600px] truncate text-2xl font-normal text-[#2F1702]">{title}</h1>
+          <h1 className="m-0 max-w-[600px] truncate text-2xl font-normal text-brown">{title}</h1>
         </div>
 
         <div className="flex h-[300px] w-full items-center justify-center overflow-hidden rounded-lg border border-black bg-white">
@@ -160,28 +160,28 @@ export default function ResultDetailPage() {
         {isDiula ? (
           <>
             <div className="flex gap-4">
-              <div className="flex h-[58px] flex-1 items-center rounded-[10px] border border-black bg-white px-4 text-base text-[#492C13]">
+              <div className="flex h-[58px] flex-1 items-center rounded-[10px] border border-black bg-white px-4 text-base text-brown">
                 {item.city || '--'}
               </div>
-              <div className="flex h-[58px] flex-1 items-center rounded-[10px] border border-black bg-white px-4 text-base text-[#492C13]">
+              <div className="flex h-[58px] flex-1 items-center rounded-[10px] border border-black bg-white px-4 text-base text-brown">
                 {item.district || '--'}
               </div>
             </div>
 
-            <div className="flex h-[58px] w-full items-center justify-center rounded-[10px] border border-black bg-white px-4 text-base text-[#492C13]">
+            <div className="flex h-[58px] w-full items-center justify-center rounded-[10px] border border-black bg-white px-4 text-base text-brown">
               {fmtDate(item.found_date) || '--'}
             </div>
 
-            <div className="min-h-[58px] w-full rounded-lg border border-black bg-white p-4 text-base text-[#50453D]">
+            <div className="min-h-[58px] w-full rounded-lg border border-black bg-white p-4 text-base text-brown/70">
               {dropOff ? `送往：${dropOff}` : (item.holding_place || '--')}
             </div>
 
             {tags.length > 0 && (
               <div className="box-border w-full rounded-[10px] border border-black bg-card p-6">
-                <div className="mb-3 text-xl font-semibold text-[#482B12]">標籤</div>
+                <div className="mb-3 text-xl font-semibold text-brown">標籤</div>
                 <div className="flex flex-wrap gap-3">
                   {tags.map((t) => (
-                    <span key={t} className="rounded-[10px] border border-black bg-blue px-5 py-[10px] text-base text-[#482B12]">{t}</span>
+                    <span key={t} className="rounded-[10px] border border-black bg-blue px-5 py-[10px] text-base text-brown">{t}</span>
                   ))}
                 </div>
               </div>

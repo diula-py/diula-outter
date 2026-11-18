@@ -131,7 +131,7 @@ export default function ThreadsPostDetail() {
           <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
             <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
           </button>
-          <h1 className="m-0 text-2xl font-normal text-[#2F1702]">Threads 尋找遺失物</h1>
+          <h1 className="m-0 text-2xl font-normal text-brown">Threads 尋找遺失物</h1>
         </div>
 
         {state === 'loading' && <LoadingInline />}

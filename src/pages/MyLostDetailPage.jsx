@@ -211,7 +211,7 @@ export default function MyLostDetailPage() {
             <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
               <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
             </button>
-            <h1 className="m-0 max-w-[460px] truncate text-2xl font-normal text-[#2F1702]">{item.name}</h1>
+            <h1 className="m-0 max-w-[460px] truncate text-2xl font-normal text-brown">{item.name}</h1>
           </div>
           <span className="shrink-0 text-xl" style={{ color: statusColor(status) }}>{status}</span>
         </div>
@@ -227,28 +227,28 @@ export default function MyLostDetailPage() {
         </div>
 
         <div className="flex gap-4">
-          <div className="flex h-[58px] flex-1 items-center rounded-[10px] border border-black bg-white px-4 text-base text-[#1C1C13]">
+          <div className="flex h-[58px] flex-1 items-center rounded-[10px] border border-black bg-white px-4 text-base text-brown">
             {placeCity || '--'}
           </div>
-          <div className="flex h-[58px] flex-1 items-center rounded-[10px] border border-black bg-white px-4 text-base text-[#1C1C13]">
+          <div className="flex h-[58px] flex-1 items-center rounded-[10px] border border-black bg-white px-4 text-base text-brown">
             {placeRestText || '--'}
           </div>
         </div>
 
-        <div className="flex h-[58px] w-full items-center justify-center rounded-[10px] border border-black bg-white px-4 text-base text-[#1C1C13]">
+        <div className="flex h-[58px] w-full items-center justify-center rounded-[10px] border border-black bg-white px-4 text-base text-brown">
           {item.date}
         </div>
 
-        <div className="flex h-[58px] w-full items-center rounded-[10px] border border-black bg-white px-4 text-base text-[#482B12]">
+        <div className="flex h-[58px] w-full items-center rounded-[10px] border border-black bg-white px-4 text-base text-brown">
           {item.code}
         </div>
 
         {item.tags.length > 0 && (
           <div className="box-border w-full rounded-[10px] border border-black bg-card p-6">
-            <div className="mb-3 text-xl font-semibold text-[#482B12]">標籤</div>
+            <div className="mb-3 text-xl font-semibold text-brown">標籤</div>
             <div className="flex flex-wrap gap-3">
               {item.tags.map((t) => (
-                <div key={t} className="rounded-[10px] bg-white px-5 py-[10px] text-base text-[#482B12]">{t}</div>
+                <div key={t} className="rounded-[10px] bg-white px-5 py-[10px] text-base text-brown">{t}</div>
               ))}
             </div>
           </div>

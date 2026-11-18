@@ -182,11 +182,11 @@ export default function ConfirmTagsPage() {
         <DesktopTopNav />
 
         <div className="z-10 mx-auto flex w-full max-w-[768px] flex-col gap-10 px-6 pb-16 pt-10 box-border">
-          <h1 className="m-0 text-2xl font-normal text-[#2F1702]">確認標籤</h1>
+          <h1 className="m-0 text-2xl font-normal text-brown">確認標籤</h1>
 
           {data.mode === 'text' ? (
             <div className="min-h-[130px] w-full rounded-lg border border-black bg-white p-4">
-              <div className="w-full break-words text-base font-normal leading-relaxed text-[#492C13]">{data.desc}</div>
+              <div className="w-full break-words text-base font-normal leading-relaxed text-brown">{data.desc}</div>
             </div>
           ) : (
             <div className="flex h-[300px] w-full items-center justify-center overflow-hidden rounded-lg border border-black bg-white">
@@ -238,10 +238,10 @@ export default function ConfirmTagsPage() {
           </p>
 
           <div data-tip="tags" className="box-border w-full rounded-[10px] border border-black bg-card p-6">
-            <div className="mb-3 text-xl font-semibold text-[#482B12]">AI 標籤</div>
+            <div className="mb-3 text-xl font-semibold text-brown">AI 標籤</div>
             <div className="flex flex-wrap gap-3">
               {tags.map((tag) => (
-                <div key={tag} className="box-border inline-flex h-[50px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-black bg-blue px-5 py-[10px] text-base font-normal text-[#482B12]">
+                <div key={tag} className="box-border inline-flex h-[50px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-black bg-blue px-5 py-[10px] text-base font-normal text-brown">
                   {tag}
                   <button type="button" onClick={() => removeTag(tag)} aria-label={`移除 ${tag}`} className="ml-1 text-lg font-bold">×</button>
                 </div>
@@ -249,7 +249,7 @@ export default function ConfirmTagsPage() {
               <button
                 type="button"
                 onClick={() => setPickerOpen(true)}
-                className="box-border inline-flex h-[50px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-black bg-white px-5 py-[10px] text-base font-normal text-[#482B12]"
+                className="box-border inline-flex h-[50px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full border border-black bg-white px-5 py-[10px] text-base font-normal text-brown"
               >
                 <PlusIcon className="h-[15px] w-[15px] shrink-0" />
                 新增
@@ -263,7 +263,7 @@ export default function ConfirmTagsPage() {
             type="button"
             onClick={handleConfirm}
             disabled={busy}
-            className="flex h-20 w-full items-center justify-center gap-3 rounded-full border-2 border-black bg-card text-xl text-[#1C1C13] transition hover:brightness-[.98] disabled:opacity-60"
+            className="flex h-20 w-full items-center justify-center gap-3 rounded-full border-2 border-black bg-card text-xl text-brown transition hover:brightness-[.98] disabled:opacity-60"
           >
             <CircleCheckIcon className="h-10 w-10 shrink-0" />
             {busy ? '比對中…' : '確認！開始比對尋找'}

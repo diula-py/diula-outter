@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { DetailHeader } from '../components/DetailKit'
 import { ChevronLeftIcon, DiulaPinIcon, XmarkIcon } from '../components/icons'
@@ -45,6 +45,10 @@ function TabPill({ label, active, onClick, small }) {
 }
 
 const scrollbarHidden = '[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+
+// 「都沒有我的遺失物」浮現規則同 ResultsPage：捲到第 7 筆（第 7 張卡片進入畫面）才浮現，
+// 往回捲到它上方就收起；這批（當頁）不到 7 筆（含沒有結果）時一進來就顯示。
+const SHOW_AT = 7
 
 // 「近2日遺失物快速看」（2026-11 改版：分類頁籤 UI）。打 Flask 的 /items/recent
 // （不用登入，公開瀏覽，見 diula-outter/flask_app.py），分類頁籤資料沿用既有的
@@ -141,6 +145,31 @@ export default function RecentFoundPage() {
   const empty = !loading && !error && !items.length
   const note = 'p-5 text-center text-base leading-normal opacity-70'
 
+  // 手機版／桌機版的清單容器各自一個 ref：同一時間只有一個斷點實際顯示
+  // （另一個是 display:none，量到的尺寸是 0），checkOne() 用 offsetParent
+  // 判斷哪個才是目前真的顯示的那個，兩邊共用同一條顯示規則（見 ResultsPage 同款做法）。
+  const listRef = useRef(null)
+  const desktopListRef = useRef(null)
+  const [showNotMine, setShowNotMine] = useState(false)
+  useEffect(() => {
+    function checkOne(ref) {
+      const el = ref.current
+      if (!el || el.offsetParent === null) return null
+      const card = el.children[SHOW_AT - 1]
+      return items.length < SHOW_AT || !card || card.getBoundingClientRect().top < window.innerHeight
+    }
+    function check() {
+      setShowNotMine(checkOne(listRef) ?? checkOne(desktopListRef) ?? false)
+    }
+    check()
+    window.addEventListener('scroll', check, { passive: true })
+    window.addEventListener('resize', check)
+    return () => {
+      window.removeEventListener('scroll', check)
+      window.removeEventListener('resize', check)
+    }
+  }, [items.length, loading])
+
   return (
     <>
     {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
@@ -177,7 +206,7 @@ export default function RecentFoundPage() {
         </div>
       )}
 
-      <div className="mt-3 flex w-[calc(100%-44px)] max-w-[350px] flex-col gap-5">
+      <div ref={listRef} className="mt-3 flex w-[calc(100%-44px)] max-w-[350px] flex-col gap-5">
         {loading && <p className={note}>載入中...</p>}
         {!loading && error && <p className={note}>{error}</p>}
 
@@ -258,16 +287,21 @@ export default function RecentFoundPage() {
         </div>
       )}
 
-      {/* 引導 CTA：不管這批篩選有沒有資料都顯示（使用者自己的遺失物不一定會出現在
-          「全站近 2 日」這批裡，所以不能只在空清單時才給入口）。mt-auto：外層是
-          min-h 撐滿畫面高度的 flex 直欄，內容短時會被推到畫面最下方，
-          內容長(清單本身夠長)時就跟著自然排版，不會硬要墊出額外空白。 */}
+    </div>
+
+    {/* 都沒有我的遺失物：浮現規則同 ResultsPage 的「都沒有我的物品」——捲到第 7 筆
+        才浮現、不到 7 筆一進來就顯示；往回捲到它上方就收起。固定貼在視窗底部
+        （＋iOS 底部橫條安全區），隱藏時淡出並往下 10px、不能點也不能用 Tab 選到。 */}
+    <div className="pointer-events-none fixed bottom-[calc(20px+env(safe-area-inset-bottom))] left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[350px] -translate-x-1/2 justify-center land:bottom-[calc(10px+env(safe-area-inset-bottom))] land:max-w-[708px] lg:hidden">
       <button
         type="button"
         onClick={() => setSosOpen(true)}
         data-tip="none-recent"
-        className="mt-auto flex h-[60px] w-[calc(100%-44px)] max-w-[350px] shrink-0 items-center justify-center rounded-[50px] border border-black bg-blue text-base font-medium text-brown
-                   transition hover:brightness-95 active:scale-[.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+        aria-hidden={!showNotMine}
+        tabIndex={showNotMine ? 0 : -1}
+        className={`box-border flex h-[60px] w-full items-center justify-center rounded-[50px] border border-black bg-blue text-base font-medium leading-4 text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)]
+                    transition duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
+                    ${showNotMine ? 'pointer-events-auto translate-y-0 opacity-100' : 'translate-y-[10px] opacity-0'}`}
       >
         都沒有我的遺失物！
       </button>
@@ -286,7 +320,7 @@ export default function RecentFoundPage() {
           <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
             <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
           </button>
-          <h1 className="m-0 text-2xl font-normal text-[#2F1702]">近 2 日遺失物快速看</h1>
+          <h1 className="m-0 text-2xl font-normal text-brown">近 2 日遺失物快速看</h1>
         </div>
 
         {/* 頂層分類頁籤 */}
@@ -318,7 +352,7 @@ export default function RecentFoundPage() {
         )}
 
         {/* 結果清單：2 欄，卡片 160×160 縮圖＋文字＋chevron，同 ResultsPage 桌機版卡片樣式 */}
-        <div className="mt-6 grid grid-cols-2 gap-6">
+        <div ref={desktopListRef} className="mt-6 grid grid-cols-2 gap-6">
           {loading && <p className="col-span-2 py-10 text-center text-base opacity-70">載入中...</p>}
           {!loading && error && <p className="col-span-2 py-10 text-center text-base opacity-70">{error}</p>}
 
@@ -343,8 +377,8 @@ export default function RecentFoundPage() {
               >
                 <ItemThumb src={it.image_ref} size={160} />
                 <div className="flex min-w-0 flex-1 flex-col gap-2">
-                  <div className="truncate text-xl text-[#2F1702]">{itemTitle(it) || x.category_name || '拾獲物'}</div>
-                  <div className="truncate text-sm font-normal text-[#50453D]">
+                  <div className="truncate text-xl text-brown">{itemTitle(it) || x.category_name || '拾獲物'}</div>
+                  <div className="truncate text-sm font-normal text-brown/70">
                     {[SOURCE_LABEL[it.source], fmtDate(it.found_date)].filter(Boolean).join(' ')}
                   </div>
                 </div>
@@ -393,28 +427,33 @@ export default function RecentFoundPage() {
           </div>
         )}
 
-        {/* 引導 CTA：不管這批有沒有資料都顯示，理由同手機版上面的註解 */}
-        <div className="mt-10 flex justify-center">
-          <button
-            type="button"
-            onClick={() => setSosOpen(true)}
-            data-tip="none-recent"
-            className="flex h-[60px] w-full max-w-[350px] items-center justify-center rounded-[50px] border border-black bg-blue text-base font-medium text-brown transition hover:brightness-95"
-          >
-            都沒有我的遺失物！
-          </button>
-        </div>
       </div>
       </div>
 
       <DesktopFooter />
     </div>
 
+    {/* 都沒有我的遺失物（桌機版）：浮現規則同手機版那顆——捲到第 7 筆才浮現、
+        不到 7 筆一進來就顯示，貼在視窗底部置中，樣式跟 ResultsPage 桌機版同款膠囊。 */}
+    <div className="pointer-events-none fixed bottom-10 left-1/2 z-[90] hidden w-full max-w-[1280px] -translate-x-1/2 justify-center px-10 box-border lg:flex">
+      <button
+        type="button"
+        onClick={() => setSosOpen(true)}
+        data-tip="none-recent"
+        aria-hidden={!showNotMine}
+        tabIndex={showNotMine ? 0 : -1}
+        className={`box-border flex h-[70px] w-full max-w-[400px] items-center justify-center rounded-full border border-black bg-blue text-xl font-medium text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)]
+                    transition duration-300 hover:brightness-[.98]
+                    ${showNotMine ? 'pointer-events-auto translate-y-0 opacity-100' : 'translate-y-[10px] opacity-0'}`}
+      >
+        都沒有我的遺失物！
+      </button>
+    </div>
+
     {/* 小提示：第一次看到「都沒有我的遺失物！」按鈕（近 2 日快速看一次；換分類不再出現）。
-        按鈕現在不管有沒有資料都會顯示，所以提示也不再綁 empty。
         anchor="none-recent" 會自動挑手機版／桌機版兩個 data-tip="none-recent" 裡
         目前看得到的那個，不用放在某一個 lg: 區塊裡面。 */}
-    <OnceTip name="tip_not_mine_recent" anchor="none-recent" show={!loading && !sosOpen}>{TIP_NOT_MINE}</OnceTip>
+    <OnceTip name="tip_not_mine_recent" anchor="none-recent" show={showNotMine && !sosOpen}>{TIP_NOT_MINE}</OnceTip>
 
     {/* 「都沒有我的遺失物」選項彈窗，樣式照 ResultsPage 的同款彈窗（inner notfound-popup）。
         這頁沒有比對條件(query/resolved)可以帶 —— 不是從填協尋單進來的，所以：

@@ -144,7 +144,7 @@ export default function RegisterOtherPage() {
           <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
             <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
           </button>
-          <h1 className="m-0 text-2xl font-normal text-[#2F1702]">非證件類遺失物登錄</h1>
+          <h1 className="m-0 text-2xl font-normal text-brown">非證件類遺失物登錄</h1>
         </div>
 
         <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
@@ -182,7 +182,7 @@ export default function RegisterOtherPage() {
             value={date}
             onChange={(e) => setDate(e.target.value)}
             aria-label="拾獲日期"
-            className="h-6 w-full bg-transparent px-3 text-base text-[#1C1C13] outline-none"
+            className="h-6 w-full bg-transparent px-3 text-base text-brown outline-none"
           />
         </div>
 
@@ -192,7 +192,7 @@ export default function RegisterOtherPage() {
               value={foundCity}
               onChange={(e) => { setFoundCity(e.target.value); setFoundDistrict('') }}
               aria-label="拾獲的縣市"
-              className="h-6 w-full appearance-none bg-transparent text-base text-[#1C1C13] outline-none"
+              className="h-6 w-full appearance-none bg-transparent text-base text-brown outline-none"
             >
               <option value="">選擇拾獲的縣市</option>
               {CITY_ORDER.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -205,7 +205,7 @@ export default function RegisterOtherPage() {
               onChange={(e) => setFoundDistrict(e.target.value)}
               disabled={!foundCity}
               aria-label="拾獲的地區"
-              className="h-6 w-full appearance-none bg-transparent text-base text-[#1C1C13] outline-none"
+              className="h-6 w-full appearance-none bg-transparent text-base text-brown outline-none"
             >
               <option value="">選擇拾獲的地區</option>
               {(TAIWAN_REGIONS[foundCity] || []).map((d) => <option key={d} value={d}>{d}</option>)}
@@ -220,7 +220,7 @@ export default function RegisterOtherPage() {
           onChange={(e) => setFoundDetail(e.target.value)}
           placeholder="拾獲的詳細地點"
           aria-label="拾獲的詳細地點"
-          className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-[#1C1C13] outline-none placeholder:text-[#1C1C13]"
+          className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-brown outline-none placeholder:text-[#888]"
         />
 
         <input
@@ -229,14 +229,14 @@ export default function RegisterOtherPage() {
           onChange={(e) => setSendTo(e.target.value)}
           placeholder="選擇送往的地點（例如：文山二分局）"
           aria-label="送往的詳細地點"
-          className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-[#1C1C13] outline-none placeholder:text-[#1C1C13]"
+          className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-brown outline-none placeholder:text-[#888]"
         />
 
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value)}
           placeholder="備註（非必填）"
-          className="h-[106px] w-full resize-none rounded-lg border border-black bg-white p-4 text-base text-[#1C1C13] outline-none placeholder:text-[#50453D]"
+          className="h-[106px] w-full resize-none rounded-lg border border-black bg-white p-4 text-base text-brown outline-none placeholder:text-[#888]"
         />
 
         {error && <p className="m-0 text-sm leading-normal text-error">{error}</p>}

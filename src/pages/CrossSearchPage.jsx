@@ -161,7 +161,7 @@ export default function CrossSearchPage() {
             <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
               <ChevronLeftIcon className="h-[30px] w-[30px]" />
             </button>
-            <h1 className="m-0 text-2xl font-normal text-[#2F1702]">尋找遺失物</h1>
+            <h1 className="m-0 text-2xl font-normal text-brown">尋找遺失物</h1>
           </div>
 
           <div className="flex w-full border-b border-[#D4C3B9]">
@@ -175,7 +175,7 @@ export default function CrossSearchPage() {
                 onClick={() => setMode(t.key)}
                 aria-pressed={mode === t.key}
                 className={`flex-1 border-b-2 pb-4 pt-4 text-center text-base
-                  ${mode === t.key ? 'border-[#2F1702] font-medium text-[#2F1702]' : 'border-transparent font-normal text-[#50453D]'}`}
+                  ${mode === t.key ? 'border-[#2F1702] font-medium text-brown' : 'border-transparent font-normal text-brown/70'}`}
               >
                 {t.label}
               </button>
@@ -227,7 +227,7 @@ export default function CrossSearchPage() {
                 value={placeCity}
                 onChange={(e) => { setPlaceCity(e.target.value); setPlaceDistrict('') }}
                 aria-label="遺失的縣市"
-                className="h-6 w-full appearance-none bg-transparent text-base text-[#1C1C13] outline-none"
+                className="h-6 w-full appearance-none bg-transparent text-base text-brown outline-none"
               >
                 <option value="">選擇縣市</option>
                 {CITY_ORDER.map((c) => <option key={c} value={c}>{c}</option>)}
@@ -240,7 +240,7 @@ export default function CrossSearchPage() {
                 onChange={(e) => setPlaceDistrict(e.target.value)}
                 disabled={!placeCity}
                 aria-label="遺失的地區"
-                className="h-6 w-full appearance-none bg-transparent text-base text-[#1C1C13] outline-none"
+                className="h-6 w-full appearance-none bg-transparent text-base text-brown outline-none"
               >
                 <option value="">選擇地區</option>
                 {(TAIWAN_REGIONS[placeCity] || []).map((d) => <option key={d} value={d}>{d}</option>)}
@@ -255,7 +255,7 @@ export default function CrossSearchPage() {
               value={date}
               onChange={(e) => setDate(e.target.value)}
               aria-label="遺失日期"
-              className="h-6 w-full bg-transparent text-center text-base text-[#1C1C13] outline-none"
+              className="h-6 w-full bg-transparent text-center text-base text-brown outline-none"
             />
           </div>
 

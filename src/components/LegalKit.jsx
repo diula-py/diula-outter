@@ -40,7 +40,7 @@ export function LegalPage({ title, updatedAt, children }) {
           <button type="button" onClick={goBack} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
             <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
           </button>
-          <h1 className="m-0 text-2xl font-normal text-[#2F1702]">{title}</h1>
+          <h1 className="m-0 text-2xl font-normal text-brown">{title}</h1>
         </div>
 
         <article className="text-base leading-relaxed text-black">

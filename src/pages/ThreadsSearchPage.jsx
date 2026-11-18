@@ -128,17 +128,17 @@ export default function ThreadsSearchPage() {
             <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
               <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
             </button>
-            <h1 className="m-0 text-2xl font-normal text-[#2F1702]">Threads 尋找遺失物</h1>
+            <h1 className="m-0 text-2xl font-normal text-brown">Threads 尋找遺失物</h1>
           </div>
 
           <div className="mt-8 flex h-[74px] items-center gap-5 rounded-full border border-[#2F1702] bg-[#F5F5F5] px-6">
-            <MagnifyingGlassIcon className="h-5 w-5 shrink-0 text-[#2F1702]" />
+            <MagnifyingGlassIcon className="h-5 w-5 shrink-0 text-brown" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="搜尋 Threads 協尋文"
-              className="h-full min-w-0 flex-1 bg-transparent p-0 text-base text-[#2F1702] outline-none placeholder:text-[#50453D]"
+              className="h-full min-w-0 flex-1 bg-transparent p-0 text-base text-brown outline-none placeholder:text-[#888]"
             />
           </div>
 

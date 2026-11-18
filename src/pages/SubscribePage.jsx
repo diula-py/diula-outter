@@ -242,7 +242,7 @@ export default function SubscribePage() {
           <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
             <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
           </button>
-          <h1 className="m-0 text-2xl font-normal text-[#2F1702]">自動尋找並推播</h1>
+          <h1 className="m-0 text-2xl font-normal text-brown">自動尋找並推播</h1>
         </div>
 
         <p className="m-0 text-base leading-relaxed text-brown/70">
