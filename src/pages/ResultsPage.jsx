@@ -68,12 +68,21 @@ export default function ResultsPage() {
     [results, source],
   )
 
+  // 手機版／桌機版的清單容器各自一個 ref：同一時間只有一個斷點實際顯示（另一個是
+  // display:none），checkOne() 用 offsetParent 判斷哪個才是目前真的顯示的那個，
+  // 兩邊共用同一條「捲到第 7 筆才浮現、不到 7 筆一進來就顯示」的規則。
   const listRef = useRef(null)
+  const desktopListRef = useRef(null)
   const [showNotMine, setShowNotMine] = useState(false)
   useEffect(() => {
+    function checkOne(ref) {
+      const el = ref.current
+      if (!el || el.offsetParent === null) return null // 這個斷點目前沒有顯示
+      const card = el.children[SHOW_AT - 1]
+      return list.length < SHOW_AT || !card || card.getBoundingClientRect().top < window.innerHeight
+    }
     function check() {
-      const card = listRef.current?.children[SHOW_AT - 1]
-      setShowNotMine(list.length < SHOW_AT || !card || card.getBoundingClientRect().top < window.innerHeight)
+      setShowNotMine(checkOne(listRef) ?? checkOne(desktopListRef) ?? false)
     }
     check()
     window.addEventListener('scroll', check, { passive: true })
@@ -249,49 +258,33 @@ export default function ResultsPage() {
           </button>
         </div>
 
-        {/* 來源分頁（照設計稿 4 顆膠囊，選中態 bg-card + 2px 框；DiuLa! 那顆用 logo 圖）
-            跟「都沒有我的物品」排同一列，按鈕貼右上角；sticky top-10 讓它在捲動結果清單
-            時持續貼在視窗頂端附近，跟手機版「捲到底才浮現」的邏輯不同——桌機版一開始
-            就看得到結果，不需要漸進揭露。 */}
-        <div className="mt-8 flex items-start justify-between">
-          <div className="flex gap-4">
-            {SOURCES.map((s) => {
-              const active = source === s.key
-              const isDiula = s.key === 'diula'
-              return (
-                <button
-                  key={s.key}
-                  type="button"
-                  onClick={() => selectSource(s.key)}
-                  aria-pressed={active}
-                  aria-label={s.label}
-                  className={`box-border flex h-14 min-w-[114px] items-center justify-center rounded-full px-10 text-base text-[#1C1C13]
-                    ${active ? 'border-2 border-black bg-card font-medium' : 'border border-black bg-[#F5F5F5] font-normal'}`}
-                >
-                  {isDiula ? (
-                    <img src={asset('/icons/diula-logo-cropped.png')} alt="" aria-hidden="true" className="h-5 w-auto max-w-[60px] object-contain" />
-                  ) : (
-                    s.label
-                  )}
-                </button>
-              )
-            })}
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setSosOpen(true)}
-            data-tip="none-results"
-            className="sticky top-10 z-[90] flex h-[100px] w-[100px] shrink-0 flex-col items-center justify-center rounded-full border border-black bg-[#D2E1F5] text-center text-sm font-medium leading-tight text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)] transition hover:brightness-[.98]"
-          >
-            都沒有
-            <br />
-            我的物品
-          </button>
+        {/* 來源分頁（照設計稿 4 顆膠囊，選中態 bg-card + 2px 框；DiuLa! 那顆用 logo 圖） */}
+        <div className="mt-8 flex gap-4">
+          {SOURCES.map((s) => {
+            const active = source === s.key
+            const isDiula = s.key === 'diula'
+            return (
+              <button
+                key={s.key}
+                type="button"
+                onClick={() => selectSource(s.key)}
+                aria-pressed={active}
+                aria-label={s.label}
+                className={`box-border flex h-14 min-w-[114px] items-center justify-center rounded-full px-10 text-base text-[#1C1C13]
+                  ${active ? 'border-2 border-black bg-card font-medium' : 'border border-black bg-[#F5F5F5] font-normal'}`}
+              >
+                {isDiula ? (
+                  <img src={asset('/icons/diula-logo-cropped.png')} alt="" aria-hidden="true" className="h-5 w-auto max-w-[60px] object-contain" />
+                ) : (
+                  s.label
+                )}
+              </button>
+            )
+          })}
         </div>
 
         {/* 結果清單：2 欄，卡片 160×160 縮圖＋文字＋chevron */}
-        <div className="mt-8 grid grid-cols-2 gap-6">
+        <div ref={desktopListRef} className="mt-8 grid grid-cols-2 gap-6">
           {list.length === 0 && (
             <div className="col-span-2 box-border w-full rounded-[10px] border border-black bg-input px-6 py-10 text-center text-base font-medium leading-normal opacity-70">
               {source === 'diula' ? (
@@ -350,6 +343,24 @@ export default function ResultsPage() {
           </button>
         )}
       </div>
+      </div>
+
+      {/* 都沒有我的物品：改成跟手機版同樣邏輯的底部 bar（showNotMine 共用同一條規則——
+          捲到第 7 筆才浮現、不到 7 筆一進來就顯示），不再是常駐貼右上角的圓鈕。
+          樣式放大成貼齊桌機版內容寬度的膠囊，貼在視窗底部置中。 */}
+      <div className="pointer-events-none fixed bottom-10 left-1/2 z-[90] flex w-full max-w-[1280px] -translate-x-1/2 justify-center px-10 box-border">
+        <button
+          type="button"
+          onClick={() => setSosOpen(true)}
+          data-tip="none-results"
+          aria-hidden={!showNotMine}
+          tabIndex={showNotMine ? 0 : -1}
+          className={`box-border flex h-[70px] w-full max-w-[400px] items-center justify-center rounded-full border border-black bg-blue text-xl font-medium text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)]
+                      transition duration-300 hover:brightness-[.98]
+                      ${showNotMine ? 'pointer-events-auto translate-y-0 opacity-100' : 'translate-y-[10px] opacity-0'}`}
+        >
+          都沒有我的物品
+        </button>
       </div>
 
       <DesktopFooter />
