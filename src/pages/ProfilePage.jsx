@@ -4,6 +4,7 @@ import { CubesIcon, FolderIcon } from '../components/icons'
 import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import DesktopTopNav from '../components/DesktopTopNav'
 import DesktopFooter from '../components/DesktopFooter'
+import SectionTitle from '../components/SectionTitle'
 import { asset } from '../lib/asset'
 import { useAuth } from '../context/AuthContext'
 
@@ -68,8 +69,14 @@ export default function ProfilePage() {
             RecentLostQuickView／MatchThumb／打 /subscriptions/recent-matches 的邏輯）。
             ⚠ 尋找頁同名按鈕（HomePage.jsx FIND_ITEMS）目前還是導來 '/profile'，這裡拿掉後
             那顆按鈕等於點了只會到空白的個人頁——還沒決定要把這段邏輯搬到哪，先別自己接掉。 */}
-        <div className="mt-[60px] flex w-full flex-col items-center gap-5 px-[21px]
-                        land:col-start-2 land:mt-[18px] land:gap-[10px] land:px-0 land:self-auto">
+        {/* 2026-11-20：補上跟電腦版一樣的「我的歷史紀錄」標題，形式同尋找／拾獲分頁的 SectionTitle
+            （不放問號鈕）。間距照那兩頁：卡片下 25 放標題、標題下 15 接按鈕（原本卡片到按鈕 60）。 */}
+        <div className="mt-[25px] flex w-full flex-col items-center px-[21px]
+                        land:col-start-2 land:mt-[18px] land:px-0 land:self-auto">
+          <div className="w-full max-w-[350px]">
+            <SectionTitle>我的歷史紀錄</SectionTitle>
+          </div>
+          <div className="mt-[15px] flex w-full flex-col items-center gap-5 land:gap-[10px]">
           <MenuButton
             icon={<CubesIcon className="h-10 w-10 shrink-0" />}
             label="我的遺失物"
@@ -80,6 +87,7 @@ export default function ProfilePage() {
             label="我的拾獲物"
             onClick={() => navigate('/my/found')}
           />
+          </div>
         </div>
 
         {/* 登出：110×40；底部連結：10/400 底線、每個寬 80（中心相距 80）。

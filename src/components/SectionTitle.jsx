@@ -8,6 +8,7 @@ import { asset } from '../lib/asset'
  *
  * 標題文字右邊 8px 放一個 20×20 問號鈕，點了重新播放這個分頁的使用教學（2026-11-16 接上）。
  * onHelp：點問號要做的事；helpTour：問號鈕本身的 data-tour 值（拾獲使用教學最後一步會框它）。
+ * 沒傳 onHelp 就不畫問號鈕（個人頁「我的歷史紀錄」沒有對應的使用教學）。
  */
 export default function SectionTitle({ children, onHelp, helpTour }) {
   return (
@@ -17,7 +18,7 @@ export default function SectionTitle({ children, onHelp, helpTour }) {
         aria-hidden="true"
       />
       {children}
-      <button
+      {onHelp && <button
         type="button"
         onClick={onHelp}
         data-tour={helpTour}
@@ -25,7 +26,7 @@ export default function SectionTitle({ children, onHelp, helpTour }) {
         className="back-hit relative ml-2 h-5 w-5 shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
       >
         <img src={asset('/icons/circle-question.png')} alt="" aria-hidden="true" className="h-5 w-5 object-contain" />
-      </button>
+      </button>}
     </h2>
   )
 }
