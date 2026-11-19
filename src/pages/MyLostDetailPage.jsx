@@ -56,6 +56,7 @@ export default function MyLostDetailPage() {
   }, [passed])
 
   // 刪除 Threads 協尋文：呼官方 API 刪文 → 清掉本機貼文欄位 → 連結列消失。
+  // 狀態原本是「已發文」的話退回「尋找中」——貼文已經不在了，不能還顯示已發文。
   async function deleteThreadPost() {
     setDeletingThread(true)
     try {
@@ -68,7 +69,10 @@ export default function MyLostDetailPage() {
         })
       }
     } catch { /* 網路錯誤也照樣把本機連結清掉，避免卡在已刪的貼文 */ }
-    if (passed?.id) updateMyItem(passed.kind || 'lost', passed.id, { thread_post_url: '', thread_post_id: '' })
+    const patch = { thread_post_url: '', thread_post_id: '' }
+    if (status === LOST_STATUS.POSTED) patch.status = LOST_STATUS.SEARCHING
+    if (passed?.id) updateMyItem(passed.kind || 'lost', passed.id, patch)
+    if (patch.status) setStatus(patch.status)
     setThreadUrl('')
     setDeletingThread(false)
   }
