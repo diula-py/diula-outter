@@ -1,10 +1,11 @@
 // 遺失／拾獲物件狀態列舉（全站共用，不要各頁面各自手打字串）。
-// 遺失：尋找中（建立）→ 自動推播中（開訂閱）／已發文（送 Threads）→ 已找到
+// 遺失：已比對（建立）→ 自動推播中（開訂閱）／已發文（送 Threads）→ 已找到
+// 已比對＝只看完比對結果、沒開推播也沒發文，系統不會再主動幫它找（原本叫「尋找中」，易誤會）
 // 自動推播中滿五天 → 結束自動推播（由 Cloud Function expireAutoPush 每小時檢查並停訂閱）
 // 審核中：送出協尋文後 AI 沒把握，等小後台人工核准（見 lib/sosReview.js）；
 //         核准後前端自己把它改成已發文——Flask 改不到 diula--test 的資料。
 export const LOST_STATUS = {
-  SEARCHING: '尋找中',
+  SEARCHING: '已比對',
   BROADCASTING: '自動推播中',
   BROADCAST_ENDED: '結束自動推播',
   REVIEWING: '審核中',
@@ -12,10 +13,12 @@ export const LOST_STATUS = {
   FOUND: '已找到',
 }
 
-// 舊字：2026-10 以前（以及 inner 網站）寫進資料庫的是「已排定發文」。
-// 資料庫不改，讀出來時（items.js toPlainItem）一律當成 LOST_STATUS.POSTED 顯示。
+// 舊字：資料庫不改，讀出來時（items.js toPlainItem）換成新字顯示。
+// 已排定發文：2026-10 以前（以及 inner 網站）寫的 → 已發文
+// 尋找中：2026-11 以前（以及 inner 網站）寫的 → 已比對
 export const LEGACY_LOST_STATUS = {
   '已排定發文': LOST_STATUS.POSTED,
+  '尋找中': LOST_STATUS.SEARCHING,
 }
 
 // 拾獲：保管中 → 已找到
