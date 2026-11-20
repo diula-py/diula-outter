@@ -386,7 +386,8 @@ export default function ResultsPage() {
             >
               <XmarkIcon className="h-[35px] w-[35px]" />
             </button>
-            <div className="text-center text-2xl font-bold leading-6">都沒有我的物品！</div>
+            {/* lg:font-medium：桌機版照手機版的字重感覺調輕，bold 在桌機版大字級下看起來太粗 */}
+            <div className="text-center text-2xl font-bold leading-6 lg:font-medium">都沒有我的物品！</div>
             <div className="mt-8 flex w-[254px] max-w-[calc(100%-40px)] flex-col gap-5">
               {[
                 { label: '開啟自動尋找並推播', tone: 'bg-blue', go: () => navigate('/search/subscribe', { state: location.state }) },

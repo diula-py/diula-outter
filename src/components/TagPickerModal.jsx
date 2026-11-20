@@ -41,8 +41,9 @@ export default function TagPickerModal({ open, value, onClose, onConfirm, taxono
     })
 
   // inner .modal-tag：高 30、padding 10 20、間距 8、12/400、白底黑框；已選＝藍底
+  // 桌機版（lg:）字級加大到 14：彈窗變寬了，手機版的 12px 比例上太小、整頁很空。
   const chip = (on) =>
-    `box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border-black px-5 py-[10px] text-xs font-normal leading-3 text-brown ${on ? 'border-[1.5px] bg-blue' : 'border bg-white'}`
+    `box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border-black px-5 py-[10px] text-xs font-normal leading-3 text-brown lg:text-sm ${on ? 'border-[1.5px] bg-blue' : 'border bg-white'}`
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center" onClick={onClose}>
@@ -70,7 +71,7 @@ export default function TagPickerModal({ open, value, onClose, onConfirm, taxono
           >
             <CheckIcon className="h-5 w-5" />
           </button>
-          <div className="w-full px-[15px] text-center text-base font-medium leading-4 text-brown">已選標籤</div>
+          <div className="w-full px-[15px] text-center text-base font-medium leading-4 text-brown lg:text-xl">已選標籤</div>
           <div className="mt-[15px] flex max-h-[90px] flex-wrap gap-[10px] overflow-y-auto px-5">
             {selected.length === 0 && <div className="text-xs font-normal text-brown opacity-50">尚未選擇標籤</div>}
             {selected.map((tag) => (
@@ -91,7 +92,7 @@ export default function TagPickerModal({ open, value, onClose, onConfirm, taxono
         <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-[5px]">
           {taxonomy.map((cat) => (
             <div key={cat.category}>
-              <div className="mb-[10px] mt-5 text-base font-medium leading-4 text-brown">{cat.category}</div>
+              <div className="mb-[10px] mt-5 text-base font-medium leading-4 text-brown lg:text-lg">{cat.category}</div>
               <div className="flex flex-wrap gap-2 pb-2">
                 {cat.tags.map((tag) => (
                   <button key={tag} type="button" onClick={() => toggle(tag)} className={chip(selected.includes(tag))}>
