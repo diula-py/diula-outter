@@ -189,14 +189,19 @@ export default function ResultDetailPage() {
           </>
         ) : (
           <>
-            <div className="flex items-center gap-3">
-              <CalendarIcon className="h-6 w-6 shrink-0 text-navy" />
-              <span className="text-base text-brown">{fmtDate(item.found_date)}</span>
-            </div>
-            <div className="min-h-[200px] w-full whitespace-pre-wrap rounded-lg border border-black bg-white p-6 text-base leading-relaxed text-brown">
-              {item.description || '（無內文）'}
-              {place && `\n\n地點：${place}`}
-              {(item.holding_place || item.station) && `\n保管地：${item.holding_place || item.station}`}
+            {/* 跟手機版一樣整塊包在米色卡片裡（日期＋「內文」標籤＋內文框），
+                不然像現在這樣只有白底方框，整頁很白。 */}
+            <div className="flex flex-col gap-4 rounded-lg bg-card p-6">
+              <div className="flex items-center gap-3">
+                <CalendarIcon className="h-8 w-8 shrink-0 text-navy" />
+                <span className="text-base text-brown">{fmtDate(item.found_date)}</span>
+              </div>
+              <span className="text-base font-medium text-brown">內文</span>
+              <div className="min-h-[200px] whitespace-pre-wrap rounded-lg bg-white p-6 text-base leading-relaxed text-brown">
+                {item.description || '（無內文）'}
+                {place && `\n\n地點：${place}`}
+                {(item.holding_place || item.station) && `\n保管地：${item.holding_place || item.station}`}
+              </div>
             </div>
 
             {link && (

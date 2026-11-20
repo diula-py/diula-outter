@@ -1,5 +1,6 @@
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { asset } from '../lib/asset'
+import { HouseIcon, UserRegularIcon } from './icons'
 
 // 桌機版（≥1024px，lg:）上方導覽列。2026-11 拿到正式 Figma 桌機設計稿後新增；
 // 手機版沒有這個元件（桌機才顯示的內容一律用 `hidden lg:flex` 這類 class，
@@ -9,9 +10,11 @@ import { asset } from '../lib/asset'
 // 寬度下畫面一模一樣，所以這裡只留「首頁」「個人」兩個連結，不跟著手機版拆成三個──
 // 「首頁」在 / 或 /found 都要顯示 active，用 activePaths 自己判斷，不吃 NavLink 預設的
 // isActive（那個只認得完全符合 to 的那條路徑）。
+// icon 跟手機版底部 TabBar 同一套素材：個人就是同一張 user.png；首頁沒有對應的
+// 單一分頁（合併了手機版的拾獲／尋找兩個 tab），用現成的 house.png 代表進站。
 const NAV_ITEMS = [
-  { to: '/', label: '首頁', activePaths: ['/', '/found'] },
-  { to: '/profile', label: '個人', activePaths: ['/profile'] },
+  { to: '/', label: '首頁', activePaths: ['/', '/found'], Icon: HouseIcon },
+  { to: '/profile', label: '個人', activePaths: ['/profile'], Icon: UserRegularIcon },
 ]
 
 export default function DesktopTopNav() {
@@ -33,8 +36,9 @@ export default function DesktopTopNav() {
               <NavLink
                 key={item.to}
                 to={item.to}
-                className={`border-b-2 pb-1 text-base ${isActive ? 'border-brown font-bold' : 'border-transparent font-normal'} text-brown`}
+                className={`flex items-center gap-2 border-b-2 pb-1 text-base ${isActive ? 'border-brown font-bold' : 'border-transparent font-normal'} text-brown`}
               >
+                <item.Icon className="h-6 w-6 shrink-0" />
                 {item.label}
               </NavLink>
             )

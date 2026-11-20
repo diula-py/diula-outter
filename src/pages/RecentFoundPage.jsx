@@ -311,7 +311,9 @@ export default function RecentFoundPage() {
         （DesktopTopNav＋1280 置中欄＋DesktopFooter，卡片樣式同 ResultsPage 桌機版）：
         頂層/次層分類頁籤橫向排、結果 2 欄卡片、分頁同手機版邏輯。狀態/資料
         （topCats/subCats/items/...）整頁共用，這裡只是另一套排版。 ======== */}
-    <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
+    {/* lg:pb-[130px]：留給下面浮動的「都沒有我的遺失物」膠囊（70 高＋離底 40），
+        不然捲到最底時膠囊會蓋到 DesktopFooter（同 ResultsPage 的做法）。 */}
+    <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex lg:pb-[130px]">
       <DesktopTopNav />
 
       <div className="flex w-full flex-1 flex-col items-center">

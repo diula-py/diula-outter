@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { CalendarIcon, LocationIcon, ChevronLeftIcon, ChevronDownIcon } from '../components/icons'
+import { CalendarIcon, LocationIcon, CircleCheckIcon, ChevronLeftIcon, ChevronDownIcon } from '../components/icons'
 import { FormHeader, FormPage, UploadBox, FormCard, FormRow, RegionField, SubmitButton, pillInput } from '../components/FormKit'
 import DesktopTopNav from '../components/DesktopTopNav'
 import DesktopFooter from '../components/DesktopFooter'
@@ -221,42 +221,52 @@ export default function CrossSearchPage() {
             />
           )}
 
-          <div className="flex gap-4">
-            <div className="flex h-[58px] flex-1 items-center rounded-full border border-black bg-white px-4">
-              <select
-                value={placeCity}
-                onChange={(e) => { setPlaceCity(e.target.value); setPlaceDistrict('') }}
-                aria-label="遺失的縣市"
-                className="h-6 w-full appearance-none bg-transparent text-base text-brown outline-none"
-              >
-                <option value="">選擇縣市</option>
-                {CITY_ORDER.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-              <ChevronDownIcon className="pointer-events-none h-4 w-4 shrink-0 text-[#6B7280]" />
+          {/* 日期／地點：跟手機版一樣包在米色卡片裡、各帶一顆 icon，
+              上下順序也跟手機版一致（日期在上、地點在下），不然整頁很白。 */}
+          <div className="flex w-full flex-col gap-4 rounded-[10px] bg-card p-5">
+            <div className="flex items-center gap-4">
+              <CalendarIcon className="h-9 w-9 shrink-0" />
+              <div className="flex h-[58px] w-full flex-1 items-center justify-center rounded-full border border-black bg-white px-4">
+                <input
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  aria-label="遺失日期"
+                  className="h-6 w-full bg-transparent text-center text-base text-brown outline-none"
+                />
+              </div>
             </div>
-            <div className="flex h-[58px] flex-1 items-center rounded-full border border-black bg-white px-4">
-              <select
-                value={placeDistrict}
-                onChange={(e) => setPlaceDistrict(e.target.value)}
-                disabled={!placeCity}
-                aria-label="遺失的地區"
-                className="h-6 w-full appearance-none bg-transparent text-base text-brown outline-none"
-              >
-                <option value="">選擇地區</option>
-                {(TAIWAN_REGIONS[placeCity] || []).map((d) => <option key={d} value={d}>{d}</option>)}
-              </select>
-              <ChevronDownIcon className="pointer-events-none h-4 w-4 shrink-0 text-[#6B7280]" />
-            </div>
-          </div>
 
-          <div className="flex h-[58px] w-full items-center justify-center rounded-full border border-black bg-white px-4">
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              aria-label="遺失日期"
-              className="h-6 w-full bg-transparent text-center text-base text-brown outline-none"
-            />
+            <div className="flex items-center gap-4">
+              <LocationIcon className="h-9 w-9 shrink-0" />
+              <div className="flex flex-1 gap-4">
+                <div className="flex h-[58px] flex-1 items-center rounded-full border border-black bg-white px-4">
+                  <select
+                    value={placeCity}
+                    onChange={(e) => { setPlaceCity(e.target.value); setPlaceDistrict('') }}
+                    aria-label="遺失的縣市"
+                    className="h-6 w-full appearance-none bg-transparent text-base text-brown outline-none"
+                  >
+                    <option value="">選擇縣市</option>
+                    {CITY_ORDER.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  <ChevronDownIcon className="pointer-events-none h-4 w-4 shrink-0 text-[#6B7280]" />
+                </div>
+                <div className="flex h-[58px] flex-1 items-center rounded-full border border-black bg-white px-4">
+                  <select
+                    value={placeDistrict}
+                    onChange={(e) => setPlaceDistrict(e.target.value)}
+                    disabled={!placeCity}
+                    aria-label="遺失的地區"
+                    className="h-6 w-full appearance-none bg-transparent text-base text-brown outline-none"
+                  >
+                    <option value="">選擇地區</option>
+                    {(TAIWAN_REGIONS[placeCity] || []).map((d) => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                  <ChevronDownIcon className="pointer-events-none h-4 w-4 shrink-0 text-[#6B7280]" />
+                </div>
+              </div>
+            </div>
           </div>
 
           {error && <p className="m-0 text-sm leading-normal text-error">{error}</p>}
@@ -265,9 +275,10 @@ export default function CrossSearchPage() {
             type="button"
             onClick={handleSubmit}
             disabled={submitting}
-            className="flex h-20 w-full items-center justify-center rounded-full border-2 border-black bg-[#F7F4E5] text-xl text-brown transition hover:brightness-[.98] disabled:opacity-60"
+            className="flex h-20 w-full items-center justify-center gap-3 rounded-full border border-black bg-blue text-xl text-brown transition hover:brightness-[.98] disabled:opacity-60"
           >
-            {submitting ? '送出中…' : '填寫完成，AI 辨識產生標籤'}
+            <CircleCheckIcon className="h-10 w-10 shrink-0" />
+            <span>{submitting ? '送出中…' : '填寫完成，AI 辨識產生標籤'}</span>
           </button>
         </div>
 

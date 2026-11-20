@@ -131,7 +131,8 @@ export default function ThreadsSearchPage() {
             <h1 className="m-0 text-2xl font-normal text-brown">Threads 尋找遺失物</h1>
           </div>
 
-          <div className="mt-8 flex h-[74px] items-center gap-5 rounded-full border border-[#2F1702] bg-[#F5F5F5] px-6">
+          {/* 輸入框要矩形（跟手機版同一套規則：輸入框矩形、按鈕膠囊形），不是膠囊 */}
+          <div className="mt-8 flex h-[74px] items-center gap-5 rounded-[10px] border border-[#2F1702] bg-[#F5F5F5] px-6">
             <MagnifyingGlassIcon className="h-5 w-5 shrink-0 text-brown" />
             <input
               type="text"

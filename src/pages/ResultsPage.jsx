@@ -239,7 +239,9 @@ export default function ResultsPage() {
         不是表單，所以不走 768 置中欄那套——內容跟手機版橫式一樣貼齊左右 32~40px，
         比對卡片 2 欄排版儘量用滿寬度。狀態與邏輯（source/list/sosOpen/homeConfirm...）
         整頁共用。 ======== */}
-    <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
+    {/* lg:pb-[130px]：留給下面浮動的「都沒有我的物品」膠囊（70 高＋離底 40），
+        不然捲到最底時膠囊會蓋到 DesktopFooter（手機版用同樣的 pb 技巧，見上面那層）。 */}
+    <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex lg:pb-[130px]">
       <DesktopTopNav />
 
       {/* flex-1 撐滿導覽列跟頁尾之間的空間：內容短（比如 0 筆結果）時頁尾會跟著貼齊這塊

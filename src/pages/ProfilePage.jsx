@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CubesIcon, FolderIcon } from '../components/icons'
+import { CubesIcon, FolderIcon, UserRegularIcon } from '../components/icons'
 import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import DesktopTopNav from '../components/DesktopTopNav'
 import DesktopFooter from '../components/DesktopFooter'
@@ -121,8 +121,11 @@ export default function ProfilePage() {
 
         <div className="mx-auto mt-16 flex w-full max-w-[1536px] flex-wrap items-start justify-center gap-16 px-12 box-border">
           <div className="flex w-[560px] max-w-full flex-col items-start gap-10 rounded-[48px] border border-brown bg-paper p-16 box-border">
+            {/* icon 跟首頁桌機版兩張卡片同一個規則（卡片標題 icon＝該分類在手機版 TabBar
+                的那個 icon）：個人對應的是 user.png，不是跟下面「我的遺失物」按鈕重複的
+                CubesIcon。 */}
             <div className="flex items-center gap-3">
-              <CubesIcon className="h-8 w-8 shrink-0" />
+              <UserRegularIcon className="h-8 w-8 shrink-0" />
               <h2 className="m-0 text-2xl font-normal text-brown">我的歷史紀錄</h2>
             </div>
             <div className="flex w-full flex-col gap-6">
