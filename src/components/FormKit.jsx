@@ -41,12 +41,15 @@ export function FormPage({ children }) {
 }
 
 /** 200px 高的圖片區（340 寬、灰底黑框、圓角 10）。mt：與上一區塊的間距（inner 各頁不同：20／25／40）。 */
-export function UploadBox({ mt = 20, onClick, ariaLabel, src, alt = '', cameraAlt = '上傳照片', onRecrop, cropped = false }) {
+// fullWidth：父層自己已經有左右留白（像 SosPostPage 手填模式，整段欄位共用同一層
+// padding）就傳 true，改吃 w-full 貼齊旁邊的輸入框；預設維持原本「父層無留白、自己
+// 用 calc(100%-40px) 留邊」那套，不動既有呼叫端（CrossSearchPage 等）的版面。
+export function UploadBox({ mt = 20, onClick, ariaLabel, src, alt = '', cameraAlt = '上傳照片', onRecrop, cropped = false, fullWidth = false }) {
   return (
     <div
       style={{ marginTop: mt }}
-      className="relative h-[200px] w-[calc(100%-40px)] max-w-[340px] shrink-0
-                 land:col-start-1 land:mt-0! land:h-[150px] land:w-full land:max-w-none"
+      className={`relative h-[200px] shrink-0 land:col-start-1 land:mt-0! land:h-[150px] land:w-full land:max-w-none
+                 ${fullWidth ? 'w-full' : 'w-[calc(100%-40px)] max-w-[340px]'}`}
     >
       <button
         type="button"

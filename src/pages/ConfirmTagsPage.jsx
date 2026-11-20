@@ -32,6 +32,9 @@ export default function ConfirmTagsPage() {
   const [pickerOpen, setPickerOpen] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  // 從「近2日遺失物快速看」的「開啟自動尋找並推播」進來（autoSubscribe:true）：
+  // 確認後不會進比對結果頁、直接開訂閱，按鈕文字要照實說，不能照舊講「開始比對尋找」。
+  const submitLabel = data.autoSubscribe ? '確認！開始自動尋找並推播' : '確認！開始比對尋找'
   // 這筆已發協尋文／開自動推播 → 退回來不能再比對一次（會再進結果頁選另一個），直接換成首頁
   const handled = useLeaveIfHandled(data.lostId)
 
@@ -166,7 +169,7 @@ export default function ConfirmTagsPage() {
           {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error">{error}</p>}
 
           <SubmitButton tone="card" onClick={handleConfirm} disabled={busy}>
-            {busy ? '比對中…' : '確認！開始比對尋找'}
+            {busy ? '比對中…' : submitLabel}
           </SubmitButton>
         </FormPage>
       </div>
@@ -266,7 +269,7 @@ export default function ConfirmTagsPage() {
             className="flex h-20 w-full items-center justify-center gap-3 rounded-full border-2 border-black bg-card text-xl text-brown transition hover:brightness-[.98] disabled:opacity-60"
           >
             <CircleCheckIcon className="h-10 w-10 shrink-0" />
-            {busy ? '比對中…' : '確認！開始比對尋找'}
+            {busy ? '比對中…' : submitLabel}
           </button>
         </div>
 

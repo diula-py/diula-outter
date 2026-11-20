@@ -5,8 +5,10 @@ import { ChevronDownIcon } from './icons'
  * 「回到頂部」圓鈕（比對結果頁、Threads 尋找遺失物頁共用）：白底 50×50、黑框、陰影，
  * 右緣對齊卡片欄（340）。往下滑超過一個螢幕高才淡入，回到一個螢幕高以內就收起；點了平滑捲回頂端。
  * bottomClass：離視窗底部多高（要寫完整的 Tailwind class，Tailwind 才產得出來）。
+ * widthClass：外層容器的寬度／內距（預設手機版卡片欄 340），桌機版呼叫端可以傳
+ * 1280 置中欄的寬度＋px-10，讓按鈕跟著貼齊內容欄右緣，不用為了桌機另外寫一顆。
  */
-export default function BackToTopButton({ bottomClass }) {
+export default function BackToTopButton({ bottomClass, widthClass = 'w-[calc(100%-40px)] max-w-[340px]' }) {
   const [show, setShow] = useState(false)
   useEffect(() => {
     function check() {
@@ -22,7 +24,7 @@ export default function BackToTopButton({ bottomClass }) {
   }, [])
 
   return (
-    <div className={`pointer-events-none fixed left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[340px] -translate-x-1/2 justify-end ${bottomClass}`}>
+    <div className={`pointer-events-none fixed left-1/2 z-[90] flex -translate-x-1/2 justify-end box-border ${widthClass} ${bottomClass}`}>
       <button
         type="button"
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
