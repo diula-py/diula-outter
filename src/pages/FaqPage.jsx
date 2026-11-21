@@ -311,6 +311,7 @@ export default function FaqPage() {
   const current = SECTIONS[topic]
 
   return (
+    <>
     <LegalPage title="常見問題">
       <div className="flex flex-col gap-7 text-brown">
         <section className="flex flex-col gap-3">
@@ -401,8 +402,11 @@ export default function FaqPage() {
           </div>
         </section>
       </div>
-
-      {tour === 'first' && <OnboardingTour onClose={() => setTour(null)} />}
     </LegalPage>
+
+    {/* 放在 LegalPage 外面：LegalPage 會把 children 渲染兩份（手機版＋桌機版），
+        放裡面會同時開兩個教學，兩個各自鎖／還原 html 捲動，關掉後捲動會一直被鎖住 */}
+    {tour === 'first' && <OnboardingTour onClose={() => setTour(null)} />}
+    </>
   )
 }
