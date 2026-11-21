@@ -8,6 +8,7 @@ import DesktopTopNav from '../components/DesktopTopNav'
 import DesktopFooter from '../components/DesktopFooter'
 import PhotoMaskModal from '../components/PhotoMaskModal'
 import { useItemPhoto } from '../components/CropModal'
+import { downscale } from '../lib/image'
 import { addMyItem, getMyItem, updateMyItem } from '../lib/items'
 import { markLostHandled } from '../lib/handledLost'
 import { friendlyError } from '../lib/errors'
@@ -20,26 +21,8 @@ import { asset } from '../lib/asset'
 import { CITY_ORDER, TAIWAN_REGIONS } from '../data/taiwanRegions'
 
 // Threads 抓外部圖有下載逾時上限，原始手機照太大會 2207003（下載逾時）→ 先縮圖再送。
-function downscale(dataUrl, maxSide = 1280, quality = 0.82) {
-  return new Promise((resolve) => {
-    const img = new Image()
-    img.onload = () => {
-      const scale = Math.min(1, maxSide / Math.max(img.width, img.height))
-      const w = Math.round(img.width * scale)
-      const h = Math.round(img.height * scale)
-      const c = document.createElement('canvas')
-      c.width = w
-      c.height = h
-      const ctx = c.getContext('2d')
-      ctx.fillStyle = '#ffffff' // JPEG 無透明，先鋪白底避免透明區變黑
-      ctx.fillRect(0, 0, w, h)
-      ctx.drawImage(img, 0, 0, w, h)
-      try { resolve(c.toDataURL('image/jpeg', quality)) } catch { resolve(dataUrl) }
-    }
-    img.onerror = () => resolve(dataUrl)
-    img.src = dataUrl
-  })
-}
+// downscale 改用 lib/image.js 共用那份（2026-11 併掉這份重複、沒有「太大就降品質重轉」
+// 保護的舊版本——這頁下面也會把縮完的圖存進 Firestore，一樣會踩單筆 1MB 上限）。
 
 // 文案模版（對齊設計稿預覽頁）
 function buildText({ name, date, place, note }) {
