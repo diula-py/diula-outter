@@ -55,26 +55,38 @@ export default function MyLostDetailPage() {
     return () => { alive = false }
   }, [passed])
 
-  // 刪除 Threads 協尋文：呼官方 API 刪文 → 清掉本機貼文欄位 → 連結列消失。
+  // 刪除 Threads 協尋文：呼官方 API 刪文 → 確認真的刪成功 → 清掉本機貼文欄位、連結列消失。
   // 狀態原本是「已發文」的話退回「尋找中」——貼文已經不在了，不能還顯示已發文。
+  // 2026-11 修：以前不管後端回應成功或失敗都照樣清掉本機連結，變成「連結消失了但
+  // Threads 上貼文其實還在」——使用者以為刪掉了，後台清單卻還顯示「已發佈」，
+  // 最後得靠管理者手動按下架。現在改成先確認 res.ok，失敗就跳錯誤、連結留著，
+  // 不能用的動作不能看起來像成功了。
   async function deleteThreadPost() {
     setDeletingThread(true)
     try {
       if (passed?.thread_post_id) {
         // 後端只讓發文者自己刪，要帶登入憑證（見 diula-outter 的 auth_token.py）。
         const authHeaders = await getAuthHeaders()
-        await fetch(flask('/threads/delete'), {
+        const res = await fetch(flask('/threads/delete'), {
           method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeaders },
-          body: JSON.stringify({ post_id: passed.thread_post_id }),
+          body: JSON.stringify({ post_id: passed.thread_post_id, lost_id: passed.id || '' }),
         })
+        if (!res.ok) {
+          const json = await res.json().catch(() => ({}))
+          throw new Error(json.error || `HTTP ${res.status}`)
+        }
       }
-    } catch { /* 網路錯誤也照樣把本機連結清掉，避免卡在已刪的貼文 */ }
-    const patch = { thread_post_url: '', thread_post_id: '' }
-    if (status === LOST_STATUS.POSTED) patch.status = LOST_STATUS.SEARCHING
-    if (passed?.id) updateMyItem(passed.kind || 'lost', passed.id, patch)
-    if (patch.status) setStatus(patch.status)
-    setThreadUrl('')
-    setDeletingThread(false)
+      const patch = { thread_post_url: '', thread_post_id: '' }
+      if (status === LOST_STATUS.POSTED) patch.status = LOST_STATUS.SEARCHING
+      if (passed?.id) updateMyItem(passed.kind || 'lost', passed.id, patch)
+      if (patch.status) setStatus(patch.status)
+      setThreadUrl('')
+    } catch (e) {
+      console.error('刪除協尋文失敗:', e)
+      alert('刪除協尋文失敗，請稍後再試')
+    } finally {
+      setDeletingThread(false)
+    }
   }
 
   // 按「已找到」→ 刪 Threads 協尋文 / 停訂閱（有的話）→ 更新本機狀態。
@@ -86,7 +98,7 @@ export default function MyLostDetailPage() {
       if (passed?.thread_post_id) {
         await fetch(flask('/threads/delete'), {
           method: 'POST', headers,
-          body: JSON.stringify({ post_id: passed.thread_post_id }),
+          body: JSON.stringify({ post_id: passed.thread_post_id, lost_id: passed.id || '' }),
         })
       }
       if (passed?.sub_id) {
@@ -118,7 +130,7 @@ export default function MyLostDetailPage() {
       }
       if (passed?.thread_post_id) {
         await fetch(flask('/threads/delete'), {
-          method: 'POST', headers, body: JSON.stringify({ post_id: passed.thread_post_id }),
+          method: 'POST', headers, body: JSON.stringify({ post_id: passed.thread_post_id, lost_id: passed.id || '' }),
         })
       }
     } catch { /* 清理失敗也照樣刪本機 */ }
