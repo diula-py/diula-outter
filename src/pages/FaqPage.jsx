@@ -16,7 +16,7 @@ import OnboardingTour from '../components/OnboardingTour'
  * 2026-11-21 改成「主題標籤切換」版型（設計稿：D 主題標籤切換-html/FaqTabs.dc.html），
  * 文案來源：「DiuLa! 常見問題（FAQ）文案.md」（11/18）。改題目只要改 SECTIONS。
  * 回答由區塊組成：p 段落、note 小字附註、ol 編號清單、ul 圓點清單、links 外部連結。
- * 清單項目若在前 12 字內有「：」，冒號前（含）會變粗體。
+ * 清單項目若在前 12 字內有「：」，冒號前（含）會變粗體；超過 12 字也要粗體的，寫成 { b: 粗體, x: 其餘 }。
  */
 
 const TUTORIALS = [
@@ -89,7 +89,7 @@ const SECTIONS = [
             t: 'ol',
             i: [
               '等通知：在查詢結果點「都沒有我的物品」，選擇「開啟自動尋找並推播」，接下來 5 天系統會持續比對新登錄的拾獲物，一有符合的就通知你。用 Google 帳號登入會寄到你的 Gmail，用 LINE 登入則由 DiuLa! 的 LINE 官方帳號傳訊息給你。',
-              '幫我匿名發 Threads 協尋文：在查詢結果點「都沒有我的物品」，選擇「幫我在Threads發協尋文」，DiuLa! 會用官方 Threads 帳號幫你發文，不會顯示你的帳號。',
+              { b: '匿名發 Threads 協尋文：', x: '在查詢結果點「都沒有我的物品」，選擇「幫我在Threads發協尋文」，DiuLa! 會用官方 Threads 帳號幫你發文，不會顯示你的帳號。' },
               '放寬條件：換成鄰近的縣市區、把日期往前調，或換一個物品類別再查一次。',
               '找找 Threads：用「Threads 尋找遺失物」查網友發的拾獲文。',
               '直接問官方：東西剛掉不久時，可能還沒登錄到系統，可以先打電話或到服務台詢問，做法見「其他尋找管道」。',
@@ -140,7 +140,7 @@ const SECTIONS = [
             t: 'ul',
             i: [
               '近2日遺失物快速看：顯示你之前在這支手機上看過的資料，連上網路後才會更新。',
-              'Threads 尋找遺失物：同樣顯示之前看過的資料。',
+              { b: 'Threads 尋找遺失物：', x: '同樣顯示之前看過的資料。' },
               '非證件類遺失物登錄：可以先拍照、填好資料，等連上網路再自動上傳。證件類登錄需要連網路才能使用。',
             ],
           },
@@ -236,6 +236,8 @@ const SECTIONS = [
 
 /** 清單項目：前 12 字內有「：」→ 冒號前（含）粗體 */
 function splitLead(text) {
+  // 冒號超過 12 字還要粗體的項目，直接寫成 { b: 粗體, x: 其餘 }
+  if (typeof text === 'object') return [text.b, text.x]
   const i = text.indexOf('：')
   return i > 0 && i <= 12 ? [text.slice(0, i + 1), text.slice(i + 1)] : ['', text]
 }
