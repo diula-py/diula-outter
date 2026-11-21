@@ -103,8 +103,10 @@ export default function ProfilePage() {
         </button>
         {/* 底部連結：mt-auto 讓手機直向(上面那層已改 min-h-full 撐滿畫面)在內容短時
             貼到 TabBar 正上方，不會跟登出按鈕之間留一大截空白；橫放(land:)維持原本
-            排版用 grid 第 4 列定位，不受影響。 */}
-        <div className="mt-auto flex pt-[30px] text-[10px] font-normal leading-[10px] text-brown [&>*]:w-20 [&>*]:text-center land:col-start-1 land:row-start-4 land:mt-1 land:pt-0 land:justify-self-center">
+            排版用 grid 第 4 列定位，不受影響。
+            2026-11-21：字 10 → 12px、行高 10 → 16px，每個連結上下各加 8px padding 讓可點高度
+            約 32px；上方 pt 30 → 22 抵掉多出來的 padding，跟登出鈕的距離維持差不多。 */}
+        <div className="mt-auto flex pt-[22px] text-[12px] font-normal leading-4 text-brown [&>*]:w-20 [&>*]:py-2 [&>*]:text-center land:col-start-1 land:row-start-4 land:mt-1 land:pt-0 land:justify-self-center">
           <a href="https://about.diula.co" target="_blank" rel="noopener noreferrer" className="underline">
             關於DiuLa!
           </a>
