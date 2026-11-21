@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { DetailHeader } from '../components/DetailKit'
 import { ChevronLeftIcon, DiulaPinIcon, XmarkIcon } from '../components/icons'
 import { Overlay } from '../components/DialogKit'
@@ -63,12 +63,15 @@ const SHOW_AT = 7
 // 這版先不做（兩排頁籤本身的功能都在，只是視覺上少了那個尖角），要再加再說。
 export default function RecentFoundPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [categories, setCategories] = useState([])
-  const [topId, setTopId] = useState(null)
-  const [subId, setSubId] = useState(null)
+  // 從案件詳情頁按返回回來時，location.state 會帶著離開當下的頁籤／頁碼（見下面
+  // 「同步進歷史紀錄」那個 effect）；有的話直接沿用，不要又跳回預設的第一個分類。
+  const [topId, setTopId] = useState(location.state?.topId ?? null)
+  const [subId, setSubId] = useState(location.state?.subId ?? null)
   const [items, setItems] = useState([])
   const [count, setCount] = useState(0)
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(location.state?.page ?? 1)
   const [totalPages, setTotalPages] = useState(1)
   const [range, setRange] = useState(null)
   const [loadingCats, setLoadingCats] = useState(true)
@@ -89,6 +92,9 @@ export default function RecentFoundPage() {
       .then((cats) => {
         if (!alive) return
         setCategories(cats)
+        // 從詳情頁返回時 topId 已經是離開當下的那個分類（上面 useState 初始化帶的），
+        // 不用再選第一個分類蓋掉它。
+        if (location.state?.topId != null) return
         const firstTop = cats.find((c) => c.level === 1)
         setTopId(firstTop?.id ?? null)
         const firstSub = firstTop && cats.find((c) => c.parent_id === firstTop.id)
@@ -126,6 +132,15 @@ export default function RecentFoundPage() {
       .catch((e) => { if (alive) setError(friendlyError(e)) })
       .finally(() => { if (alive) setLoadingItems(false) })
     return () => { alive = false }
+  }, [topId, subId, page])
+
+  // 同步進歷史紀錄：把目前的頁籤／頁碼存進這一筆 history entry 的 state（replace，
+  // 不會多推一筆紀錄）。點進案件詳情頁再按返回時，瀏覽器會跳回這一筆 entry，上面
+  // 那兩個 useState 的初始值就讀得到離開當下選的分類／頁碼，不會重置回第一個分類。
+  useEffect(() => {
+    if (topId == null) return
+    navigate(location.pathname, { replace: true, state: { topId, subId, page } })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topId, subId, page])
 
   // 換分類（頂層／次層）要跳回第 1 頁，不然留著上次的頁碼可能超過新分類的總頁數。
