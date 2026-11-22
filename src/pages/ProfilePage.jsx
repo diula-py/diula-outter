@@ -56,7 +56,7 @@ export default function ProfilePage() {
 
         {/* 使用者卡：350×190、置中、header 下 18；1px 咖啡框；頭像 70、間距 20、名稱 16/500、編號 12/500 行高 13（設計稿 Frame 74） */}
         <div className="mt-[18px] flex h-[190px] w-[calc(100%-43px)] max-w-[350px] flex-col items-center justify-center gap-5 rounded-[20px] border border-brown bg-card/50 px-5 py-[30px]
-                        land:col-start-1 land:row-span-2 land:mt-[18px] land:h-auto land:w-full land:max-w-none land:gap-3 land:py-5 land:self-auto">
+                        land:col-start-1 land:mt-[18px] land:h-auto land:w-full land:max-w-none land:gap-3 land:py-5 land:self-auto">
           <div className="flex h-[70px] w-[70px] shrink-0 items-center justify-center overflow-hidden rounded-full border border-black bg-white">
             <img src={avatarSrc} alt="大頭貼" onError={() => setAvatarBroken(true)} className="h-full w-full object-cover" />
           </div>
@@ -105,8 +105,11 @@ export default function ProfilePage() {
             貼到 TabBar 正上方，不會跟登出按鈕之間留一大截空白；橫放(land:)維持原本
             排版用 grid 第 4 列定位，不受影響。
             2026-11-21：字 10 → 12px、行高 10 → 16px，每個連結上下各加 8px padding 讓可點高度
-            約 32px；上方 pt 30 → 22 抵掉多出來的 padding，跟登出鈕的距離維持差不多。 */}
-        <div className="mt-auto flex pt-[22px] text-[12px] font-normal leading-4 text-brown [&>*]:w-20 [&>*]:py-2 [&>*]:text-center land:col-start-1 land:row-start-4 land:mt-1 land:pt-0 land:justify-self-center">
+            約 32px；上方 pt 30 → 22 抵掉多出來的 padding，跟登出鈕的距離維持差不多。
+            2026-11-23：橫放時原本這排自己佔第 4 列，頁面比畫面高、一進來剛好被浮動 TabBar 擋住。
+            改成放在使用者卡正下方（第 3 列，跟登出鈕同一列、上緣對齊；使用者卡不再 row-span-2），
+            橫放的上下 padding 8 → 4px，整排落在 TabBar 上方。直式不受影響。 */}
+        <div className="mt-auto flex pt-[22px] text-[12px] font-normal leading-4 text-brown [&>*]:w-20 [&>*]:py-2 [&>*]:text-center land:col-start-1 land:row-start-3 land:mt-1 land:pt-0 land:self-start land:justify-self-center land:[&>*]:py-1">
           <a href="https://about.diula.co" target="_blank" rel="noopener noreferrer" className="underline">
             關於DiuLa!
           </a>
