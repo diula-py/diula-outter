@@ -378,7 +378,8 @@ export default function FaqPage() {
                                focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
                   >
                     <span aria-hidden="true" className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brown text-sm font-bold text-white">
-                      Q
+                      {/* Comfortaa 的字身在行高裡偏上，往下移 1px 才會在圓圈正中 */}
+                      <span className="translate-y-px">Q</span>
                     </span>
                     <span className="min-w-0 flex-1">{q.q}</span>
                     <svg
@@ -391,7 +392,7 @@ export default function FaqPage() {
                   {isOpen && (
                     <div className="flex items-start gap-3 pb-5">
                       <span aria-hidden="true" className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 border-brown text-sm font-bold">
-                        A
+                        <span className="translate-y-px">A</span>
                       </span>
                       <div className="flex min-w-0 flex-1 flex-col gap-[10px] text-[15px] leading-[1.75]">
                         {q.a.map((b, k) => <AnswerBlock key={k} b={b} />)}
