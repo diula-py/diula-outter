@@ -302,8 +302,8 @@ export default function FaqPage() {
   const navigate = useNavigate()
   const [tour, setTour] = useState(null)
   const [topic, setTopic] = useState(0)
-  // 展開狀態以「主題-題號」記，切換主題再切回來會保留；預設展開第一題（同設計稿）
-  const [open, setOpen] = useState({ '0-0': true })
+  // 展開狀態以「主題-題號」記，切換主題再切回來會保留；一打開全部收合（2026-11-23 改，不照設計稿預設展開第一題）
+  const [open, setOpen] = useState({})
 
   const play = (t) => {
     if (t.path) navigate(t.path, { state: { tour: t.key } })
