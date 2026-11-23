@@ -143,6 +143,17 @@ export function DeleteThreadConfirmModal({ onCancel, onConfirm, busy }) {
   )
 }
 
+/** 停止自動尋找並推播：版型照 DeleteThreadConfirmModal（兩行標題、是／否，否為藍色）。 */
+export function StopAutoPushConfirmModal({ onCancel, onConfirm, busy }) {
+  return (
+    <WireDialog height={251} onClose={onCancel} label="是否停止自動尋找並推播">
+      <DialogTitle top={79} width={246} lineHeight={24}>是否停止自動尋找<br />並推播？</DialogTitle>
+      <DialogButton left={41} top={146} width={90} onClick={onConfirm} disabled={busy}>是</DialogButton>
+      <DialogButton left={170} top={146} width={90} tone="blue" onClick={onCancel}>否</DialogButton>
+    </WireDialog>
+  )
+}
+
 /** inner delete-success-modal（300×230，無 X）：「該筆資料已被刪除！」＋ 置中藍色「確認」180×60。 */
 export function DeleteSuccessModal({ onConfirm }) {
   return (

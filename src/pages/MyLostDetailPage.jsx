@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { CalendarIcon, LocationIcon, ChevronLeftIcon, CircleCheckIcon } from '../components/icons'
-import { ConfirmFoundModal, DeleteConfirmModal, DeleteSuccessModal, DeleteThreadConfirmModal } from '../components/DialogKit'
+import { ConfirmFoundModal, DeleteConfirmModal, DeleteSuccessModal, DeleteThreadConfirmModal, StopAutoPushConfirmModal } from '../components/DialogKit'
 import { DetailHeader, DetailImage, InfoBox, InfoRow, TagsBox, ActionButton, DeleteButton } from '../components/DetailKit'
 import DesktopTopNav from '../components/DesktopTopNav'
 import DesktopFooter from '../components/DesktopFooter'
@@ -38,8 +38,13 @@ export default function MyLostDetailPage() {
   useEffect(() => { wakeFlask() }, [])
   // Threads 自動發文的貼文連結；非 Threads 的協尋物沒有這欄 → 不顯示連結列。
   const [threadUrl, setThreadUrl] = useState(passed?.thread_post_url || '')
+  // 貼文 id 用 state 記：刪成功就清掉，之後重試「我找到了／刪除」不會再刪一次同一則
+  const [threadPostId, setThreadPostId] = useState(passed?.thread_post_id || '')
   const [deletingThread, setDeletingThread] = useState(false)
+  const [stoppingPush, setStoppingPush] = useState(false)
   const found = status === LOST_STATUS.FOUND
+  // 只有「自動推播中」才需要停訂閱；已結束的訂閱 expireAutoPush 已經停過，不再打一次
+  const broadcasting = status === LOST_STATUS.BROADCASTING && !!passed?.sub_id
 
   // 還在審核中的協尋文：問後端審過了沒，審完就把狀態補上（見 lib/sosReview.js，
   // 那邊有解釋為什麼這件事得由前端做）。查不到就什麼都不變。
@@ -55,59 +60,98 @@ export default function MyLostDetailPage() {
     return () => { alive = false }
   }, [passed])
 
+  async function jsonAuthHeaders() {
+    // 後端只讓本人刪文／停訂閱，要帶登入憑證（見 diula-outter 的 auth_token.py）
+    const authHeaders = await getAuthHeaders()
+    return { 'Content-Type': 'application/json', ...authHeaders }
+  }
+
+  // 丟給使用者看的錯誤：呼叫端 alert(`${e.userMessage}，請稍後再試`)
+  function userError(userMessage) {
+    const e = new Error(userMessage)
+    e.userMessage = userMessage
+    return e
+  }
+
+  // 呼 Flask 並確認回 2xx。2026-11 修：以前「我找到了／刪除」不看 res.ok，後端失敗
+  // （例如 Render 冷啟動逾時）照樣標已找到／刪紀錄，訂閱卻還在推播、貼文還掛在 Threads，
+  // 而且狀態改掉後 expireAutoPush 也掃不到，永遠停不掉。現在失敗就丟錯，不往下做。
+  async function postFlask(path, body, headers, userMessage) {
+    let res
+    try {
+      res = await fetch(flask(path), { method: 'POST', headers, body: JSON.stringify(body) })
+    } catch {
+      throw userError(userMessage)
+    }
+    if (!res.ok) throw userError(userMessage)
+  }
+
+  // 停掉自動推播訂閱，成功才把狀態改「結束自動推播」（同 Cloud Function expireAutoPush）
+  async function stopSubscription(headers) {
+    await postFlask('/subscriptions/found', { id: passed.sub_id }, headers, '停止自動推播失敗')
+    if (passed?.id) await updateMyItem(passed.kind || 'lost', passed.id, { status: LOST_STATUS.BROADCAST_ENDED })
+    setStatus(LOST_STATUS.BROADCAST_ENDED)
+  }
+
   // 刪除 Threads 協尋文：呼官方 API 刪文 → 確認真的刪成功 → 清掉本機貼文欄位、連結列消失。
-  // 狀態原本是「已發文」的話退回「尋找中」——貼文已經不在了，不能還顯示已發文。
+  // 狀態原本是「已發文」的話退回「已比對」——貼文已經不在了，不能還顯示已發文。
   // 2026-11 修：以前不管後端回應成功或失敗都照樣清掉本機連結，變成「連結消失了但
-  // Threads 上貼文其實還在」——使用者以為刪掉了，後台清單卻還顯示「已發佈」，
-  // 最後得靠管理者手動按下架。現在改成先確認 res.ok，失敗就跳錯誤、連結留著，
-  // 不能用的動作不能看起來像成功了。
+  // Threads 上貼文其實還在」。現在先確認 res.ok，失敗就丟錯、連結留著。
+  async function deleteThreadOnServer(headers) {
+    if (threadPostId) {
+      await postFlask('/threads/delete', { post_id: threadPostId, lost_id: passed?.id || '' }, headers, '刪除 Threads 協尋文失敗')
+    }
+    const patch = { thread_post_url: '', thread_post_id: '' }
+    if (status === LOST_STATUS.POSTED) patch.status = LOST_STATUS.SEARCHING
+    if (passed?.id) await updateMyItem(passed.kind || 'lost', passed.id, patch)
+    if (patch.status) setStatus(patch.status)
+    setThreadUrl('')
+    setThreadPostId('')
+  }
+
+  function alertFailure(e, fallback) {
+    console.error(fallback, e)
+    alert(`${e.userMessage || fallback}，請稍後再試`)
+  }
+
   async function deleteThreadPost() {
     setDeletingThread(true)
     try {
-      if (passed?.thread_post_id) {
-        // 後端只讓發文者自己刪，要帶登入憑證（見 diula-outter 的 auth_token.py）。
-        const authHeaders = await getAuthHeaders()
-        const res = await fetch(flask('/threads/delete'), {
-          method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeaders },
-          body: JSON.stringify({ post_id: passed.thread_post_id, lost_id: passed.id || '' }),
-        })
-        if (!res.ok) {
-          const json = await res.json().catch(() => ({}))
-          throw new Error(json.error || `HTTP ${res.status}`)
-        }
-      }
-      const patch = { thread_post_url: '', thread_post_id: '' }
-      if (status === LOST_STATUS.POSTED) patch.status = LOST_STATUS.SEARCHING
-      if (passed?.id) updateMyItem(passed.kind || 'lost', passed.id, patch)
-      if (patch.status) setStatus(patch.status)
-      setThreadUrl('')
+      await deleteThreadOnServer(await jsonAuthHeaders())
     } catch (e) {
-      console.error('刪除協尋文失敗:', e)
-      alert('刪除協尋文失敗，請稍後再試')
+      alertFailure(e, '刪除協尋文失敗')
     } finally {
       setDeletingThread(false)
+      setDialog(null)
     }
   }
 
-  // 按「已找到」→ 刪 Threads 協尋文 / 停訂閱（有的話）→ 更新本機狀態。
+  // 「停止自動尋找並推播」：只停訂閱、留著這筆紀錄，「我找到了」「刪除」照樣可以按
+  async function stopAutoPush() {
+    setStoppingPush(true)
+    try {
+      await stopSubscription(await jsonAuthHeaders())
+    } catch (e) {
+      alertFailure(e, '停止自動推播失敗')
+    } finally {
+      setStoppingPush(false)
+      setDialog(null)
+    }
+  }
+
+  // 按「已找到」→ 停訂閱 / 刪 Threads 協尋文（有的話）→ 都成功才標已找到。
   async function confirmFound() {
     setBusy(true)
     try {
-      const authHeaders = await getAuthHeaders()
-      const headers = { 'Content-Type': 'application/json', ...authHeaders }
-      if (passed?.thread_post_id) {
-        await fetch(flask('/threads/delete'), {
-          method: 'POST', headers,
-          body: JSON.stringify({ post_id: passed.thread_post_id, lost_id: passed.id || '' }),
-        })
-      }
-      if (passed?.sub_id) {
-        await fetch(flask('/subscriptions/found'), {
-          method: 'POST', headers,
-          body: JSON.stringify({ id: passed.sub_id }),
-        })
-      }
-    } catch { /* 網路錯誤也照樣標記已找到 */ }
+      const headers = await jsonAuthHeaders()
+      if (broadcasting) await stopSubscription(headers)
+      if (threadPostId) await deleteThreadOnServer(headers)
+    } catch (e) {
+      alertFailure(e, '更新狀態失敗')
+      setBusy(false)
+      setDialog(null)
+      return
+    }
     if (passed?.id) updateMyItem(passed.kind || 'lost', passed.id, { status: LOST_STATUS.FOUND })
     setStatus(LOST_STATUS.FOUND)
     setBusy(false)
@@ -115,25 +159,20 @@ export default function MyLostDetailPage() {
     navigate('/my/lost', { replace: true })
   }
 
-  // 刪除此筆資料：先停掉自動推播訂閱、撤下 Threads 協尋文（避免刪了紀錄還一直收到通知／
-  // 留下孤兒貼文），再刪本機紀錄 →「該筆資料已被刪除！」→ 確認後回列表。
+  // 刪除此筆資料：先停掉自動推播訂閱、撤下 Threads 協尋文，都成功才刪本機紀錄
+  // （紀錄一刪 sub_id／貼文 id 就沒了，之後再也停不掉、撤不下）→「該筆資料已被刪除！」→ 確認後回列表。
   async function deleteItem() {
     setBusy(true)
-    // 後端清理（best-effort）：網路錯誤也照樣刪本機，不卡住使用者
     try {
-      const authHeaders = await getAuthHeaders()
-      const headers = { 'Content-Type': 'application/json', ...authHeaders }
-      if (passed?.sub_id) {
-        await fetch(flask('/subscriptions/found'), {
-          method: 'POST', headers, body: JSON.stringify({ id: passed.sub_id }),
-        })
-      }
-      if (passed?.thread_post_id) {
-        await fetch(flask('/threads/delete'), {
-          method: 'POST', headers, body: JSON.stringify({ post_id: passed.thread_post_id, lost_id: passed.id || '' }),
-        })
-      }
-    } catch { /* 清理失敗也照樣刪本機 */ }
+      const headers = await jsonAuthHeaders()
+      if (broadcasting) await stopSubscription(headers)
+      if (threadPostId) await deleteThreadOnServer(headers)
+    } catch (e) {
+      alertFailure(e, '刪除失敗')
+      setBusy(false)
+      setDialog(null)
+      return
+    }
     try {
       if (passed?.id) await removeMyItem(passed.kind || 'lost', passed.id)
       setDialog('deleted')
@@ -209,6 +248,21 @@ export default function MyLostDetailPage() {
 
       {/* 我找到了（找到後隱藏） */}
       {!found && <ActionButton tone="blue" onClick={() => setDialog('confirm')}>我找到了！立即更新狀態</ActionButton>}
+
+      {/* 停止自動尋找並推播（只在自動推播中顯示）：跟「我找到了」同尺寸，白底無圖示當次要按鈕 */}
+      {broadcasting && (
+        <button
+          type="button"
+          onClick={() => setDialog('stopPush')}
+          disabled={stoppingPush}
+          className="mt-5 box-border flex h-[60px] w-[calc(100%-40px)] max-w-[350px] shrink-0 items-center justify-center rounded-[50px] border border-black bg-white px-5 text-base font-medium text-brown
+                     land:col-span-full land:mt-1 land:justify-self-center
+                     transition hover:brightness-[.98] disabled:opacity-60
+                     focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+        >
+          {stoppingPush ? '停止中…' : '停止自動尋找並推播'}
+        </button>
+      )}
 
       {/* 刪除此筆資料（inner：我找到了鈕下方 20px；我找到了隱藏時仍顯示） */}
       <DeleteButton onClick={() => setDialog('delete')} />
@@ -311,6 +365,17 @@ export default function MyLostDetailPage() {
           </button>
         )}
 
+        {broadcasting && (
+          <button
+            type="button"
+            onClick={() => setDialog('stopPush')}
+            disabled={stoppingPush}
+            className="flex h-20 w-full items-center justify-center rounded-full border border-black bg-white text-xl text-brown transition hover:brightness-[.98] disabled:opacity-60"
+          >
+            {stoppingPush ? '停止中…' : '停止自動尋找並推播'}
+          </button>
+        )}
+
         <button
           type="button"
           onClick={() => setDialog('delete')}
@@ -330,8 +395,11 @@ export default function MyLostDetailPage() {
         <DeleteThreadConfirmModal
           busy={deletingThread}
           onCancel={() => setDialog(null)}
-          onConfirm={async () => { await deleteThreadPost(); setDialog(null) }}
+          onConfirm={deleteThreadPost}
         />
+      )}
+      {dialog === 'stopPush' && (
+        <StopAutoPushConfirmModal busy={stoppingPush} onCancel={() => setDialog(null)} onConfirm={stopAutoPush} />
       )}
       {dialog === 'deleted' && <DeleteSuccessModal onConfirm={() => navigate('/my/lost', { replace: true })} />}
     </>

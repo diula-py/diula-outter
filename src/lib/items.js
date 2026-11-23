@@ -165,6 +165,8 @@ export async function updateMyItem(kind, id, patch) {
   const fields = toFirestoreFields(patch)
   // 已建立的遺失物之後才開自動推播，一樣要記開始時間（同 addMyItem）
   if (patch.status === LOST_STATUS.BROADCASTING) fields.autoPushStartedAt = serverTimestamp()
+  // 使用者手動停止推播：跟 Cloud Function expireAutoPush 一樣記結束時間
+  if (patch.status === LOST_STATUS.BROADCAST_ENDED) fields.autoPushEndedAt = serverTimestamp()
   await getOwnerUid()
   await updateDoc(doc(db, col, id), fields)
 }
