@@ -353,11 +353,10 @@ export default function RecentFoundPage() {
         （DesktopTopNav＋1280 置中欄＋DesktopFooter，卡片樣式同 ResultsPage 桌機版）：
         頂層/次層分類頁籤橫向排、結果 2 欄卡片、分頁同手機版邏輯。狀態/資料
         （topCats/subCats/items/...）整頁共用，這裡只是另一套排版。 ======== */}
-    {/* lg:pb-[200px]：留給下面浮動的「都沒有我的遺失物」膠囊（70 高＋離底 40）。
-        原本只留 130px、捲到最底時在窄一點的桌機寬度下還是會蓋到 DesktopFooter——
-        那顆頁尾是 flex-wrap，螢幕不夠寬時會折成兩行、變高，130 的安全距不夠用。
-        改抓 200px，連頁尾折兩行都還有餘裕（同 ResultsPage 的做法）。 */}
-    <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex lg:pb-[200px]">
+    {/* 2026-11：拿掉原本留在這裡的 lg:pb-[200px]——頁尾一定要貼齊畫面最下緣，不能墊
+        一塊空白在它下面。浮動膠囊蓋到頁尾的問題改交給下面的 footerNear 處理（捲動時
+        直接量頁尾位置，真的靠近了才讓膠囊淡出），不用再犧牲頁尾的貼底來換安全距。 */}
+    <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
       <DesktopTopNav />
 
       <div className="flex w-full flex-1 flex-col items-center">
