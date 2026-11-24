@@ -490,7 +490,7 @@ export default function RecentFoundPage() {
         data-tip="none-recent"
         aria-hidden={!showNotMine || footerNear}
         tabIndex={showNotMine && !footerNear ? 0 : -1}
-        className={`box-border flex h-[70px] w-full max-w-[400px] items-center justify-center rounded-full border border-black bg-blue text-xl font-medium text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)]
+        className={`box-border flex h-[70px] w-full max-w-[400px] items-center justify-center rounded-full border border-black bg-blue text-xl font-bold text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)]
                     transition duration-300 hover:brightness-[.98]
                     ${showNotMine && !footerNear ? 'pointer-events-auto translate-y-0 opacity-100' : 'translate-y-[10px] opacity-0'}`}
       >
