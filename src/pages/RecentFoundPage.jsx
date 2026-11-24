@@ -476,7 +476,7 @@ export default function RecentFoundPage() {
       </div>
       </div>
 
-      <div ref={desktopFooterRef}>
+      <div ref={desktopFooterRef} className="w-full">
         <DesktopFooter />
       </div>
     </div>

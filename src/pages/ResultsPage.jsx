@@ -401,7 +401,7 @@ export default function ResultsPage() {
         </button>
       </div>
 
-      <div ref={desktopFooterRef}>
+      <div ref={desktopFooterRef} className="w-full">
         <DesktopFooter />
       </div>
     </div>
