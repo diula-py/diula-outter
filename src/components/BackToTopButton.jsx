@@ -7,12 +7,15 @@ import { ChevronDownIcon } from './icons'
  * bottomClass：離視窗底部多高（要寫完整的 Tailwind class，Tailwind 才產得出來）。
  * widthClass：外層容器的寬度／內距（預設手機版卡片欄 340），桌機版呼叫端可以傳
  * 1280 置中欄的寬度＋px-10，讓按鈕跟著貼齊內容欄右緣，不用為了桌機另外寫一顆。
+ * forceHide：呼叫端自己判斷「頁尾快捲進畫面了」之類的情況，不管捲動位置強制收起
+ * （避免蓋到頁尾，見 ResultsPage 的 footerNear）。
  */
-export default function BackToTopButton({ bottomClass, widthClass = 'w-[calc(100%-40px)] max-w-[340px]' }) {
-  const [show, setShow] = useState(false)
+export default function BackToTopButton({ bottomClass, widthClass = 'w-[calc(100%-40px)] max-w-[340px]', forceHide = false }) {
+  const [scrolled, setScrolled] = useState(false)
+  const show = scrolled && !forceHide
   useEffect(() => {
     function check() {
-      setShow(window.scrollY > window.innerHeight)
+      setScrolled(window.scrollY > window.innerHeight)
     }
     check()
     window.addEventListener('scroll', check, { passive: true })

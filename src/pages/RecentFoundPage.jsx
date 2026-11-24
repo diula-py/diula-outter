@@ -185,6 +185,33 @@ export default function RecentFoundPage() {
     }
   }, [items.length, loading])
 
+  // 桌機版頁尾快捲進畫面時，浮動的「都沒有我的遺失物」膠囊要先讓開，不然會蓋到頁尾。
+  // 2026-11：原本只靠 lg:pb-[200px] 多留視窗高度去「賭」頁尾一定留在膠囊上方，但不同
+  // 瀏覽器縮放／實際可視高度換算下來還是會不夠，數字抓再大都只是賭得更大而已。改成
+  // 跟上面 showNotMine 同一招：捲動時直接量頁尾「真正的」邊界位置——頁尾下緣一旦
+  // 進到膠囊自己站的那塊（離視窗底部 110px＋留 20px 餘裕）才讓開，不是頁尾一出現在
+  // 畫面裡（哪怕還離很遠）就收起，不然清單很短、頁尾提早出現時膠囊會莫名消失。
+  const desktopFooterRef = useRef(null)
+  const [footerNear, setFooterNear] = useState(false)
+  useEffect(() => {
+    function check() {
+      const el = desktopFooterRef.current
+      if (!el) { setFooterNear(false); return }
+      const rect = el.getBoundingClientRect()
+      // 單看「下緣有沒有超過 innerHeight-130」不夠──頁尾還遠在螢幕下方沒捲到時，
+      // 它的 bottom 座標也是一個遠大於 innerHeight 的數字，一樣會被誤判成「靠近了」。
+      // 要兩個條件都成立：頁尾已經開始進到畫面裡，而且下緣深到膠囊自己站的那塊。
+      setFooterNear(rect.top < window.innerHeight && rect.bottom > window.innerHeight - 130)
+    }
+    check()
+    window.addEventListener('scroll', check, { passive: true })
+    window.addEventListener('resize', check)
+    return () => {
+      window.removeEventListener('scroll', check)
+      window.removeEventListener('resize', check)
+    }
+  }, [])
+
   return (
     <>
     {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
@@ -449,21 +476,24 @@ export default function RecentFoundPage() {
       </div>
       </div>
 
-      <DesktopFooter />
+      <div ref={desktopFooterRef}>
+        <DesktopFooter />
+      </div>
     </div>
 
     {/* 都沒有我的遺失物（桌機版）：浮現規則同手機版那顆——捲到第 7 筆才浮現、
-        不到 7 筆一進來就顯示，貼在視窗底部置中，樣式跟 ResultsPage 桌機版同款膠囊。 */}
+        不到 7 筆一進來就顯示，貼在視窗底部置中，樣式跟 ResultsPage 桌機版同款膠囊。
+        footerNear 一為 true（頁尾真的捲進畫面）就跟著收起，不會蓋到頁尾。 */}
     <div className="pointer-events-none fixed bottom-10 left-1/2 z-[90] hidden w-full max-w-[1280px] -translate-x-1/2 justify-center px-10 box-border lg:flex">
       <button
         type="button"
         onClick={() => setSosOpen(true)}
         data-tip="none-recent"
-        aria-hidden={!showNotMine}
-        tabIndex={showNotMine ? 0 : -1}
+        aria-hidden={!showNotMine || footerNear}
+        tabIndex={showNotMine && !footerNear ? 0 : -1}
         className={`box-border flex h-[70px] w-full max-w-[400px] items-center justify-center rounded-full border border-black bg-blue text-xl font-medium text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)]
                     transition duration-300 hover:brightness-[.98]
-                    ${showNotMine ? 'pointer-events-auto translate-y-0 opacity-100' : 'translate-y-[10px] opacity-0'}`}
+                    ${showNotMine && !footerNear ? 'pointer-events-auto translate-y-0 opacity-100' : 'translate-y-[10px] opacity-0'}`}
       >
         都沒有我的遺失物！
       </button>
@@ -472,7 +502,7 @@ export default function RecentFoundPage() {
     {/* 小提示：第一次看到「都沒有我的遺失物！」按鈕（近 2 日快速看一次；換分類不再出現）。
         anchor="none-recent" 會自動挑手機版／桌機版兩個 data-tip="none-recent" 裡
         目前看得到的那個，不用放在某一個 lg: 區塊裡面。 */}
-    <OnceTip name="tip_not_mine_recent" anchor="none-recent" show={showNotMine && !sosOpen}>{TIP_NOT_MINE}</OnceTip>
+    <OnceTip name="tip_not_mine_recent" anchor="none-recent" show={showNotMine && !footerNear && !sosOpen}>{TIP_NOT_MINE}</OnceTip>
 
     {/* 「都沒有我的遺失物」選項彈窗，樣式照 ResultsPage 的同款彈窗（inner notfound-popup）。
         這頁沒有比對條件(query/resolved)可以帶 —— 不是從填協尋單進來的，所以：
