@@ -53,6 +53,7 @@ function HeroCarousel({ heroes }) {
   const scrollerRef = useRef(null)
   const [active, setActive] = useState(0)
 
+  // 左右箭頭都一直顯示、可以循環：第一張按「上一張」跳到最後一張，最後一張按「下一張」回到第一張
   function goTo(i) {
     const el = scrollerRef.current
     if (!el) return
@@ -82,18 +83,16 @@ function HeroCarousel({ heroes }) {
       <button
         type="button"
         aria-label="上一張"
-        onClick={() => goTo(Math.max(0, active - 1))}
-        disabled={active === 0}
-        className="absolute left-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-brown bg-white text-brown shadow-sm transition disabled:opacity-0"
+        onClick={() => goTo((active - 1 + heroes.length) % heroes.length)}
+        className="absolute left-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-brown bg-white text-brown shadow-sm transition hover:brightness-[.97]"
       >
         <ChevronLeftIcon className="h-5 w-5" />
       </button>
       <button
         type="button"
         aria-label="下一張"
-        onClick={() => goTo(Math.min(heroes.length - 1, active + 1))}
-        disabled={active === heroes.length - 1}
-        className="absolute right-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-brown bg-white text-brown shadow-sm transition disabled:opacity-0"
+        onClick={() => goTo((active + 1) % heroes.length)}
+        className="absolute right-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-brown bg-white text-brown shadow-sm transition hover:brightness-[.97]"
       >
         <ChevronLeftIcon className="h-5 w-5 -scale-x-100" />
       </button>
