@@ -174,7 +174,7 @@ export default function HomeTabPage({ title, items, hero, tour }) {
             純裝飾，橫式矮螢幕直接藏起來，把高度讓給下面真正有功能的按鈕。 */}
         {hero && (
           <div
-            className="relative mt-[18px] h-[190px] w-[calc(100%-40px)] max-w-[350px] overflow-hidden rounded-[10px] border border-brown land:hidden"
+            className="relative mt-[18px] h-[190px] w-[calc(100%-40px)] max-w-[350px] overflow-hidden rounded-[10px] border border-brown land:hidden md:max-w-[500px]"
             style={{ background: hero.bg }}
           >
             <img
@@ -190,9 +190,9 @@ export default function HomeTabPage({ title, items, hero, tour }) {
 
         {/* 內容欄 350 寬（窄螢幕左右各留 20）。橫式矮螢幕把按鈕排成兩欄，不然只有兩顆按鈕
             堆疊起來也要捲動，違背 land: 本來要解決的問題。 */}
-        <section className="mt-[25px] w-[calc(100%-40px)] max-w-[350px] land:mt-[18px] land:w-full land:max-w-[700px]">
+        <section className="mt-[25px] w-[calc(100%-40px)] max-w-[350px] land:mt-[18px] land:w-full land:max-w-[700px] md:w-full md:max-w-[700px]">
           <SectionTitle onHelp={tour ? () => openTour(tour) : undefined} helpTour={tour ? `${tour}-help` : undefined}>{title}</SectionTitle>
-          <div className="mt-[15px] flex flex-col gap-5 land:grid land:grid-cols-2 land:items-stretch land:gap-4">
+          <div className="mt-[15px] flex flex-col gap-5 land:grid land:grid-cols-2 land:items-stretch land:gap-4 md:grid md:grid-cols-2 md:items-stretch md:gap-4">
             {items.map(renderItem)}
           </div>
         </section>
