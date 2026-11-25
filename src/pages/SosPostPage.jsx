@@ -292,9 +292,7 @@ export default function SosPostPage() {
       {step === 'preview' && (
         <div className="flex flex-col gap-4 px-[26px] pt-5 land:mx-auto land:max-w-[708px] land:pt-3">
           <div className="rounded-[10px] bg-card p-4 text-xs font-medium leading-normal text-brown">
-            由 <b>DiuLa!官方帳號</b> 幫你把協尋資訊發到 Threads，擴大協尋範圍。貼文圖片將沿用你上傳的圖片（有框選就用框內範圍）！
-            <b>會公開發到 Threads，發佈前可框住路人臉、車牌、地址等個資。</b>
-            送出後會先經過審核，經小編確認沒問題才會正式發出，通過或退件都會通知你。
+            由 DiuLa! 幫你把協尋資訊發到官方 Threads，擴大協尋範圍。貼文圖片將沿用你上傳的圖片，發佈前可將路人臉、車牌、地址等個資打碼。送出後會先經過審核，經管理員確認沒問題才會正式發出，通過或退件都會通知你。
           </div>
 
           <div>
@@ -487,9 +485,7 @@ export default function SosPostPage() {
         {step === 'preview' && (
           <div className="flex flex-col gap-6">
             <div className="rounded-lg bg-card p-6 text-base leading-relaxed text-brown">
-              由 <b>DiuLa!官方帳號</b> 幫你把協尋資訊發到 Threads，擴大協尋範圍。貼文圖片將沿用你上傳的圖片（有框選就用框內範圍）！
-              <b>會公開發到 Threads，發佈前可框住路人臉、車牌、地址等個資。</b>
-              送出後會先經過審核，經小編確認沒問題才會正式發出，通過或退件都會通知你。
+              由 DiuLa! 幫你把協尋資訊發到官方 Threads，擴大協尋範圍。貼文圖片將沿用你上傳的圖片，發佈前可將路人臉、車牌、地址等個資打碼。送出後會先經過審核，經管理員確認沒問題才會正式發出，通過或退件都會通知你。
             </div>
 
             <div>
