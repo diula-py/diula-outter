@@ -156,69 +156,88 @@ export default function RegisterConfirmPage() {
           {item.image && <img src={item.image} alt="" className="h-full w-full object-contain" />}
         </div>
 
-        <div className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-4">
-          <CalendarIcon className="h-5 w-5 shrink-0 text-[#6B7280]" />
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            aria-label="拾獲日期"
-            className="h-6 w-full bg-transparent px-3 text-base text-brown outline-none"
-          />
-        </div>
-
-        <div className="flex gap-4">
-          <div className="flex h-[58px] flex-1 items-center rounded-full border border-black bg-white px-4">
-            <select
-              value={city}
-              onChange={(e) => { setCity(e.target.value); setDistrict('') }}
-              aria-label="拾獲的縣市"
-              className="h-6 w-full appearance-none bg-transparent text-base text-brown outline-none"
-            >
-              <option value="">選擇拾獲的縣市</option>
-              {CITY_ORDER.map((c) => <option key={c} value={c}>{c}</option>)}
-            </select>
-            <ChevronDownIcon className="pointer-events-none h-4 w-4 shrink-0 text-[#6B7280]" />
+        {/* 跟手機版一樣整組包在米色卡片裡、各帶一顆 icon；自由打字的欄位（詳細地點／
+            送往／備註）維持矩形角，跟可選取欄位（日期／縣市地區）的膠囊角分開。 */}
+        <div className="flex w-full flex-col gap-4 rounded-[10px] bg-card p-5">
+          <div className="flex items-center gap-4">
+            <CalendarIcon className="h-9 w-9 shrink-0" />
+            <div className="flex h-[58px] w-full flex-1 items-center rounded-full border border-black bg-white px-4">
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                aria-label="拾獲日期"
+                className="h-6 w-full bg-transparent text-base text-brown outline-none"
+              />
+            </div>
           </div>
-          <div className="flex h-[58px] flex-1 items-center rounded-full border border-black bg-white px-4">
-            <select
-              value={district}
-              onChange={(e) => setDistrict(e.target.value)}
-              disabled={!city}
-              aria-label="拾獲的地區"
-              className="h-6 w-full appearance-none bg-transparent text-base text-brown outline-none"
-            >
-              <option value="">選擇拾獲的地區</option>
-              {(TAIWAN_REGIONS[city] || []).map((d) => <option key={d} value={d}>{d}</option>)}
-            </select>
-            <ChevronDownIcon className="pointer-events-none h-4 w-4 shrink-0 text-[#6B7280]" />
+
+          <div className="flex items-center gap-4">
+            <LocationIcon className="h-9 w-9 shrink-0" />
+            <div className="flex flex-1 gap-4">
+              <div className="flex h-[58px] flex-1 items-center rounded-full border border-black bg-white px-4">
+                <select
+                  value={city}
+                  onChange={(e) => { setCity(e.target.value); setDistrict('') }}
+                  aria-label="拾獲的縣市"
+                  className="h-6 w-full appearance-none bg-transparent text-base text-brown outline-none"
+                >
+                  <option value="">選擇拾獲的縣市</option>
+                  {CITY_ORDER.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+                <ChevronDownIcon className="pointer-events-none h-4 w-4 shrink-0 text-[#6B7280]" />
+              </div>
+              <div className="flex h-[58px] flex-1 items-center rounded-full border border-black bg-white px-4">
+                <select
+                  value={district}
+                  onChange={(e) => setDistrict(e.target.value)}
+                  disabled={!city}
+                  aria-label="拾獲的地區"
+                  className="h-6 w-full appearance-none bg-transparent text-base text-brown outline-none"
+                >
+                  <option value="">選擇拾獲的地區</option>
+                  {(TAIWAN_REGIONS[city] || []).map((d) => <option key={d} value={d}>{d}</option>)}
+                </select>
+                <ChevronDownIcon className="pointer-events-none h-4 w-4 shrink-0 text-[#6B7280]" />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="h-9 w-9 shrink-0" />
+            <input
+              type="text"
+              value={foundDetail}
+              onChange={(e) => setFoundDetail(e.target.value)}
+              placeholder="拾獲的詳細地點"
+              aria-label="拾獲的詳細地點"
+              className="flex h-[58px] w-full flex-1 items-center rounded-[10px] border border-black bg-white px-6 text-base text-brown outline-none placeholder:text-[#888]"
+            />
+          </div>
+
+          <div className="flex items-center gap-4">
+            <PersonChalkboardIcon className="h-9 w-9 shrink-0" />
+            <input
+              type="text"
+              value={sendTo}
+              onChange={(e) => setSendTo(e.target.value)}
+              placeholder="送往的詳細地點（例如：文山二分局）"
+              aria-label="送往的詳細地點"
+              className="flex h-[58px] w-full flex-1 items-center rounded-[10px] border border-black bg-white px-6 text-base text-brown outline-none placeholder:text-[#888]"
+            />
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center text-base text-brown">備註</div>
+            <input
+              type="text"
+              value={remark}
+              onChange={(e) => setRemark(e.target.value)}
+              aria-label="備註"
+              className="flex h-[58px] w-full flex-1 items-center rounded-[10px] border border-black bg-white px-6 text-base text-brown outline-none"
+            />
           </div>
         </div>
-
-        <input
-          type="text"
-          value={foundDetail}
-          onChange={(e) => setFoundDetail(e.target.value)}
-          placeholder="拾獲的詳細地點"
-          aria-label="拾獲的詳細地點"
-          className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-brown outline-none placeholder:text-[#888]"
-        />
-
-        <input
-          type="text"
-          value={sendTo}
-          onChange={(e) => setSendTo(e.target.value)}
-          placeholder="送往的詳細地點（例如：文山二分局）"
-          aria-label="送往的詳細地點"
-          className="flex h-[58px] w-full items-center rounded-full border border-black bg-white px-6 text-base text-brown outline-none placeholder:text-[#888]"
-        />
-
-        <textarea
-          value={remark}
-          onChange={(e) => setRemark(e.target.value)}
-          placeholder="備註（非必填）"
-          className="h-[106px] w-full resize-none rounded-lg border border-black bg-white p-4 text-base text-brown outline-none placeholder:text-[#888]"
-        />
 
         <div data-tip="tags" className="box-border w-full rounded-[10px] border border-black bg-card p-6">
           <div className="mb-3 text-xl font-semibold text-brown">{fixedTags || manualTags ? '標籤' : 'AI 標籤'}</div>

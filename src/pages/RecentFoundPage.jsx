@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { DetailHeader } from '../components/DetailKit'
 import { ChevronLeftIcon, DiulaPinIcon, XmarkIcon } from '../components/icons'
 import { Overlay } from '../components/DialogKit'
@@ -63,12 +63,15 @@ const SHOW_AT = 7
 // 這版先不做（兩排頁籤本身的功能都在，只是視覺上少了那個尖角），要再加再說。
 export default function RecentFoundPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [categories, setCategories] = useState([])
-  const [topId, setTopId] = useState(null)
-  const [subId, setSubId] = useState(null)
+  // 從案件詳情頁按返回回來時，location.state 會帶著離開當下的頁籤／頁碼（見下面
+  // 「同步進歷史紀錄」那個 effect）；有的話直接沿用，不要又跳回預設的第一個分類。
+  const [topId, setTopId] = useState(location.state?.topId ?? null)
+  const [subId, setSubId] = useState(location.state?.subId ?? null)
   const [items, setItems] = useState([])
   const [count, setCount] = useState(0)
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(location.state?.page ?? 1)
   const [totalPages, setTotalPages] = useState(1)
   const [range, setRange] = useState(null)
   const [loadingCats, setLoadingCats] = useState(true)
@@ -89,6 +92,9 @@ export default function RecentFoundPage() {
       .then((cats) => {
         if (!alive) return
         setCategories(cats)
+        // 從詳情頁返回時 topId 已經是離開當下的那個分類（上面 useState 初始化帶的），
+        // 不用再選第一個分類蓋掉它。
+        if (location.state?.topId != null) return
         const firstTop = cats.find((c) => c.level === 1)
         setTopId(firstTop?.id ?? null)
         const firstSub = firstTop && cats.find((c) => c.parent_id === firstTop.id)
@@ -126,6 +132,15 @@ export default function RecentFoundPage() {
       .catch((e) => { if (alive) setError(friendlyError(e)) })
       .finally(() => { if (alive) setLoadingItems(false) })
     return () => { alive = false }
+  }, [topId, subId, page])
+
+  // 同步進歷史紀錄：把目前的頁籤／頁碼存進這一筆 history entry 的 state（replace，
+  // 不會多推一筆紀錄）。點進案件詳情頁再按返回時，瀏覽器會跳回這一筆 entry，上面
+  // 那兩個 useState 的初始值就讀得到離開當下選的分類／頁碼，不會重置回第一個分類。
+  useEffect(() => {
+    if (topId == null) return
+    navigate(location.pathname, { replace: true, state: { topId, subId, page } })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topId, subId, page])
 
   // 換分類（頂層／次層）要跳回第 1 頁，不然留著上次的頁碼可能超過新分類的總頁數。
@@ -169,6 +184,33 @@ export default function RecentFoundPage() {
       window.removeEventListener('resize', check)
     }
   }, [items.length, loading])
+
+  // 桌機版頁尾快捲進畫面時，浮動的「都沒有我的遺失物」膠囊要先讓開，不然會蓋到頁尾。
+  // 2026-11：原本只靠 lg:pb-[200px] 多留視窗高度去「賭」頁尾一定留在膠囊上方，但不同
+  // 瀏覽器縮放／實際可視高度換算下來還是會不夠，數字抓再大都只是賭得更大而已。改成
+  // 跟上面 showNotMine 同一招：捲動時直接量頁尾「真正的」邊界位置——頁尾下緣一旦
+  // 進到膠囊自己站的那塊（離視窗底部 110px＋留 20px 餘裕）才讓開，不是頁尾一出現在
+  // 畫面裡（哪怕還離很遠）就收起，不然清單很短、頁尾提早出現時膠囊會莫名消失。
+  const desktopFooterRef = useRef(null)
+  const [footerNear, setFooterNear] = useState(false)
+  useEffect(() => {
+    function check() {
+      const el = desktopFooterRef.current
+      if (!el) { setFooterNear(false); return }
+      const rect = el.getBoundingClientRect()
+      // 單看「下緣有沒有超過 innerHeight-130」不夠──頁尾還遠在螢幕下方沒捲到時，
+      // 它的 bottom 座標也是一個遠大於 innerHeight 的數字，一樣會被誤判成「靠近了」。
+      // 要兩個條件都成立：頁尾已經開始進到畫面裡，而且下緣深到膠囊自己站的那塊。
+      setFooterNear(rect.top < window.innerHeight && rect.bottom > window.innerHeight - 130)
+    }
+    check()
+    window.addEventListener('scroll', check, { passive: true })
+    window.addEventListener('resize', check)
+    return () => {
+      window.removeEventListener('scroll', check)
+      window.removeEventListener('resize', check)
+    }
+  }, [])
 
   return (
     <>
@@ -311,6 +353,9 @@ export default function RecentFoundPage() {
         （DesktopTopNav＋1280 置中欄＋DesktopFooter，卡片樣式同 ResultsPage 桌機版）：
         頂層/次層分類頁籤橫向排、結果 2 欄卡片、分頁同手機版邏輯。狀態/資料
         （topCats/subCats/items/...）整頁共用，這裡只是另一套排版。 ======== */}
+    {/* 2026-11：拿掉原本留在這裡的 lg:pb-[200px]——頁尾一定要貼齊畫面最下緣，不能墊
+        一塊空白在它下面。浮動膠囊蓋到頁尾的問題改交給下面的 footerNear 處理（捲動時
+        直接量頁尾位置，真的靠近了才讓膠囊淡出），不用再犧牲頁尾的貼底來換安全距。 */}
     <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
       <DesktopTopNav />
 
@@ -430,21 +475,24 @@ export default function RecentFoundPage() {
       </div>
       </div>
 
-      <DesktopFooter />
+      <div ref={desktopFooterRef} className="w-full">
+        <DesktopFooter />
+      </div>
     </div>
 
     {/* 都沒有我的遺失物（桌機版）：浮現規則同手機版那顆——捲到第 7 筆才浮現、
-        不到 7 筆一進來就顯示，貼在視窗底部置中，樣式跟 ResultsPage 桌機版同款膠囊。 */}
+        不到 7 筆一進來就顯示，貼在視窗底部置中，樣式跟 ResultsPage 桌機版同款膠囊。
+        footerNear 一為 true（頁尾真的捲進畫面）就跟著收起，不會蓋到頁尾。 */}
     <div className="pointer-events-none fixed bottom-10 left-1/2 z-[90] hidden w-full max-w-[1280px] -translate-x-1/2 justify-center px-10 box-border lg:flex">
       <button
         type="button"
         onClick={() => setSosOpen(true)}
         data-tip="none-recent"
-        aria-hidden={!showNotMine}
-        tabIndex={showNotMine ? 0 : -1}
-        className={`box-border flex h-[70px] w-full max-w-[400px] items-center justify-center rounded-full border border-black bg-blue text-xl font-medium text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)]
+        aria-hidden={!showNotMine || footerNear}
+        tabIndex={showNotMine && !footerNear ? 0 : -1}
+        className={`box-border flex h-[70px] w-full max-w-[400px] items-center justify-center rounded-full border border-black bg-blue text-xl font-bold text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)]
                     transition duration-300 hover:brightness-[.98]
-                    ${showNotMine ? 'pointer-events-auto translate-y-0 opacity-100' : 'translate-y-[10px] opacity-0'}`}
+                    ${showNotMine && !footerNear ? 'pointer-events-auto translate-y-0 opacity-100' : 'translate-y-[10px] opacity-0'}`}
       >
         都沒有我的遺失物！
       </button>
@@ -453,7 +501,7 @@ export default function RecentFoundPage() {
     {/* 小提示：第一次看到「都沒有我的遺失物！」按鈕（近 2 日快速看一次；換分類不再出現）。
         anchor="none-recent" 會自動挑手機版／桌機版兩個 data-tip="none-recent" 裡
         目前看得到的那個，不用放在某一個 lg: 區塊裡面。 */}
-    <OnceTip name="tip_not_mine_recent" anchor="none-recent" show={showNotMine && !sosOpen}>{TIP_NOT_MINE}</OnceTip>
+    <OnceTip name="tip_not_mine_recent" anchor="none-recent" show={showNotMine && !footerNear && !sosOpen}>{TIP_NOT_MINE}</OnceTip>
 
     {/* 「都沒有我的遺失物」選項彈窗，樣式照 ResultsPage 的同款彈窗（inner notfound-popup）。
         這頁沒有比對條件(query/resolved)可以帶 —— 不是從填協尋單進來的，所以：
@@ -470,7 +518,8 @@ export default function RecentFoundPage() {
           >
             <XmarkIcon className="h-[35px] w-[35px]" />
           </button>
-          <div className="text-center text-2xl font-bold leading-6">都沒有我的遺失物！</div>
+          {/* lg:font-medium：桌機版照手機版的字重感覺調輕，bold 在桌機版大字級下看起來太粗 */}
+          <div className="text-center text-2xl font-bold leading-6 lg:font-medium">都沒有我的遺失物！</div>
           <div className="mt-8 flex w-[254px] max-w-[calc(100%-40px)] flex-col gap-5">
             {[
               { label: '開啟自動尋找並推播', tone: 'bg-blue', go: () => navigate('/search', { state: { autoSubscribe: true } }) },

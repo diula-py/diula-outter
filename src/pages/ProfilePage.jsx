@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CubesIcon, FolderIcon } from '../components/icons'
+import { CubesIcon, FolderIcon, UserRegularIcon } from '../components/icons'
 import { WireDialog, DialogTitle, DialogButton } from '../components/DialogKit'
 import DesktopTopNav from '../components/DesktopTopNav'
 import DesktopFooter from '../components/DesktopFooter'
+import SectionTitle from '../components/SectionTitle'
 import { asset } from '../lib/asset'
 import { useAuth } from '../context/AuthContext'
 
@@ -55,7 +56,7 @@ export default function ProfilePage() {
 
         {/* 使用者卡：350×190、置中、header 下 18；1px 咖啡框；頭像 70、間距 20、名稱 16/500、編號 12/500 行高 13（設計稿 Frame 74） */}
         <div className="mt-[18px] flex h-[190px] w-[calc(100%-43px)] max-w-[350px] flex-col items-center justify-center gap-5 rounded-[20px] border border-brown bg-card/50 px-5 py-[30px]
-                        land:col-start-1 land:row-span-2 land:mt-[18px] land:h-auto land:w-full land:max-w-none land:gap-3 land:py-5 land:self-auto">
+                        land:col-start-1 land:mt-[18px] land:h-auto land:w-full land:max-w-none land:gap-3 land:py-5 land:self-auto">
           <div className="flex h-[70px] w-[70px] shrink-0 items-center justify-center overflow-hidden rounded-full border border-black bg-white">
             <img src={avatarSrc} alt="大頭貼" onError={() => setAvatarBroken(true)} className="h-full w-full object-cover" />
           </div>
@@ -68,8 +69,14 @@ export default function ProfilePage() {
             RecentLostQuickView／MatchThumb／打 /subscriptions/recent-matches 的邏輯）。
             ⚠ 尋找頁同名按鈕（HomePage.jsx FIND_ITEMS）目前還是導來 '/profile'，這裡拿掉後
             那顆按鈕等於點了只會到空白的個人頁——還沒決定要把這段邏輯搬到哪，先別自己接掉。 */}
-        <div className="mt-[60px] flex w-full flex-col items-center gap-5 px-[21px]
-                        land:col-start-2 land:mt-[18px] land:gap-[10px] land:px-0 land:self-auto">
+        {/* 2026-11-20：補上跟電腦版一樣的「我的歷史紀錄」標題，形式同尋找／拾獲分頁的 SectionTitle
+            （不放問號鈕）。間距照那兩頁：卡片下 25 放標題、標題下 15 接按鈕（原本卡片到按鈕 60）。 */}
+        <div className="mt-[25px] flex w-full flex-col items-center px-[21px]
+                        land:col-start-2 land:mt-[18px] land:px-0 land:self-auto">
+          <div className="w-full max-w-[350px]">
+            <SectionTitle>我的歷史紀錄</SectionTitle>
+          </div>
+          <div className="mt-[15px] flex w-full flex-col items-center gap-5 land:gap-[10px]">
           <MenuButton
             icon={<CubesIcon className="h-10 w-10 shrink-0" />}
             label="我的遺失物"
@@ -80,6 +87,7 @@ export default function ProfilePage() {
             label="我的拾獲物"
             onClick={() => navigate('/my/found')}
           />
+          </div>
         </div>
 
         {/* 登出：110×40；底部連結：10/400 底線、每個寬 80（中心相距 80）。
@@ -95,8 +103,13 @@ export default function ProfilePage() {
         </button>
         {/* 底部連結：mt-auto 讓手機直向(上面那層已改 min-h-full 撐滿畫面)在內容短時
             貼到 TabBar 正上方，不會跟登出按鈕之間留一大截空白；橫放(land:)維持原本
-            排版用 grid 第 4 列定位，不受影響。 */}
-        <div className="mt-auto flex pt-[30px] text-[10px] font-normal leading-[10px] text-brown [&>*]:w-20 [&>*]:text-center land:col-start-1 land:row-start-4 land:mt-1 land:pt-0 land:justify-self-center">
+            排版用 grid 第 4 列定位，不受影響。
+            2026-11-21：字 10 → 12px、行高 10 → 16px，每個連結上下各加 8px padding 讓可點高度
+            約 32px；上方 pt 30 → 22 抵掉多出來的 padding，跟登出鈕的距離維持差不多。
+            2026-11-23：橫放時原本這排自己佔第 4 列，頁面比畫面高、一進來剛好被浮動 TabBar 擋住。
+            改成放在使用者卡正下方（第 3 列，跟登出鈕同一列、上緣對齊；使用者卡不再 row-span-2），
+            橫放的上下 padding 8 → 4px，整排落在 TabBar 上方。直式不受影響。 */}
+        <div className="mt-auto flex pt-[22px] text-[12px] font-normal leading-4 text-brown [&>*]:w-20 [&>*]:py-2 [&>*]:text-center land:col-start-1 land:row-start-3 land:mt-1 land:pt-0 land:self-start land:justify-self-center land:[&>*]:py-1">
           <a href="https://about.diula.co" target="_blank" rel="noopener noreferrer" className="underline">
             關於DiuLa!
           </a>
@@ -113,8 +126,11 @@ export default function ProfilePage() {
 
         <div className="mx-auto mt-16 flex w-full max-w-[1536px] flex-wrap items-start justify-center gap-16 px-12 box-border">
           <div className="flex w-[560px] max-w-full flex-col items-start gap-10 rounded-[48px] border border-brown bg-paper p-16 box-border">
+            {/* icon 跟首頁桌機版兩張卡片同一個規則（卡片標題 icon＝該分類在手機版 TabBar
+                的那個 icon）：個人對應的是 user.png，不是跟下面「我的遺失物」按鈕重複的
+                CubesIcon。 */}
             <div className="flex items-center gap-3">
-              <CubesIcon className="h-8 w-8 shrink-0" />
+              <UserRegularIcon className="h-8 w-8 shrink-0" />
               <h2 className="m-0 text-2xl font-normal text-brown">我的歷史紀錄</h2>
             </div>
             <div className="flex w-full flex-col gap-6">

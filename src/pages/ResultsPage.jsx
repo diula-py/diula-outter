@@ -93,6 +93,33 @@ export default function ResultsPage() {
     }
   }, [source, list.length])
 
+  // 桌機版頁尾快捲進畫面時，浮動的「都沒有我的物品」膠囊要先讓開，不然會蓋到頁尾。
+  // 2026-11：原本只靠 lg:pb-[200px] 多留視窗高度去「賭」頁尾一定留在膠囊上方，但不同
+  // 瀏覽器縮放／實際可視高度換算下來還是會不夠，數字抓再大都只是賭得更大而已。改成
+  // 跟上面 showNotMine 同一招：捲動時直接量頁尾「真正的」邊界位置——頁尾下緣一旦
+  // 進到膠囊自己站的那塊（離視窗底部 110px＋留 20px 餘裕）才讓開，不是頁尾一出現在
+  // 畫面裡（哪怕還離很遠）就收起，不然清單很短、頁尾提早出現時膠囊會莫名消失。
+  const desktopFooterRef = useRef(null)
+  const [footerNear, setFooterNear] = useState(false)
+  useEffect(() => {
+    function check() {
+      const el = desktopFooterRef.current
+      if (!el) { setFooterNear(false); return }
+      const rect = el.getBoundingClientRect()
+      // 單看「下緣有沒有超過 innerHeight-130」不夠──頁尾還遠在螢幕下方沒捲到時，
+      // 它的 bottom 座標也是一個遠大於 innerHeight 的數字，一樣會被誤判成「靠近了」。
+      // 要兩個條件都成立：頁尾已經開始進到畫面裡，而且下緣深到膠囊自己站的那塊。
+      setFooterNear(rect.top < window.innerHeight && rect.bottom > window.innerHeight - 130)
+    }
+    check()
+    window.addEventListener('scroll', check, { passive: true })
+    window.addEventListener('resize', check)
+    return () => {
+      window.removeEventListener('scroll', check)
+      window.removeEventListener('resize', check)
+    }
+  }, [])
+
   const emptyBox =
     'box-border w-full rounded-[10px] border border-black bg-input px-5 py-[30px] text-center text-sm font-medium leading-normal opacity-70'
 
@@ -239,6 +266,9 @@ export default function ResultsPage() {
         不是表單，所以不走 768 置中欄那套——內容跟手機版橫式一樣貼齊左右 32~40px，
         比對卡片 2 欄排版儘量用滿寬度。狀態與邏輯（source/list/sosOpen/homeConfirm...）
         整頁共用。 ======== */}
+    {/* 2026-11：拿掉原本留在這裡的 lg:pb-[200px]——頁尾一定要貼齊畫面最下緣，不能墊
+        一塊空白在它下面。浮動膠囊蓋到頁尾的問題改交給下面的 footerNear 處理（捲動時
+        直接量頁尾位置，真的靠近了才讓膠囊淡出），不用再犧牲頁尾的貼底來換安全距。 */}
     <div className="hidden min-h-screen w-full flex-col items-center bg-paper lg:flex">
       <DesktopTopNav />
 
@@ -345,34 +375,40 @@ export default function ResultsPage() {
       </div>
       </div>
 
+      {/* 回到頂部：桌機版照手機版同一顆元件、同一條顯示規則，之前漏掉只有手機版有。
+          貼在「都沒有我的物品」膠囊（70 高＋離底 40）上方 15px，寬度改用桌機 1280
+          置中欄＋px-10，右緣對齊內容欄，不是手機版那個固定 340 欄。footerNear 時
+          一起收起，跟下面主要的膠囊同一條規則，不然它也會蓋到頁尾。 */}
+      <BackToTopButton bottomClass="bottom-[125px]" widthClass="w-full max-w-[1280px] px-10" forceHide={footerNear} />
+
       {/* 都沒有我的物品：改成跟手機版同樣邏輯的底部 bar（showNotMine 共用同一條規則——
           捲到第 7 筆才浮現、不到 7 筆一進來就顯示），不再是常駐貼右上角的圓鈕。
-          樣式放大成貼齊桌機版內容寬度的膠囊，貼在視窗底部置中。 */}
+          樣式放大成貼齊桌機版內容寬度的膠囊，貼在視窗底部置中。footerNear 一為 true
+          （頁尾真的捲進畫面）就跟著收起，不會蓋到頁尾。 */}
       <div className="pointer-events-none fixed bottom-10 left-1/2 z-[90] flex w-full max-w-[1280px] -translate-x-1/2 justify-center px-10 box-border">
         <button
           type="button"
           onClick={() => setSosOpen(true)}
           data-tip="none-results"
-          aria-hidden={!showNotMine}
-          tabIndex={showNotMine ? 0 : -1}
-          className={`box-border flex h-[70px] w-full max-w-[400px] items-center justify-center rounded-full border border-black bg-blue text-xl font-medium text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)]
+          aria-hidden={!showNotMine || footerNear}
+          tabIndex={showNotMine && !footerNear ? 0 : -1}
+          className={`box-border flex h-[70px] w-full max-w-[400px] items-center justify-center rounded-full border border-black bg-blue text-xl font-bold text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)]
                       transition duration-300 hover:brightness-[.98]
-                      ${showNotMine ? 'pointer-events-auto translate-y-0 opacity-100' : 'translate-y-[10px] opacity-0'}`}
+                      ${showNotMine && !footerNear ? 'pointer-events-auto translate-y-0 opacity-100' : 'translate-y-[10px] opacity-0'}`}
         >
           都沒有我的物品
         </button>
       </div>
 
-      {/* 回到頂部（桌機）：右下角，跟「都沒有我的物品」膠囊同一水平線 */}
-      <BackToTopButton desktop />
-
-      <DesktopFooter />
+      <div ref={desktopFooterRef} className="w-full">
+        <DesktopFooter />
+      </div>
     </div>
 
       {/* 小提示：第一次看到「都沒有我的物品」按鈕（跨平台結果頁一次；換平台分頁不再出現）。
           anchor="none-results" 會自動挑手機版／桌機版兩個 data-tip="none-results" 裡
           目前看得到的那個（見 OnceTip 的註解），不用放在某一個 lg: 區塊裡面。 */}
-      <OnceTip name="tip_not_mine_results" anchor="none-results" show={showNotMine && !sosOpen && !homeConfirm}>{TIP_NOT_MINE}</OnceTip>
+      <OnceTip name="tip_not_mine_results" anchor="none-results" show={showNotMine && !footerNear && !sosOpen && !homeConfirm}>{TIP_NOT_MINE}</OnceTip>
 
       {/* 「都沒有我的物品」選項彈窗（照 Figma：305×380、陰影、X 35×35 在 (12,14)、
           標題 24/700 離頂端 49、按鈕 254×70 間距 20、第一顆離頂端 105、底部留 25） */}
@@ -387,7 +423,8 @@ export default function ResultsPage() {
             >
               <XmarkIcon className="h-[35px] w-[35px]" />
             </button>
-            <div className="text-center text-2xl font-bold leading-6">都沒有我的物品！</div>
+            {/* lg:font-medium：桌機版照手機版的字重感覺調輕，bold 在桌機版大字級下看起來太粗 */}
+            <div className="text-center text-2xl font-bold leading-6 lg:font-medium">都沒有我的物品！</div>
             <div className="mt-8 flex w-[254px] max-w-[calc(100%-40px)] flex-col gap-5">
               {[
                 { label: '開啟自動尋找並推播', tone: 'bg-blue', go: () => navigate('/search/subscribe', { state: location.state }) },

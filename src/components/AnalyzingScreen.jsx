@@ -11,8 +11,10 @@ import { WandSparkleIcon } from './icons'
  */
 export default function AnalyzingScreen({ pct, error, errorLabel = 'AI 辨識失敗', onRetry, children }) {
   return (
+    <>
+    {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
     <div className="relative mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] overflow-hidden bg-[#CDDCF0] [--top:clamp(40px,calc((100dvh-var(--top-inset)-390px)*0.4481),207px)]
-                    land:max-w-none land:[--top:16px]">
+                    land:max-w-none land:[--top:16px] lg:hidden">
       <div className="absolute left-[calc(50%-84.5px)] top-[var(--top)] flex h-[170px] w-[170px] items-center justify-center rounded-full bg-card land:left-[calc(50%-60px)] land:h-[120px] land:w-[120px]">
         <WandSparkleIcon className="h-20 w-20 land:h-14 land:w-14" />
       </div>
@@ -42,5 +44,41 @@ export default function AnalyzingScreen({ pct, error, errorLabel = 'AI 辨識失
         </>
       )}
     </div>
+
+    {/* ======== 桌機（lg:）：這個過場頁之前完全沒做桌機版，會卡在畫面正中央一小塊 393
+        寬、看起來像沒套版。改用簡單置中的直欄，不用手機版那套絕對定位的 --top clamp
+        算法（那是為了 393 窄版面設計的）。沒有 DesktopTopNav／Footer——這是過場頁，
+        不是會停留的頁面，維持原本簡潔滿版淺藍底的樣子就好。 ======== */}
+    <div className="hidden min-h-screen w-full flex-col items-center justify-center gap-10 bg-[#CDDCF0] lg:flex">
+      <div className="flex h-[170px] w-[170px] shrink-0 items-center justify-center rounded-full bg-card">
+        <WandSparkleIcon className="h-20 w-20" />
+      </div>
+
+      {error ? (
+        <div className="flex w-full max-w-[400px] flex-col items-center gap-4 text-center">
+          <p className="text-base leading-normal text-error">{errorLabel}：{error}</p>
+          {onRetry && (
+            <button
+              type="button"
+              onClick={onRetry}
+              className="h-11 rounded-[50px] border border-black bg-white px-6 text-base font-medium text-brown transition hover:brightness-[.98]"
+            >
+              返回重試
+            </button>
+          )}
+        </div>
+      ) : (
+        <>
+          <div className="h-[15px] w-full max-w-[400px] overflow-hidden rounded-[10px] bg-white">
+            <div
+              className="h-full rounded-[10px] bg-brown opacity-70 transition-[width] duration-300 ease-out"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+          <div className="w-full max-w-[400px] text-center text-base leading-[18px] text-black opacity-40">{children}</div>
+        </>
+      )}
+    </div>
+    </>
   )
 }

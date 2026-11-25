@@ -76,6 +76,11 @@ export default function AdminSosPage() {
       setItems((prev) => prev.filter((it) => it.id !== id))
     } catch (e) {
       setError(friendlyError(e))
+      // 2026-11 補：核准／下架會呼叫 Threads 官方 API，偶爾後端那邊其實已經處理完
+      // （貼文真的發出去／真的下架了），但回應還沒送達瀏覽器前連線就先斷了
+      // （常見是「無法連線」）。這種情況畫面不能維持舊清單讓管理者誤判還沒處理——
+      // 重新問一次後端目前真正的狀態，清單自己會更新成實際結果。
+      load(tab)
     } finally {
       setBusyId('')
     }
