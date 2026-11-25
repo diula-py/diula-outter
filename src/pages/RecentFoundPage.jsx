@@ -490,7 +490,7 @@ export default function RecentFoundPage() {
         data-tip="none-recent"
         aria-hidden={!showNotMine || footerNear}
         tabIndex={showNotMine && !footerNear ? 0 : -1}
-        className={`box-border flex h-[70px] w-full max-w-[400px] items-center justify-center rounded-full border border-black bg-blue text-xl font-bold text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)]
+        className={`box-border flex h-[70px] w-full max-w-[400px] items-center justify-center rounded-full border border-black bg-blue text-xl font-medium text-brown shadow-[0_4px_4px_rgba(0,0,0,0.25)]
                     transition duration-300 hover:brightness-[.98]
                     ${showNotMine && !footerNear ? 'pointer-events-auto translate-y-0 opacity-100' : 'translate-y-[10px] opacity-0'}`}
       >
@@ -518,8 +518,7 @@ export default function RecentFoundPage() {
           >
             <XmarkIcon className="h-[35px] w-[35px]" />
           </button>
-          {/* lg:font-medium：桌機版照手機版的字重感覺調輕，bold 在桌機版大字級下看起來太粗 */}
-          <div className="text-center text-2xl font-bold leading-6 lg:font-medium">都沒有我的遺失物！</div>
+          <div className="text-center text-2xl font-bold leading-6">都沒有我的遺失物！</div>
           <div className="mt-8 flex w-[254px] max-w-[calc(100%-40px)] flex-col gap-5">
             {[
               { label: '開啟自動尋找並推播', tone: 'bg-blue', go: () => navigate('/search', { state: { autoSubscribe: true } }) },
