@@ -24,6 +24,8 @@ export default function ConfirmTagsPage() {
   const location = useLocation()
   const { userId } = useAuth()
   const data = location.state || {}
+  // 從「近2日遺失物快速看」的「開啟自動尋找並推播」進來的，按下去是直接開訂閱（不看比對結果），按鈕文字跟著改
+  const submitLabel = data.autoSubscribe ? '確認！開始自動尋找並推播' : '確認！開始比對尋找'
 
   const [date, setDate] = useState(data.date || todayStr())
   const [placeCity, setPlaceCity] = useState((data.place || '').split(' ')[0] || '')
@@ -166,7 +168,7 @@ export default function ConfirmTagsPage() {
           {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error">{error}</p>}
 
           <SubmitButton tone="card" onClick={handleConfirm} disabled={busy}>
-            {busy ? '比對中…' : '確認！開始比對尋找'}
+            {busy ? '比對中…' : submitLabel}
           </SubmitButton>
         </FormPage>
       </div>
@@ -275,7 +277,7 @@ export default function ConfirmTagsPage() {
             className="flex h-20 w-full items-center justify-center gap-3 rounded-full border-2 border-black bg-card text-xl text-brown transition hover:brightness-[.98] disabled:opacity-60"
           >
             <CircleCheckIcon className="h-10 w-10 shrink-0" />
-            {busy ? '比對中…' : '確認！開始比對尋找'}
+            {busy ? '比對中…' : submitLabel}
           </button>
         </div>
 
