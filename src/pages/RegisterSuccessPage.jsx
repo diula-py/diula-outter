@@ -13,7 +13,7 @@ export default function RegisterSuccessPage() {
   const { id, queued } = useLocation().state || {}
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper px-[22px] pb-[40px] text-brown land:max-w-[560px]">
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper px-[22px] pb-[40px] text-brown land:max-w-[560px] md:max-w-[560px]">
       <div className="flex w-full flex-1 flex-col items-center justify-center text-center">
         <CircleCheckIcon className="mb-6 h-[120px] w-[120px]" />
         <h1 className="mb-4 text-xl font-bold leading-5">{queued ? '暫存成功！' : '登錄成功！'}</h1>

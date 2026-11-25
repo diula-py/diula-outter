@@ -70,7 +70,7 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
   return (
     <>
     {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[120px] land:max-w-none land:pb-[80px] lg:hidden">
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[120px] land:max-w-none land:pb-[80px] md:max-w-[700px] lg:hidden">
       {/* inner 的數值含狀態列（約 59px）。iPhone PWA（狀態列 59）跟原本一樣；
           LINE App／瀏覽器裡沒有狀態列（safe-area＝0），整組上移、不留狀態列的空白（返回鍵離頂端 30px）。 */}
       <header
@@ -87,7 +87,7 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
         </button>
         <h1 className="pointer-events-none absolute left-0 top-[calc(74px+var(--hshift))] w-full text-center text-xl font-bold leading-5 text-brown land:top-[calc(54px+var(--hshift))]">{title}</h1>
 
-        <div className="absolute left-1/2 top-[calc(109px+var(--hshift))] flex w-[calc(100%-40px)] max-w-[340px] -translate-x-1/2 gap-[10px] land:top-[calc(89px+var(--hshift))] land:max-w-[708px]">
+        <div className="absolute left-1/2 top-[calc(109px+var(--hshift))] flex w-[calc(100%-40px)] max-w-[340px] -translate-x-1/2 gap-[10px] land:top-[calc(89px+var(--hshift))] land:max-w-[708px] md:max-w-[708px]">
           <label className="relative flex h-[47px] w-[97px] shrink-0 items-center justify-center rounded-[50px] border border-black bg-card">
             <CalendarIcon className="pointer-events-none h-5 w-5" />
             {dateFilter && <span className="pointer-events-none absolute right-[14px] top-2 h-2 w-2 rounded-full bg-error" />}
@@ -113,10 +113,11 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
       </header>
 
       <div className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-[15px]
-                      land:mt-3 land:grid land:max-w-[708px] land:grid-cols-2 land:items-start land:gap-[14px]">
-        {loading && <LoadingInline className="land:col-span-full" />}
-        {!loading && error && items.length === 0 && <p className={`${note} text-error land:col-span-full`}>{error}</p>}
-        {!loading && !(error && items.length === 0) && filtered.length === 0 && <p className={`${note} text-[#888] land:col-span-full`}>{emptyText}</p>}
+                      land:mt-3 land:grid land:max-w-[708px] land:grid-cols-2 land:items-start land:gap-[14px]
+                      md:grid md:max-w-[708px] md:grid-cols-2 md:items-start md:gap-[14px]">
+        {loading && <LoadingInline className="land:col-span-full md:col-span-full" />}
+        {!loading && error && items.length === 0 && <p className={`${note} text-error land:col-span-full md:col-span-full`}>{error}</p>}
+        {!loading && !(error && items.length === 0) && filtered.length === 0 && <p className={`${note} text-[#888] land:col-span-full md:col-span-full`}>{emptyText}</p>}
 
         {filtered.map((it) => (
           <button

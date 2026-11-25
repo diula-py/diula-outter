@@ -12,7 +12,7 @@ export function DetailHeader({ title, onBack, height, titleTop, backLeft, backTo
   // LINE App／瀏覽器裡沒有狀態列（safe-area＝0），不留狀態列的空白，返回鍵改離頂端 25px。
   const shift = `calc(max(env(safe-area-inset-top, 0px), 20px) + ${5 - Math.min(titleTop, backTop)}px)`
   return (
-    <header className="safe-header-bleed relative w-full shrink-0 rounded-b-[20px] bg-card land:col-span-full land:mx-[calc(50%-50vw)] land:w-screen" style={{ height: `calc(${height}px + ${shift})` }}>
+    <header className="safe-header-bleed relative w-full shrink-0 rounded-b-[20px] bg-card land:col-span-full land:mx-[calc(50%-50vw)] land:w-screen md:col-span-full md:mx-[calc(50%-50vw)] md:w-screen" style={{ height: `calc(${height}px + ${shift})` }}>
       <button
         type="button"
         onClick={onBack}
@@ -45,7 +45,8 @@ export function DetailImage({ src, mt, desc }) {
   return (
     <div
       className="flex h-[200px] w-[calc(100%-40px)] max-w-[340px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-input
-                 land:col-start-1 land:mt-0! land:h-[150px] land:w-full land:max-w-none"
+                 land:col-start-1 land:mt-0! land:h-[150px] land:w-full land:max-w-none
+                 md:col-start-1 md:mt-0! md:w-full md:max-w-none"
       style={{ marginTop: mt }}
     >
       {src ? (
@@ -62,7 +63,7 @@ export function DetailImage({ src, mt, desc }) {
 /** 米色資訊卡（340 寬、固定高度），內部列用絕對位置。 */
 export function InfoBox({ height, mt = 20, children }) {
   return (
-    <div className="relative w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card land:col-start-2 land:row-span-2 land:mt-0! land:w-full land:max-w-none" style={{ height, marginTop: mt }}>
+    <div className="relative w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card land:col-start-2 land:row-span-2 land:mt-0! land:w-full land:max-w-none md:col-start-2 md:row-span-2 md:mt-0! md:w-full md:max-w-none" style={{ height, marginTop: mt }}>
       {children}
     </div>
   )
@@ -90,7 +91,7 @@ export function InfoRow({ icon, text, iconTop, textTop, pillTop, pillLeft = 82.5
 /** 標籤區（AI 產生、使用者增刪、證件類固定、離線手動選的都存在同一個 tags，分不出來源，所以不寫「AI 標籤」）：340 寬、padding 20、標題 16/600（同 inner）、chip 12/400 白底圓角 10、padding 6 14、間距 10。 */
 export function TagsBox({ tags, mt = 20 }) {
   return (
-    <div className="box-border min-h-[98px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card p-5 land:col-start-2 land:mt-0! land:w-full land:max-w-none" style={{ marginTop: mt }}>
+    <div className="box-border min-h-[98px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card p-5 land:col-start-2 land:mt-0! land:w-full land:max-w-none md:col-start-2 md:mt-0! md:w-full md:max-w-none" style={{ marginTop: mt }}>
       <div className="mb-[10px] text-base font-semibold leading-[18px]">標籤</div>
       <div className="flex flex-wrap gap-[10px]">
         {tags.map((t) => (
@@ -109,6 +110,7 @@ export function ActionButton({ tone, onClick, children }) {
       onClick={onClick}
       className={`mt-5 box-border flex h-[60px] w-[calc(100%-40px)] max-w-[350px] shrink-0 items-center justify-center gap-[15px] rounded-[50px] border border-black px-5 py-[30px] min-[380px]:gap-[30px] min-[380px]:px-10
                   land:col-span-full land:mt-1 land:justify-self-center
+                  md:col-span-full md:justify-self-center
                   text-base font-medium transition hover:brightness-[.98]
                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
                   ${tone === 'card' ? 'bg-card' : 'bg-blue'}`}
@@ -127,6 +129,7 @@ export function DeleteButton({ onClick }) {
       onClick={onClick}
       className="mt-5 box-border flex h-10 w-[100px] shrink-0 items-center justify-center rounded-[50px] border border-[#C4C4C4] bg-white text-xs font-bold leading-3 text-[#C4C4C4]
                  land:col-span-full land:mt-1 land:justify-self-center
+                 md:col-span-full md:justify-self-center
                  focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
     >
       刪除此筆資料

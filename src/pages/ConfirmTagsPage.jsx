@@ -112,13 +112,13 @@ export default function ConfirmTagsPage() {
           {/* 圖片模式：340×200；文字模式：米色卡片＋筆圖示＋描述（inner page-05） */}
           {data.mode === 'text' ? (
             <div className="mt-5 box-border flex w-[calc(100%-40px)] max-w-[340px] shrink-0 items-center gap-[15px] rounded-[10px] bg-card p-[15px]
-                            land:col-start-1 land:mt-0 land:w-full land:max-w-none">
+                            land:col-start-1 land:mt-0 land:w-full land:max-w-none md:col-start-1 md:mt-0 md:w-full md:max-w-none">
               <img src={asset('/icons/square-pen.png')} alt="" aria-hidden="true" className="h-10 w-10 shrink-0 object-contain" />
               <div className="min-w-0 flex-1 break-words text-sm font-normal leading-normal text-brown">{data.desc}</div>
             </div>
           ) : (
             <div className="mt-5 h-[200px] w-[calc(100%-40px)] max-w-[340px] shrink-0 overflow-hidden rounded-[10px]
-                            land:col-start-1 land:mt-0 land:h-[150px] land:w-full land:max-w-none">
+                            land:col-start-1 land:mt-0 land:h-[150px] land:w-full land:max-w-none md:col-start-1 md:mt-0 md:w-full md:max-w-none">
               {data.base64Image && <img src={data.base64Image} alt="" className="h-full w-full bg-input object-contain" />}
             </div>
           )}
@@ -139,13 +139,13 @@ export default function ConfirmTagsPage() {
           {/* 比對時間區間提示：跟後端 matcher 的 TIME_TOLERANCE(前5) / TIME_WINDOW_DAYS(後30) 一致，
               改一邊要同步改另一邊。放在日期卡正下方、橫式同在右欄。 */}
           <p className="mt-1 w-[calc(100%-40px)] max-w-[340px] text-xs leading-normal text-brown/70
-                        land:col-start-2 land:mt-0 land:w-full land:max-w-none">
+                        land:col-start-2 land:mt-0 land:w-full land:max-w-none md:col-start-2 md:mt-0 md:w-full md:max-w-none">
             系統會比對<b className="text-brown">遺失日前 5 天～後 30 天</b>內拾獲的失物
           </p>
 
           {/* AI 標籤（可增刪）：340 寬、padding 20、標題 16/600（同 inner）、chip 高 30 */}
           <div data-tip="tags" className="mt-5 box-border min-h-[98px] w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card p-5
-                          land:col-start-2 land:mt-0 land:w-full land:max-w-none">
+                          land:col-start-2 land:mt-0 land:w-full land:max-w-none md:col-start-2 md:mt-0 md:w-full md:max-w-none">
             <div className="mb-[10px] text-base font-semibold text-brown">AI 標籤</div>
             <div className="flex flex-wrap gap-[10px]">
               {tags.map((tag) => (

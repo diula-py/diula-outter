@@ -37,7 +37,7 @@ export default function ResultDetailPage() {
     <>
     {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
     {/* 沒有 AppLayout（無 TabBar），外框與底部留白自己處理 */}
-    <div className="mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] bg-paper pb-[calc(40px+env(safe-area-inset-bottom))] land:max-w-none lg:hidden">
+    <div className="mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] bg-paper pb-[calc(40px+env(safe-area-inset-bottom))] land:max-w-none md:max-w-[700px] lg:hidden">
       {/* Header */}
       <header className="safe-header relative rounded-b-[20px] bg-card [--header-h:80px] land:[--header-h:64px]">
         <div className="relative flex h-full items-center justify-center">
@@ -53,9 +53,10 @@ export default function ResultDetailPage() {
         </div>
       </header>
 
-      <div className="flex flex-col gap-5 px-[22px] pt-5 land:grid land:grid-cols-[repeat(2,minmax(0,340px))] land:content-start land:justify-center land:gap-x-7 land:gap-y-3 land:[grid-auto-flow:row_dense] land:px-5 land:pt-3 land:pb-6">
+      <div className="flex flex-col gap-5 px-[22px] pt-5 land:grid land:grid-cols-[repeat(2,minmax(0,340px))] land:content-start land:justify-center land:gap-x-7 land:gap-y-3 land:[grid-auto-flow:row_dense] land:px-5 land:pt-3 land:pb-6
+      md:grid md:grid-cols-[repeat(2,minmax(0,340px))] md:content-start md:justify-center md:gap-x-7 md:gap-y-3 md:[grid-auto-flow:row_dense]">
         {/* 圖片 */}
-        <div className="flex h-[200px] w-full items-center justify-center overflow-hidden rounded-[10px] bg-[#e7e3d5] land:col-start-1 land:h-[150px]">
+        <div className="flex h-[200px] w-full items-center justify-center overflow-hidden rounded-[10px] bg-[#e7e3d5] land:col-start-1 land:h-[150px] md:col-start-1">
           {item.image_ref && /^https?:\/\//.test(item.image_ref) ? (
             <img src={item.image_ref} alt="" className="h-full w-full object-cover" />
           ) : (
@@ -66,7 +67,7 @@ export default function ResultDetailPage() {
         {isDiula ? (
           <>
             {/* DiuLa! 自家資料：日期 / 拾獲地點 / 送往 / 備註 + 標籤 */}
-            <div className="flex flex-col gap-2.5 rounded-[10px] bg-card p-4 land:col-start-2">
+            <div className="flex flex-col gap-2.5 rounded-[10px] bg-card p-4 land:col-start-2 md:col-start-2">
               <div className="flex items-center gap-3">
                 <div className="flex w-[46px] shrink-0 items-center justify-center"><CalendarIcon className="h-[35px] w-[35px] text-navy" /></div>
                 <div className="flex h-10 min-w-0 flex-1 items-center rounded-[10px] bg-white px-4 text-xs text-brown">{fmtDate(item.found_date)}</div>
@@ -88,7 +89,7 @@ export default function ResultDetailPage() {
             </div>
 
             {tags.length > 0 && (
-              <div className="flex flex-col gap-3 rounded-[10px] bg-card p-5 land:col-start-2">
+              <div className="flex flex-col gap-3 rounded-[10px] bg-card p-5 land:col-start-2 md:col-start-2">
                 <span className="text-base font-bold text-brown">標籤</span>
                 <div className="flex flex-wrap gap-2.5">
                   {tags.map((t) => (
@@ -101,7 +102,7 @@ export default function ResultDetailPage() {
         ) : (
           <>
             {/* 官方來源：日期 + 內文 */}
-            <div className="flex flex-col gap-3 rounded-[10px] bg-card p-5 land:col-start-2">
+            <div className="flex flex-col gap-3 rounded-[10px] bg-card p-5 land:col-start-2 md:col-start-2">
               <div className="flex items-center gap-2.5">
                 <CalendarIcon className="h-[35px] w-[35px] text-navy" />
                 <span className="text-base text-brown">{fmtDate(item.found_date)}</span>
@@ -120,7 +121,7 @@ export default function ResultDetailPage() {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex h-[56px] w-full items-center justify-center rounded-[50px] border border-black bg-card land:col-span-full land:max-w-[350px] land:justify-self-center
+                className="flex h-[56px] w-full items-center justify-center rounded-[50px] border border-black bg-card land:col-span-full land:max-w-[350px] land:justify-self-center md:col-span-full md:max-w-[350px] md:justify-self-center
                            px-6 text-center text-base font-medium text-brown no-underline transition hover:bg-[#eee8d7]
                            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
               >

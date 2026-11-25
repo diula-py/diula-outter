@@ -7,11 +7,14 @@ import { ChevronLeftIcon, ChevronDownIcon, CircleCheckIcon } from './icons'
 import { CITY_ORDER, TAIWAN_REGIONS } from '../data/taiwanRegions'
 import { asset } from '../lib/asset'
 
-/** 80px 標頭（有瀏海時＝狀態列＋73px，見 index.css .safe-header）：標題置中 20/700，返回鍵 30×30 垂直置中、left 22。onBack 省略＝不顯示返回鍵（如「確認標籤」）。 */
+/** 80px 標頭（有瀏海時＝狀態列＋73px，見 index.css .safe-header）：標題置中 20/700，返回鍵 30×30 垂直置中、left 22。onBack 省略＝不顯示返回鍵（如「確認標籤」）。
+ * md:（平板）跟 land:（手機橫放）一樣會進 2 欄 grid，所以要跨欄置中；但不像 land: 縮
+ * header 高度（64px）——平板直向高度夠，維持手機版原本的 80px 不用為了省高度縮小。 */
 export function FormHeader({ title, onBack }) {
   return (
     <header className="safe-header relative z-10 w-full shrink-0 rounded-b-[20px] bg-card [--header-h:80px]
-                       land:col-span-full land:mx-[calc(50%-50vw)] land:w-screen land:[--header-h:64px]">
+                       land:col-span-full land:mx-[calc(50%-50vw)] land:w-screen land:[--header-h:64px]
+                       md:col-span-full md:mx-[calc(50%-50vw)] md:w-screen">
       <div className="relative flex h-full items-center justify-center">
         {onBack && (
           <button
@@ -29,12 +32,16 @@ export function FormHeader({ title, onBack }) {
   )
 }
 
-/** 表單頁外框：置中欄，底部留 80px（inner 的 padding-bottom）。 */
+/** 表單頁外框：置中欄，底部留 80px（inner 的 padding-bottom）。
+ * md:（平板，768~1023px）直接沿用 land:（手機橫放）同一套「圖片左欄、表單右欄」
+ * 2 欄 grid——340+340+間距 708，平板寬度綽綽有餘，不用另外設計一套版型。 */
 export function FormPage({ children }) {
   return (
     <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(80px+env(safe-area-inset-bottom))]
                     land:grid land:max-w-none land:grid-cols-[repeat(2,minmax(0,340px))] land:content-start land:items-start land:justify-center
-                    land:gap-x-7 land:gap-y-3 land:[grid-auto-flow:row_dense] land:pb-6">
+                    land:gap-x-7 land:gap-y-3 land:[grid-auto-flow:row_dense] land:pb-6
+                    md:grid md:max-w-none md:grid-cols-[repeat(2,minmax(0,340px))] md:content-start md:items-start md:justify-center
+                    md:gap-x-7 md:gap-y-3 md:[grid-auto-flow:row_dense] md:pb-6">
       {children}
     </div>
   )
@@ -49,6 +56,7 @@ export function UploadBox({ mt = 20, onClick, ariaLabel, src, alt = '', cameraAl
     <div
       style={{ marginTop: mt }}
       className={`relative h-[200px] shrink-0 land:col-start-1 land:mt-0! land:h-[150px] land:w-full land:max-w-none
+                 md:col-start-1 md:mt-0! md:w-full md:max-w-none
                  ${fullWidth ? 'w-full' : 'w-[calc(100%-40px)] max-w-[340px]'}`}
     >
       <button
@@ -90,7 +98,8 @@ export function FormCard({ mt = 20, children }) {
     <div
       style={{ marginTop: mt }}
       className="flex w-[calc(100%-40px)] max-w-[340px] shrink-0 flex-col gap-[10px] rounded-[10px] bg-card p-[10px] min-[380px]:p-[15px]
-                 land:col-start-2 land:mt-0! land:w-full land:max-w-none land:gap-2 land:p-3"
+                 land:col-start-2 land:mt-0! land:w-full land:max-w-none land:gap-2 land:p-3
+                 md:col-start-2 md:mt-0! md:w-full md:max-w-none"
     >
       {children}
     </div>
@@ -188,6 +197,7 @@ export function SubmitButton({ onClick, disabled, children, tone = 'blue' }) {
       disabled={disabled}
       className={`mb-[20px] mt-[35px] flex h-[60px] w-[calc(100%-40px)] max-w-[350px] shrink-0 items-center justify-center gap-[10px] rounded-[50px] border border-black
                   land:col-span-full land:mb-0 land:mt-1 land:h-[52px] land:justify-self-center
+                  md:col-span-full md:justify-self-center
                   px-2 py-[20px] text-[15px] font-medium min-[380px]:gap-[15px] min-[380px]:px-[30px] min-[380px]:text-base text-brown transition hover:brightness-[.98] disabled:opacity-60
                   focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
                   ${tone === 'card' ? 'bg-card' : 'bg-blue'}`}
