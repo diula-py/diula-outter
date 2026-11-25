@@ -217,7 +217,9 @@ export default function RecentFoundPage() {
     {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
     {/* 沒有 AppLayout（無 TabBar）——跟 ResultsPage／MyItemsPage 同樣的理由：
         這是從尋找頁按鈕點進來的子頁，不是分頁本身，用返回鍵回去就好。 */}
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-10 land:max-w-none lg:hidden">
+    {/* 底部留 100px＋安全區（同 ResultsPage）：浮動「都沒有我的遺失物」膠囊高 60px、離底 20px，
+        留太少會蓋住最下面的分頁按鈕。 */}
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(100px+env(safe-area-inset-bottom))] land:max-w-none lg:hidden">
       <DetailHeader title="近 2 日遺失物快速看" onBack={() => navigate(-1)} height={80} titleTop={40} backLeft={22} backTop={35} backSize={30} />
 
       {/* 頂層分類頁籤：橫向可滑動（跟 src/data/tagTaxonomy.js 的 14 大類一一對應） */}
