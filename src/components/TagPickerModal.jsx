@@ -41,43 +41,43 @@ export default function TagPickerModal({ open, value, onClose, onConfirm, taxono
     })
 
   // inner .modal-tag：高 30、padding 10 20、間距 8、12/400、白底黑框；已選＝藍底
-  // 桌機版（lg:）字級加大到 14：彈窗變寬了，手機版的 12px 比例上太小、整頁很空。
+  // 桌機版（lg:）整個放大：chip 高 40、字 16、左右 24，彈窗寬 640，桌機大螢幕上才不會顯得太小。
   const chip = (on) =>
-    `box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border-black px-5 py-[10px] text-xs font-normal leading-3 text-brown lg:text-sm ${on ? 'border-[1.5px] bg-blue' : 'border bg-white'}`
+    `box-border inline-flex h-[30px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[50px] border-black px-5 py-[10px] text-xs font-normal leading-3 text-brown lg:h-10 lg:px-6 lg:text-base lg:leading-4 ${on ? 'border-[1.5px] bg-blue' : 'border bg-white'}`
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center" onClick={onClose}>
       <Backdrop />
       <div
-        className="relative flex max-h-[80vh] w-[calc(100vw-20px)] max-w-[300px] flex-col overflow-hidden rounded-[10px] bg-card shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:max-h-[70vh] lg:w-[448px] lg:max-w-[448px]"
+        className="relative flex max-h-[80vh] w-[calc(100vw-20px)] max-w-[300px] flex-col overflow-hidden rounded-[10px] bg-card shadow-[0_4px_4px_rgba(0,0,0,0.25)] lg:max-h-[85vh] lg:w-[640px] lg:max-w-[calc(100vw-80px)] lg:rounded-[16px]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* header：X（左）／打勾（右，未選時淡灰 50%）／「已選標籤」置中／已選 chip */}
-        <div className="relative z-[1] w-full shrink-0 rounded-t-[10px] bg-card py-[15px]">
+        <div className="relative z-[1] w-full shrink-0 rounded-t-[10px] bg-card py-[15px] lg:rounded-t-[16px] lg:py-6">
           <button
             type="button"
             onClick={onClose}
             aria-label="取消"
-            className="absolute left-[15px] top-[5px] flex h-7 w-7 items-center justify-center text-brown"
+            className="absolute left-[15px] top-[5px] flex h-7 w-7 items-center justify-center text-brown lg:left-6 lg:top-5 lg:h-9 lg:w-9"
           >
-            <XIcon className="h-5 w-5" />
+            <XIcon className="h-5 w-5 lg:h-7 lg:w-7" />
           </button>
           <button
             type="button"
             onClick={() => { onConfirm(selected); onClose() }}
             disabled={selected.length === 0}
             aria-label="確認"
-            className={`absolute right-[15px] top-[5px] flex h-7 w-7 items-center justify-center transition ${selected.length ? 'text-brown' : 'text-[#888] opacity-50'}`}
+            className={`absolute right-[15px] top-[5px] flex h-7 w-7 items-center justify-center transition lg:right-6 lg:top-5 lg:h-9 lg:w-9 ${selected.length ? 'text-brown' : 'text-[#888] opacity-50'}`}
           >
-            <CheckIcon className="h-5 w-5" />
+            <CheckIcon className="h-5 w-5 lg:h-7 lg:w-7" />
           </button>
-          <div className="w-full px-[15px] text-center text-base font-medium leading-4 text-brown lg:text-xl">已選標籤</div>
-          <div className="mt-[15px] flex max-h-[90px] flex-wrap gap-[10px] overflow-y-auto px-5">
-            {selected.length === 0 && <div className="text-xs font-normal text-brown opacity-50">尚未選擇標籤</div>}
+          <div className="w-full px-[15px] text-center text-base font-medium leading-4 text-brown lg:text-2xl lg:leading-6">已選標籤</div>
+          <div className="mt-[15px] flex max-h-[90px] flex-wrap gap-[10px] overflow-y-auto px-5 lg:mt-6 lg:max-h-[140px] lg:gap-3 lg:px-8">
+            {selected.length === 0 && <div className="text-xs font-normal text-brown opacity-50 lg:text-base">尚未選擇標籤</div>}
             {selected.map((tag) => (
               <button key={tag} type="button" onClick={() => toggle(tag)} aria-label={`移除 ${tag}`} className={chip(true)}>
                 {tag}
-                <span className="text-sm font-bold leading-none">×</span>
+                <span className="text-sm font-bold leading-none lg:text-lg">×</span>
               </button>
             ))}
           </div>
@@ -89,11 +89,11 @@ export default function TagPickerModal({ open, value, onClose, onConfirm, taxono
         </div>
 
         {/* 分類標籤（每類換行；分類標題 16/500，上距 20、下距 10） */}
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-[5px]">
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-[5px] lg:px-8 lg:pb-8">
           {taxonomy.map((cat) => (
             <div key={cat.category}>
-              <div className="mb-[10px] mt-5 text-base font-medium leading-4 text-brown lg:text-lg">{cat.category}</div>
-              <div className="flex flex-wrap gap-2 pb-2">
+              <div className="mb-[10px] mt-5 text-base font-medium leading-4 text-brown lg:mb-4 lg:mt-7 lg:text-xl lg:leading-5">{cat.category}</div>
+              <div className="flex flex-wrap gap-2 pb-2 lg:gap-3">
                 {cat.tags.map((tag) => (
                   <button key={tag} type="button" onClick={() => toggle(tag)} className={chip(selected.includes(tag))}>
                     {tag}
