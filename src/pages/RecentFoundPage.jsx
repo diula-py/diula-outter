@@ -46,7 +46,7 @@ function TabPill({ label, active, onClick, small }) {
 
 const scrollbarHidden = '[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
 
-// 「都沒有我的遺失物」浮現規則同 ResultsPage：捲到第 7 筆（第 7 張卡片進入畫面）才浮現，
+// 「都沒有我的物品」浮現規則同 ResultsPage：捲到第 7 筆（第 7 張卡片進入畫面）才浮現，
 // 往回捲到它上方就收起；這批（當頁）不到 7 筆（含沒有結果）時一進來就顯示。
 const SHOW_AT = 7
 
@@ -185,7 +185,7 @@ export default function RecentFoundPage() {
     }
   }, [items.length, loading])
 
-  // 桌機版頁尾快捲進畫面時，浮動的「都沒有我的遺失物」膠囊要先讓開，不然會蓋到頁尾。
+  // 桌機版頁尾快捲進畫面時，浮動的「都沒有我的物品」膠囊要先讓開，不然會蓋到頁尾。
   // 2026-11：原本只靠 lg:pb-[200px] 多留視窗高度去「賭」頁尾一定留在膠囊上方，但不同
   // 瀏覽器縮放／實際可視高度換算下來還是會不夠，數字抓再大都只是賭得更大而已。改成
   // 跟上面 showNotMine 同一招：捲動時直接量頁尾「真正的」邊界位置——頁尾下緣一旦
@@ -217,7 +217,7 @@ export default function RecentFoundPage() {
     {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
     {/* 沒有 AppLayout（無 TabBar）——跟 ResultsPage／MyItemsPage 同樣的理由：
         這是從尋找頁按鈕點進來的子頁，不是分頁本身，用返回鍵回去就好。 */}
-    {/* 底部留 100px＋安全區（同 ResultsPage）：浮動「都沒有我的遺失物」膠囊高 60px、離底 20px，
+    {/* 底部留 100px＋安全區（同 ResultsPage）：浮動「都沒有我的物品」膠囊高 60px、離底 20px，
         留太少會蓋住最下面的分頁按鈕。 */}
     <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(100px+env(safe-area-inset-bottom))] land:max-w-none lg:hidden">
       <DetailHeader title="近 2 日遺失物快速看" onBack={() => navigate(-1)} height={80} titleTop={40} backLeft={22} backTop={35} backSize={30} />
@@ -333,7 +333,7 @@ export default function RecentFoundPage() {
 
     </div>
 
-    {/* 都沒有我的遺失物：浮現規則同 ResultsPage 的「都沒有我的物品」——捲到第 7 筆
+    {/* 都沒有我的物品：浮現規則同 ResultsPage 的「都沒有我的物品」——捲到第 7 筆
         才浮現、不到 7 筆一進來就顯示；往回捲到它上方就收起。固定貼在視窗底部
         （＋iOS 底部橫條安全區），隱藏時淡出並往下 10px、不能點也不能用 Tab 選到。 */}
     <div className="pointer-events-none fixed bottom-[calc(20px+env(safe-area-inset-bottom))] left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[350px] -translate-x-1/2 justify-center land:bottom-[calc(10px+env(safe-area-inset-bottom))] land:max-w-[708px] lg:hidden">
@@ -347,7 +347,7 @@ export default function RecentFoundPage() {
                     transition duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
                     ${showNotMine ? 'pointer-events-auto translate-y-0 opacity-100' : 'translate-y-[10px] opacity-0'}`}
       >
-        都沒有我的遺失物！
+        都沒有我的物品
       </button>
     </div>
 
@@ -482,7 +482,7 @@ export default function RecentFoundPage() {
       </div>
     </div>
 
-    {/* 都沒有我的遺失物（桌機版）：浮現規則同手機版那顆——捲到第 7 筆才浮現、
+    {/* 都沒有我的物品（桌機版）：浮現規則同手機版那顆——捲到第 7 筆才浮現、
         不到 7 筆一進來就顯示，貼在視窗底部置中，樣式跟 ResultsPage 桌機版同款膠囊。
         footerNear 一為 true（頁尾真的捲進畫面）就跟著收起，不會蓋到頁尾。 */}
     <div className="pointer-events-none fixed bottom-10 left-1/2 z-[90] hidden w-full max-w-[1280px] -translate-x-1/2 justify-center px-10 box-border lg:flex">
@@ -496,22 +496,22 @@ export default function RecentFoundPage() {
                     transition duration-300 hover:brightness-[.98]
                     ${showNotMine && !footerNear ? 'pointer-events-auto translate-y-0 opacity-100' : 'translate-y-[10px] opacity-0'}`}
       >
-        都沒有我的遺失物！
+        都沒有我的物品
       </button>
     </div>
 
-    {/* 小提示：第一次看到「都沒有我的遺失物！」按鈕（近 2 日快速看一次；換分類不再出現）。
+    {/* 小提示：第一次看到「都沒有我的物品！」按鈕（近 2 日快速看一次；換分類不再出現）。
         anchor="none-recent" 會自動挑手機版／桌機版兩個 data-tip="none-recent" 裡
         目前看得到的那個，不用放在某一個 lg: 區塊裡面。 */}
     <OnceTip name="tip_not_mine_recent" anchor="none-recent" show={showNotMine && !footerNear && !sosOpen}>{TIP_NOT_MINE}</OnceTip>
 
-    {/* 「都沒有我的遺失物」選項彈窗，樣式照 ResultsPage 的同款彈窗（inner notfound-popup）。
+    {/* 「都沒有我的物品」選項彈窗，樣式照 ResultsPage 的同款彈窗（inner notfound-popup）。
         這頁沒有比對條件(query/resolved)可以帶 —— 不是從填協尋單進來的，所以：
         「開啟自動尋找並推播」導去 /search 從頭填（SubscribePage 沒有 category_id/date 會擋下），
         「幫我在Threads發協尋文」可以直接進 /search/sos（那頁欄位都能手動填，不強制帶入） */}
     {sosOpen && (
       <Overlay onClose={() => setSosOpen(false)}>
-        <div role="dialog" aria-modal="true" aria-label="都沒有我的遺失物" className="relative box-border flex h-[380px] w-[calc(100vw-20px)] max-w-[305px] shrink-0 flex-col items-center rounded-[10px] bg-card pt-[49px] shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
+        <div role="dialog" aria-modal="true" aria-label="都沒有我的物品" className="relative box-border flex h-[380px] w-[calc(100vw-20px)] max-w-[305px] shrink-0 flex-col items-center rounded-[10px] bg-card pt-[49px] shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
           <button
             type="button"
             onClick={() => setSosOpen(false)}
@@ -520,7 +520,7 @@ export default function RecentFoundPage() {
           >
             <XmarkIcon className="h-[35px] w-[35px]" />
           </button>
-          <div className="text-center text-2xl font-bold leading-6">都沒有我的遺失物！</div>
+          <div className="text-center text-2xl font-bold leading-6">都沒有我的物品！</div>
           <div className="mt-8 flex w-[254px] max-w-[calc(100%-40px)] flex-col gap-5">
             {[
               { label: '開啟自動尋找並推播', tone: 'bg-blue', go: () => navigate('/search', { state: { autoSubscribe: true } }) },
