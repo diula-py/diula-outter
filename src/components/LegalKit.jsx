@@ -49,6 +49,9 @@ export function LegalPage({ title, updatedAt, children }) {
         </article>
       </div>
 
+      {/* 回到頂部（桌機）：右下角 */}
+      <BackToTopButton bottomClass="bottom-10" widthClass="w-full max-w-[1280px] px-10" />
+
       <DesktopFooter />
     </div>
     </>

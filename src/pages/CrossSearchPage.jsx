@@ -175,7 +175,7 @@ export default function CrossSearchPage() {
                 onClick={() => setMode(t.key)}
                 aria-pressed={mode === t.key}
                 className={`flex-1 border-b-2 pb-4 pt-4 text-center text-base
-                  ${mode === t.key ? 'border-[#2F1702] font-medium text-brown' : 'border-transparent font-normal text-brown/70'}`}
+                  ${mode === t.key ? 'border-[#2F1702] font-medium text-brown' : 'border-transparent font-normal text-brown'}`}
               >
                 {t.label}
               </button>
