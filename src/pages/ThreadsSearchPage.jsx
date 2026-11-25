@@ -165,6 +165,9 @@ export default function ThreadsSearchPage() {
         </div>
       </div>
 
+      {/* 回到頂部（桌機）：右下角 */}
+      <BackToTopButton desktop />
+
       <DesktopFooter />
     </div>
     </>

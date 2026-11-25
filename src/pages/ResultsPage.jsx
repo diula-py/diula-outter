@@ -363,6 +363,9 @@ export default function ResultsPage() {
         </button>
       </div>
 
+      {/* 回到頂部（桌機）：右下角，跟「都沒有我的物品」膠囊同一水平線 */}
+      <BackToTopButton desktop />
+
       <DesktopFooter />
     </div>
 
