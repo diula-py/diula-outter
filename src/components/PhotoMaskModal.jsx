@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Backdrop } from './DialogKit'
+import MaskHint from './MaskHint'
 
 // 通用相片打碼：在圖上自由拖曳黑框遮住個資／路人臉，再輸出打碼後的 JPEG。
 // 與 MaskingModal（證件專用、強制裁切＋依版型自動打碼）不同，這支給一般照片用，
@@ -13,6 +14,8 @@ export default function PhotoMaskModal({ src, onCancel, onConfirm }) {
   const masksRef = useRef([])       // 已畫的黑框（canvas 座標）
   const drawRef = useRef({ drawing: false, x: 0, y: 0 })
   const [count, setCount] = useState(0)
+  // 打碼提示動畫（同證件打碼視窗的 MaskHint）：每次打開都播，手指一碰照片就收起
+  const [showHint, setShowHint] = useState(true)
 
   // 載圖 → 依上限縮放畫進 canvas，存乾淨底圖像素供重畫。
   useEffect(() => {
@@ -50,6 +53,7 @@ export default function PhotoMaskModal({ src, onCancel, onConfirm }) {
   }
   function onDown(e) {
     e.preventDefault()
+    setShowHint(false)
     const p = posFrom(e)
     drawRef.current = { drawing: true, x: p.x, y: p.y }
     overlayRef.current.setPointerCapture?.(e.pointerId)
@@ -113,6 +117,7 @@ export default function PhotoMaskModal({ src, onCancel, onConfirm }) {
               className="absolute inset-0 h-full w-full touch-none"
               style={{ cursor: 'crosshair' }}
             />
+            {showHint && <MaskHint />}
           </div>
           <p className="mt-3 text-xs leading-normal text-brown/70">
             在照片上拖曳，框住要遮住的部分（路人臉、車牌、地址…）。可不打碼直接按「完成」。
