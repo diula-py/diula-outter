@@ -12,6 +12,6 @@ export const FIND_ITEMS = [
 // 「拾獲」選單資料：手機版「拾獲」分頁（FoundHomePage.jsx）用它當 items，
 // 桌機版合併頁（HomeTabPage.jsx 的 lg: 區塊）也用同一份資料畫右邊卡片。
 export const REGISTER_ITEMS = [
-  { icon: asset('/icons/address-card.png'), label: '證件類遺失物登錄', to: '/register/id', needsOnline: true, tour: 'found-id' },
-  { icon: asset('/icons/clipboard-question.png'), label: '非證件類遺失物登錄', to: '/register/other', tour: 'found-other' },
+  { icon: asset('/icons/address-card.png'), label: '證件類拾獲物登錄', to: '/register/id', needsOnline: true, tour: 'found-id' },
+  { icon: asset('/icons/clipboard-question.png'), label: '非證件類拾獲物登錄', to: '/register/other', tour: 'found-other' },
 ]

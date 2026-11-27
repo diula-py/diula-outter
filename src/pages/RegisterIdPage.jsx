@@ -169,7 +169,7 @@ export default function RegisterIdPage() {
     {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
     <div className="lg:hidden">
       <FormPage>
-        <FormHeader title="證件類遺失物登錄" onBack={() => navigate(-1)} />
+        <FormHeader title="證件類拾獲物登錄" onBack={() => navigate(-1)} />
 
         {/* 證件類型分頁：4 顆 80×45 膠囊、間距 10、置中（inner page-12）；窄螢幕 4 顆平均縮小 */}
         <div className="mt-5 flex w-full justify-center gap-[10px] px-5 land:col-span-full land:mt-0 land:[&>*]:h-10 md:col-span-full">
@@ -261,7 +261,7 @@ export default function RegisterIdPage() {
           <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
             <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
           </button>
-          <h1 className="m-0 text-2xl font-normal text-brown">證件類遺失物登錄</h1>
+          <h1 className="m-0 text-2xl font-normal text-brown">證件類拾獲物登錄</h1>
         </div>
 
         <div className="flex gap-3">
