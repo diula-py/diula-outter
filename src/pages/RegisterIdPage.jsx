@@ -172,7 +172,7 @@ export default function RegisterIdPage() {
         <FormHeader title="證件類遺失物登錄" onBack={() => navigate(-1)} />
 
         {/* 證件類型分頁：4 顆 80×45 膠囊、間距 10、置中（inner page-12）；窄螢幕 4 顆平均縮小 */}
-        <div className="mt-5 flex w-full justify-center gap-[10px] px-5 land:col-span-full land:mt-0 land:[&>*]:h-10">
+        <div className="mt-5 flex w-full justify-center gap-[10px] px-5 land:col-span-full land:mt-0 land:[&>*]:h-10 md:col-span-full">
           {ID_TYPES.map((t) => {
             const active = type === t
             return (
@@ -200,7 +200,7 @@ export default function RegisterIdPage() {
           <button
             type="button"
             onClick={() => setPickerOpen(true)}
-            className={`mt-[10px] w-fit rounded-[50px] px-4 py-1.5 text-xs font-normal transition land:col-start-1 land:mt-0 land:justify-self-center
+            className={`mt-[10px] w-fit rounded-[50px] px-4 py-1.5 text-xs font-normal transition land:col-start-1 land:mt-0 land:justify-self-center md:col-start-1 md:justify-self-center
               focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
               ${otherType ? 'border-[1.5px] border-black bg-blue text-brown' : 'border border-black bg-white text-[#888]'}`}
           >
@@ -240,7 +240,7 @@ export default function RegisterIdPage() {
           </FormRow>
         </FormCard>
 
-        {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error land:col-start-2 land:mt-0 land:w-full land:max-w-none">{error}</p>}
+        {error && <p className="mt-[15px] w-[calc(100%-40px)] max-w-[340px] text-sm leading-normal text-error land:col-start-2 land:mt-0 land:w-full land:max-w-none md:col-start-2 md:mt-0 md:w-full md:max-w-none">{error}</p>}
         <SubmitButton onClick={handleSubmit} disabled={status === 'submitting'}>
           {status === 'submitting' ? '送出中…' : '填寫完成，確認標籤'}
         </SubmitButton>

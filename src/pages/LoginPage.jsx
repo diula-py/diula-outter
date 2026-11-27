@@ -127,6 +127,7 @@ export default function LoginPage() {
           矮螢幕自動縮小、最少 40，再矮就整頁往下捲，不會再有按鈕被切掉按不到。 */}
       <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center overflow-x-hidden bg-blue pb-10
                       land:grid land:max-w-none land:grid-cols-[repeat(2,minmax(0,320px))] land:content-center land:items-center land:justify-center land:gap-x-8 land:gap-y-4 land:pb-4
+                      md:mx-[calc(50%-50vw)] md:w-screen md:max-w-none
                       lg:hidden">
         <div className="h-[clamp(40px,calc((100dvh-var(--top-inset)-547px)*0.6197),189px)] shrink-0 land:hidden" />
 

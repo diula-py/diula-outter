@@ -219,7 +219,7 @@ export default function RecentFoundPage() {
         這是從尋找頁按鈕點進來的子頁，不是分頁本身，用返回鍵回去就好。 */}
     {/* 底部留 100px＋安全區（同 ResultsPage）：浮動「都沒有我的物品」膠囊高 60px、離底 20px，
         留太少會蓋住最下面的分頁按鈕。 */}
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(100px+env(safe-area-inset-bottom))] land:max-w-none lg:hidden">
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(100px+env(safe-area-inset-bottom))] land:max-w-none md:max-w-[700px] lg:hidden">
       <DetailHeader title="近 2 日遺失物快速看" onBack={() => navigate(-1)} height={80} titleTop={40} backLeft={22} backTop={35} backSize={30} />
 
       {/* 頂層分類頁籤：橫向可滑動（跟 src/data/tagTaxonomy.js 的 14 大類一一對應） */}
@@ -233,7 +233,7 @@ export default function RecentFoundPage() {
 
       {/* 次層分類：選中頂層底下的細分類，一樣橫向可滑動 */}
       {!!subCats.length && (
-        <div className="mt-3 w-[calc(100%-44px)] max-w-[350px] rounded-[20px] bg-card px-3 py-2">
+        <div className="mt-3 w-[calc(100%-44px)] max-w-[350px] rounded-[20px] bg-card px-3 py-2 md:max-w-[708px]">
           <div className={`flex gap-[10px] overflow-x-auto ${scrollbarHidden}`}>
             {subCats.map((c) => (
               <TabPill key={c.id} label={c.name} active={c.id === subId} onClick={() => selectSub(c.id)} small />
@@ -244,13 +244,13 @@ export default function RecentFoundPage() {
 
       {/* 日期區間 + 篩選條件下的總筆數（不是只有顯示的這幾筆，見後端 count 欄位說明） */}
       {range && (
-        <div className="mt-5 flex w-[calc(100%-44px)] max-w-[350px] items-center justify-between text-xs text-brown">
+        <div className="mt-5 flex w-[calc(100%-44px)] max-w-[350px] items-center justify-between text-xs text-brown md:max-w-[708px]">
           <span>{fmtDate(range.start)} ~{fmtDate(range.end)}</span>
           <span className="font-medium">共 {count} 筆</span>
         </div>
       )}
 
-      <div ref={listRef} className="mt-3 flex w-[calc(100%-44px)] max-w-[350px] flex-col gap-5">
+      <div ref={listRef} className="mt-3 flex w-[calc(100%-44px)] max-w-[350px] flex-col gap-5 md:max-w-[708px] md:grid md:grid-cols-2 md:items-start md:gap-[14px]">
         {loading && <p className={note}>載入中...</p>}
         {!loading && error && <p className={note}>{error}</p>}
 
@@ -290,7 +290,7 @@ export default function RecentFoundPage() {
       {/* 頁碼列：count 遠大於一頁顯示的筆數時才需要，只有 1 頁就不顯示（後端已經算好 total_pages）。
           數字本身一排橫向可滑動（頁數多時不擠成兩行），加左右箭頭快速翻頁，照使用者給的參考樣式。 */}
       {totalPages > 1 && (
-        <div className="mt-5 flex w-[calc(100%-44px)] max-w-[350px] items-center justify-center gap-3">
+        <div className="mt-5 flex w-[calc(100%-44px)] max-w-[350px] items-center justify-center gap-3 md:max-w-[708px]">
           <button
             type="button"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
@@ -336,7 +336,7 @@ export default function RecentFoundPage() {
     {/* 都沒有我的物品：浮現規則同 ResultsPage 的「都沒有我的物品」——捲到第 7 筆
         才浮現、不到 7 筆一進來就顯示；往回捲到它上方就收起。固定貼在視窗底部
         （＋iOS 底部橫條安全區），隱藏時淡出並往下 10px、不能點也不能用 Tab 選到。 */}
-    <div className="pointer-events-none fixed bottom-[calc(20px+env(safe-area-inset-bottom))] left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[350px] -translate-x-1/2 justify-center land:bottom-[calc(10px+env(safe-area-inset-bottom))] land:max-w-[708px] lg:hidden">
+    <div className="pointer-events-none fixed bottom-[calc(20px+env(safe-area-inset-bottom))] left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[350px] -translate-x-1/2 justify-center land:bottom-[calc(10px+env(safe-area-inset-bottom))] land:max-w-[708px] md:max-w-[708px] lg:hidden">
       <button
         type="button"
         onClick={() => setSosOpen(true)}

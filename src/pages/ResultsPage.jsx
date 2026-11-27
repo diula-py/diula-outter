@@ -130,7 +130,7 @@ export default function ResultsPage() {
   return (
     <>
     {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(100px+env(safe-area-inset-bottom))] land:max-w-none lg:hidden">
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[calc(100px+env(safe-area-inset-bottom))] land:max-w-none md:max-w-[700px] lg:hidden">
       {/* Header 80px：標題＋右上角「回首頁」（先跳確認彈窗）；沒有返回鍵（inner page-06） */}
       <header className="safe-header relative z-10 w-full shrink-0 rounded-b-[20px] bg-card [--header-h:80px] land:[--header-h:64px]">
         <div className="relative flex h-full items-center justify-center">
@@ -176,7 +176,8 @@ export default function ResultsPage() {
 
       {/* 結果清單：340 寬、卡片間距 20 */}
       <div ref={listRef} className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-5
-                                    land:mt-3 land:grid land:max-w-[708px] land:grid-cols-2 land:items-start land:gap-[14px]">
+                                    land:mt-3 land:grid land:max-w-[708px] land:grid-cols-2 land:items-start land:gap-[14px]
+                                    md:grid md:max-w-[708px] md:grid-cols-2 md:items-start md:gap-[14px]">
         {list.length === 0 && (
           <div className={emptyBox}>
             {source === 'diula' ? (
@@ -246,7 +247,7 @@ export default function ResultsPage() {
 
       {/* 都沒有我的物品：藍底膠囊 350×60（同其他主要膠囊）、陰影，浮在離視窗底部 20px（＋iOS 底部橫條安全區）。
           隱藏時淡出並往下 10px、不能點也不能用 Tab 選到；頁面底部留 100px，滑到底最後一張卡片不會被蓋住 */}
-      <div className="pointer-events-none fixed bottom-[calc(20px+env(safe-area-inset-bottom))] left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[350px] -translate-x-1/2 justify-center land:bottom-[calc(10px+env(safe-area-inset-bottom))] land:max-w-[708px]">
+      <div className="pointer-events-none fixed bottom-[calc(20px+env(safe-area-inset-bottom))] left-1/2 z-[90] flex w-[calc(100%-40px)] max-w-[350px] -translate-x-1/2 justify-center land:bottom-[calc(10px+env(safe-area-inset-bottom))] land:max-w-[708px] md:max-w-[708px]">
         <button
           type="button"
           onClick={() => setSosOpen(true)}

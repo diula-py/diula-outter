@@ -178,7 +178,7 @@ export default function SosPostPage() {
     <>
     {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
     {/* 沒有 AppLayout（無 TabBar），外框與底部留白（含 iOS safe-area）自己處理 */}
-    <div className="mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] bg-paper pb-[calc(24px+env(safe-area-inset-bottom))] land:max-w-none lg:hidden">
+    <div className="mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] bg-paper pb-[calc(24px+env(safe-area-inset-bottom))] land:max-w-none md:max-w-[700px] lg:hidden">
       <DetailHeader
         title="幫你發Threads的協尋文"
         onBack={() => (step === 'preview' ? setStep('form') : navigate(-1))}
@@ -193,8 +193,10 @@ export default function SosPostPage() {
       {step === 'form' && (
         <div className="flex w-full flex-col pb-[112px] pl-[27px] pr-[26px] pt-5
                         land:grid land:grid-cols-[repeat(2,minmax(0,340px))] land:content-start land:justify-center
-                        land:gap-x-7 land:gap-y-1.5 land:[grid-auto-flow:row_dense] land:[&>*]:mt-0 land:px-5 land:pb-6 land:pt-3">
-          <div className="box-border flex min-h-[60px] w-full items-center rounded-[10px] bg-card px-[15px] py-[10px] text-xs font-medium leading-normal text-brown land:col-span-full land:min-h-0 land:py-2">
+                        land:gap-x-7 land:gap-y-1.5 land:[grid-auto-flow:row_dense] land:[&>*]:mt-0 land:px-5 land:pb-6 land:pt-3
+                        md:grid md:grid-cols-[repeat(2,minmax(0,340px))] md:content-start md:justify-center
+                        md:gap-x-7 md:gap-y-1.5 md:[grid-auto-flow:row_dense] md:[&>*]:mt-0">
+          <div className="box-border flex min-h-[60px] w-full items-center rounded-[10px] bg-card px-[15px] py-[10px] text-xs font-medium leading-normal text-brown land:col-span-full land:min-h-0 land:py-2 md:col-span-full">
             請照欄位填，系統會套用統一模版並發佈協尋文到DiuLa!官方 Threads 帳號，你的個人帳號不會露出。
           </div>
 
@@ -215,29 +217,29 @@ export default function SosPostPage() {
             </>
           )}
 
-          <div className={`${label} mt-5 land:col-start-1`}>物品名稱</div>
-          <div className={`${pill} mt-[10px] rounded-[10px] border border-black bg-input land:col-start-1`}>
+          <div className={`${label} mt-5 land:col-start-1 md:col-start-1`}>物品名稱</div>
+          <div className={`${pill} mt-[10px] rounded-[10px] border border-black bg-input land:col-start-1 md:col-start-1`}>
             <input value={name} onChange={(e) => setName(e.target.value)} className={fieldInput} />
           </div>
 
-          <div className={`${label} relative -left-px mt-[10px] land:col-start-1`}>遺失日期</div>
+          <div className={`${label} relative -left-px mt-[10px] land:col-start-1 md:col-start-1`}>遺失日期</div>
           {hasQuery ? (
-            <div className={`${pill} mt-[14px] rounded-[10px] bg-input land:col-start-1`}>
+            <div className={`${pill} mt-[14px] rounded-[10px] bg-input land:col-start-1 md:col-start-1`}>
               <span className="opacity-70">{(date || '').replaceAll('-', '/') || '--'}</span>
             </div>
           ) : (
-            <div className={`${pill} mt-[14px] rounded-[10px] border border-black bg-input land:col-start-1`}>
+            <div className={`${pill} mt-[14px] rounded-[10px] border border-black bg-input land:col-start-1 md:col-start-1`}>
               <input type="date" value={manualDate} onChange={(e) => setManualDate(e.target.value)} aria-label="遺失日期" className={fieldInput} />
             </div>
           )}
 
-          <div className={`${label} mt-[10px] land:col-start-1`}>遺失地點</div>
+          <div className={`${label} mt-[10px] land:col-start-1 md:col-start-1`}>遺失地點</div>
           {hasQuery ? (
-            <div className={`${pill} relative left-px mt-[14px] rounded-[10px] bg-input land:col-start-1`}>
+            <div className={`${pill} relative left-px mt-[14px] rounded-[10px] bg-input land:col-start-1 md:col-start-1`}>
               <span className="truncate opacity-70">{place || '--'}</span>
             </div>
           ) : (
-            <div className="relative left-px mt-[14px] flex gap-[10px] land:col-start-1">
+            <div className="relative left-px mt-[14px] flex gap-[10px] land:col-start-1 md:col-start-1">
               <select
                 value={manualCity}
                 onChange={(e) => { setManualCity(e.target.value); setManualDistrict('') }}
@@ -260,19 +262,19 @@ export default function SosPostPage() {
             </div>
           )}
 
-          <div className={`${label} mt-[10px] land:col-start-2`}>詳細地點</div>
-          <div className={`${pill} mt-[10px] rounded-[10px] border border-black bg-input land:col-start-2`}>
+          <div className={`${label} mt-[10px] land:col-start-2 md:col-start-2`}>詳細地點</div>
+          <div className={`${pill} mt-[10px] rounded-[10px] border border-black bg-input land:col-start-2 md:col-start-2`}>
             <input value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="如：世新山洞口、景美站2號出口" className={fieldInput} />
           </div>
 
-          <div className={`${label} relative left-px mt-[10px] land:col-start-2`}>備註</div>
-          <div className={`${pill} relative left-px mt-[10px] rounded-[10px] border border-black bg-input land:col-start-2`}>
+          <div className={`${label} relative left-px mt-[10px] land:col-start-2 md:col-start-2`}>備註</div>
+          <div className={`${pill} relative left-px mt-[10px] rounded-[10px] border border-black bg-input land:col-start-2 md:col-start-2`}>
             <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="如：對我很有紀念意義，謝謝大家幫忙留意" className={fieldInput} />
           </div>
 
           {/* 錯誤訊息疊在備註和送出鈕之間（inner top 466），不推動送出鈕。
               送出鈕在寬度不到 380 的螢幕縮小內距與間距，文字維持一行 */}
-          <div className="relative land:col-span-full">
+          <div className="relative land:col-span-full md:col-span-full">
             {error && <p className="absolute left-0 top-2 w-full text-sm leading-normal text-error">{error}</p>}
           </div>
 
@@ -280,7 +282,7 @@ export default function SosPostPage() {
             type="button"
             onClick={goPreview}
             className="relative -left-[0.5px] mt-[30px] self-center box-border flex h-[60px] w-[calc(100%+13px)] max-w-[350px] items-center justify-center gap-[15px] rounded-[50px] border border-black bg-card px-5 py-[30px] min-[380px]:gap-[30px] min-[380px]:px-10
-                       land:col-span-full land:mt-1! land:h-[52px] land:w-full land:justify-self-center
+                       land:col-span-full land:mt-1! land:h-[52px] land:w-full land:justify-self-center md:col-span-full md:w-full md:justify-self-center
                        text-base font-medium text-brown transition hover:brightness-[.98]
                        focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
           >
@@ -292,7 +294,7 @@ export default function SosPostPage() {
 
       {/* 步驟二：貼文預覽 + 圖片預覽 + 實際發佈 */}
       {step === 'preview' && (
-        <div className="flex flex-col gap-4 px-[26px] pt-5 land:mx-auto land:max-w-[708px] land:pt-3">
+        <div className="flex flex-col gap-4 px-[26px] pt-5 land:mx-auto land:max-w-[708px] land:pt-3 md:mx-auto md:max-w-[708px]">
           <div className="rounded-[10px] bg-card p-4 text-xs font-medium leading-normal text-brown">
             由 DiuLa! 幫你把協尋資訊發到官方 Threads，擴大協尋範圍。貼文圖片將沿用你上傳的圖片，發佈前可將路人臉、車牌、地址等個資打碼。送出後會先經過審核，經管理員確認沒問題才會正式發出，通過或退件都會通知你。
           </div>

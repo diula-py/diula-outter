@@ -188,7 +188,7 @@ export default function MyLostDetailPage() {
   return (
     <>
     {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[100px] land:grid land:max-w-none land:grid-cols-[repeat(2,minmax(0,340px))] land:content-start land:items-start land:justify-center land:gap-x-7 land:gap-y-3 land:[grid-auto-flow:row_dense] land:pb-6 lg:hidden">
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[100px] land:grid land:max-w-none land:grid-cols-[repeat(2,minmax(0,340px))] land:content-start land:items-start land:justify-center land:gap-x-7 land:gap-y-3 land:[grid-auto-flow:row_dense] land:pb-6 md:grid md:max-w-none md:grid-cols-[repeat(2,minmax(0,340px))] md:content-start md:items-start md:justify-center md:gap-x-7 md:gap-y-3 md:[grid-auto-flow:row_dense] md:pb-6 lg:hidden">
       {/* Header 90px：標題 top:55、返回鍵 30×30 在 (21,50) */}
       <DetailHeader title={item.name} onBack={() => navigate(-1)} height={90} titleTop={55} backLeft={20} backTop={50} backSize={30} />
 
@@ -196,7 +196,7 @@ export default function MyLostDetailPage() {
           這一排跟下方圖片框同寬（畫面寬 −40、最寬 340、置中）：狀態靠左、編號靠右，左右都對齊圖片框。
           編號用 12px（design.md Body 2）：最長的編號（如 ＃DL-LI-260902-WMW）約 128px；
           320 寬的舊手機再縮到 11px、左右內距 10，留給編號的寬度才夠 */}
-      <div className="mt-5 flex h-[30px] w-[calc(100%-40px)] max-w-[340px] shrink-0 justify-between gap-[10px] land:col-start-1 land:mt-0 land:w-full land:max-w-none">
+      <div className="mt-5 flex h-[30px] w-[calc(100%-40px)] max-w-[340px] shrink-0 justify-between gap-[10px] land:col-start-1 land:mt-0 land:w-full land:max-w-none md:col-start-1 md:mt-0 md:w-full md:max-w-none">
         <span className="flex h-[30px] shrink-0 items-center rounded-[10px] bg-blue px-[15px] text-base font-normal leading-4">{status}</span>
         <span className="flex h-[30px] min-w-0 items-center overflow-hidden whitespace-nowrap rounded-[10px] bg-blue px-[15px] text-xs font-normal leading-4 max-[374px]:px-[10px] max-[374px]:text-[11px]">
           <span className="min-w-0 truncate">{item.code}</span>
@@ -215,7 +215,7 @@ export default function MyLostDetailPage() {
 
       {/* 審核中／被退件的說明。審核中時還沒有貼文連結，不說一聲使用者會以為發文壞了。 */}
       {(status === LOST_STATUS.REVIEWING || reviewReason) && (
-        <div className="mt-5 box-border w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card p-[15px] text-xs font-medium leading-normal text-brown land:col-start-2 land:mt-0 land:w-full land:max-w-none">
+        <div className="mt-5 box-border w-[calc(100%-40px)] max-w-[340px] shrink-0 rounded-[10px] bg-card p-[15px] text-xs font-medium leading-normal text-brown land:col-start-2 land:mt-0 land:w-full land:max-w-none md:col-start-2 md:mt-0 md:w-full md:max-w-none">
           {status === LOST_STATUS.REVIEWING
             ? '協尋文審核中，通過後會由 DiuLa! 官方帳號發佈並通知你。'
             : `協尋文沒有通過審核${reviewReason ? `：${reviewReason}` : ''}，修改內容後可以再送一次。`}
@@ -224,7 +224,7 @@ export default function MyLostDetailPage() {
 
       {/* Threads 協尋文連結（僅 Threads 自動發文的項目有；非 Threads 不顯示） */}
       {threadUrl && (
-        <div className="mt-5 box-border flex h-[60px] w-[calc(100%-40px)] max-w-[340px] shrink-0 items-center gap-[10px] rounded-[10px] bg-card p-[10px] land:col-start-2 land:mt-0 land:w-full land:max-w-none">
+        <div className="mt-5 box-border flex h-[60px] w-[calc(100%-40px)] max-w-[340px] shrink-0 items-center gap-[10px] rounded-[10px] bg-card p-[10px] land:col-start-2 land:mt-0 land:w-full land:max-w-none md:col-start-2 md:mt-0 md:w-full md:max-w-none">
           <img src={asset('/icons/threads.png')} alt="Threads" className="h-10 w-10 shrink-0 object-contain" />
           <a
             href={threadUrl}
@@ -256,7 +256,7 @@ export default function MyLostDetailPage() {
           onClick={() => setDialog('stopPush')}
           disabled={stoppingPush}
           className="mt-5 box-border flex h-[60px] w-[calc(100%-40px)] max-w-[350px] shrink-0 items-center justify-center rounded-[50px] border border-black bg-white px-5 text-base font-medium text-brown
-                     land:col-span-full land:mt-1 land:justify-self-center
+                     land:col-span-full land:mt-1 land:justify-self-center md:col-span-full md:justify-self-center
                      transition hover:brightness-[.98] disabled:opacity-60
                      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
         >

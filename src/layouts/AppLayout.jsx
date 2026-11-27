@@ -9,10 +9,16 @@ import OnboardingGate from '../components/OnboardingGate'
  * 2026-11 加桌機版（lg:）：393 的手機外框寬度限制在桌機要整個解除，不然裡面各頁
  * 自己做的桌機版型（上方導覽列＋Hero＋卡片，見 HomeTabPage／ProfilePage）會被這層
  * 外框硬壓回 393 寬。底部浮動 TabBar 在桌機也不需要，改用 DesktopTopNav。
+ *
+ * 2026-11 加平板版（md: 768~1023px，lg: 1024px 桌機版之前還沒人用過的空檔）：
+ * 維持手機版的視覺／元件（不是另一套桌機設計），只是把 393 的寬度上限放寬到 700——
+ * 跟 land:（手機橫放）已經在用的寬度一致，各頁面在 md: 也直接沿用 land: 同一組
+ * 「變寬」class（2 欄 grid、max-w-[700px] 之類），但不要跟著套 land: 那些「矮螢幕
+ * 縮高度」的 class（header 高度、藏裝飾圖）——平板直向高度很夠，不需要那些。
  */
 export default function AppLayout() {
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col bg-paper land:max-w-none lg:max-w-none lg:min-h-screen">
+    <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col bg-paper land:max-w-none md:max-w-[700px] lg:max-w-none lg:min-h-screen">
       <main className="flex flex-1 flex-col">
         <Outlet />
       </main>
