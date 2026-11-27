@@ -181,16 +181,10 @@ export default function LoginPage() {
         </p>
       </div>
 
-      {/* ======== 桌機（lg:）：照 2026-11 Figma 桌機設計稿，裝飾圓點＋置中登入卡＋頁尾 ======== */}
+      {/* ======== 桌機（lg:）：照 2026-11 Figma 桌機設計稿，置中登入卡＋頁尾 ======== */}
       <div className="relative hidden lg:flex lg:min-h-screen lg:w-full lg:flex-col lg:items-center lg:overflow-hidden lg:bg-blue">
-        <div aria-hidden="true" className="pointer-events-none absolute -left-24 -top-24 h-[420px] w-[420px] rounded-full bg-[#FCE6B7]/60 blur-3xl" />
-        <div aria-hidden="true" className="pointer-events-none absolute -bottom-32 -right-16 h-[460px] w-[460px] rounded-full bg-[#D2E1F5] blur-3xl" />
-
-        <header className="z-10 flex w-full max-w-[1536px] items-center px-10 py-8">
-          <img src={asset('/icons/diula-logo-cropped.png')} alt="DiuLa!" className="h-8" />
-        </header>
-
         <div className="z-10 flex w-full flex-1 flex-col items-center justify-center gap-10 px-6 py-10">
+          <img src={asset('/icons/diula-logo-cropped.png')} alt="DiuLa!" className="h-10" />
           <p className="m-0 text-2xl font-medium text-brown">一站式AI遺失物協尋平台</p>
 
           <button
