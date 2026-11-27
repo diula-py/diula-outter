@@ -6,6 +6,7 @@ import { Overlay } from '../components/DialogKit'
 import DesktopTopNav from '../components/DesktopTopNav'
 import DesktopFooter from '../components/DesktopFooter'
 import OnceTip from '../components/OnceTip'
+import { LoadingInline } from '../components/LoadingScreen'
 import { TIP_NOT_MINE } from '../lib/tours'
 import { asset } from '../lib/asset'
 import { flask, apiFetch, wakeFlask } from '../lib/api'
@@ -251,7 +252,7 @@ export default function RecentFoundPage() {
       )}
 
       <div ref={listRef} className="mt-3 flex w-[calc(100%-44px)] max-w-[350px] flex-col gap-5 md:max-w-[708px] md:grid md:grid-cols-2 md:items-start md:gap-[14px]">
-        {loading && <p className={note}>載入中...</p>}
+        {loading && <LoadingInline className="md:col-span-full" />}
         {!loading && error && <p className={note}>{error}</p>}
 
         {empty && (
@@ -400,7 +401,7 @@ export default function RecentFoundPage() {
 
         {/* 結果清單：2 欄，卡片 160×160 縮圖＋文字＋chevron，同 ResultsPage 桌機版卡片樣式 */}
         <div ref={desktopListRef} className="mt-6 grid grid-cols-2 gap-6">
-          {loading && <p className="col-span-2 py-10 text-center text-base opacity-70">載入中...</p>}
+          {loading && <LoadingInline className="col-span-2" />}
           {!loading && error && <p className="col-span-2 py-10 text-center text-base opacity-70">{error}</p>}
 
           {empty && (
