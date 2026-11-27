@@ -41,7 +41,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="flex flex-1 flex-col items-center lg:block">
+    <div className="flex flex-1 flex-col items-center">
       {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
       <div className="flex flex-1 w-full flex-col items-center
                       land:grid land:grid-cols-[repeat(2,minmax(0,340px))] land:content-start land:items-start land:justify-center land:gap-x-7
@@ -124,7 +124,9 @@ export default function ProfilePage() {
       </div>
 
       {/* ======== 桌機（lg:）：照 2026-11 Figma 桌機設計稿，上方導覽列＋雙卡片（我的歷史紀錄／使用者資料）＋登出＋頁尾 ======== */}
-      <div className="hidden lg:flex lg:w-full lg:flex-col lg:items-center">
+      {/* 2026-11-25：lg:flex-1 撐滿 AppLayout 的 main 高度，再用下面的 flex-1 空白把 DesktopFooter
+          推到最底（內容短時 footer 貼視窗底，不會浮在中間；內容長時照常接在登出鈕下 mt-16）。 */}
+      <div className="hidden lg:flex lg:w-full lg:flex-1 lg:flex-col lg:items-center">
         <DesktopTopNav />
 
         <div className="mx-auto mt-16 flex w-full max-w-[1536px] flex-wrap items-start justify-center gap-16 px-12 box-border">
@@ -161,6 +163,7 @@ export default function ProfilePage() {
         </button>
         {/* 底下這排連結拿掉：DesktopFooter 本來就有隱私權政策／服務條款／關於我們，
             兩排疊在一起是重複資訊，FAQ 改併進 DesktopFooter 裡（見該檔案）。 */}
+        <div className="flex-1" aria-hidden="true" />
         <DesktopFooter />
       </div>
 

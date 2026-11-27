@@ -56,7 +56,7 @@ export default function SosPostPage() {
   const place = hasQuery ? (q.place || '') : [manualCity, manualDistrict].filter(Boolean).join(' ')
 
   const [name, setName] = useState(titleFromTags(q.tags))
-  const [detail, setDetail] = useState('') // 詳細遺失地點（選填）
+  const [detail, setDetail] = useState('') // 詳細遺失地點（必填）
   const [note, setNote] = useState('')     // 備註（選填）
   const [step, setStep] = useState('form') // form | preview
   const [status, setStatus] = useState('idle') // idle | submitting | success
@@ -75,6 +75,7 @@ export default function SosPostPage() {
   function goPreview() {
     setError('')
     if (!name.trim()) { setError('請填物品名稱'); return }
+    if (!detail.trim()) { setError('請填詳細地點'); return }
     setStep('preview')
   }
 
@@ -84,6 +85,7 @@ export default function SosPostPage() {
   async function submit() {
     setError('')
     if (!name.trim()) { setError('請填物品名稱'); return }
+    if (!detail.trim()) { setError('請填詳細地點'); return }
     setStatus('submitting')
 
     // 第一步：送審（已經送過就跳過）。後端可能直接發出去，也可能交人工審核。
@@ -260,7 +262,7 @@ export default function SosPostPage() {
             </div>
           )}
 
-          <div className={`${label} mt-[10px] land:col-start-2 md:col-start-2`}>詳細地點（選填）</div>
+          <div className={`${label} mt-[10px] land:col-start-2 md:col-start-2`}>詳細地點</div>
           <div className={`${pill} mt-[10px] rounded-[10px] border border-black bg-input land:col-start-2 md:col-start-2`}>
             <input value={detail} onChange={(e) => setDetail(e.target.value)} placeholder="如：世新山洞口、景美站2號出口" className={fieldInput} />
           </div>
@@ -456,7 +458,7 @@ export default function SosPostPage() {
               type="text"
               value={detail}
               onChange={(e) => setDetail(e.target.value)}
-              placeholder="詳細地點（選填，如：世新山洞口、景美站2號出口）"
+              placeholder="詳細地點（如：世新山洞口、景美站2號出口）"
               aria-label="詳細地點"
               className="flex h-[58px] w-full items-center rounded-[10px] border border-black bg-white px-6 text-base text-brown outline-none placeholder:text-[#888]"
             />
