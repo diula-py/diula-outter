@@ -179,15 +179,7 @@ export default function SosPostPage() {
     {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
     {/* 沒有 AppLayout（無 TabBar），外框與底部留白（含 iOS safe-area）自己處理 */}
     <div className="mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] bg-paper pb-[calc(24px+env(safe-area-inset-bottom))] land:max-w-none md:max-w-[700px] lg:hidden">
-      <DetailHeader
-        title="幫你發Threads的協尋文"
-        onBack={() => (step === 'preview' ? setStep('form') : navigate(-1))}
-        height={109}
-        titleTop={70}
-        backLeft={25}
-        backTop={62}
-        backSize={35}
-      />
+      <DetailHeader title="幫你發Threads的協尋文" onBack={() => (step === 'preview' ? setStep('form') : navigate(-1))} />
 
       {/* 步驟一：填表單 */}
       {step === 'form' && (

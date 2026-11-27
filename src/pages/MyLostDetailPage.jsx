@@ -189,8 +189,8 @@ export default function MyLostDetailPage() {
     <>
     {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
     <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[100px] land:grid land:max-w-none land:grid-cols-[repeat(2,minmax(0,340px))] land:content-start land:items-start land:justify-center land:gap-x-7 land:gap-y-3 land:[grid-auto-flow:row_dense] land:pb-6 md:grid md:max-w-none md:grid-cols-[repeat(2,minmax(0,340px))] md:content-start md:items-start md:justify-center md:gap-x-7 md:gap-y-3 md:[grid-auto-flow:row_dense] md:pb-6 lg:hidden">
-      {/* Header 90px：標題 top:55、返回鍵 30×30 在 (21,50) */}
-      <DetailHeader title={item.name} onBack={() => navigate(-1)} height={90} titleTop={55} backLeft={20} backTop={50} backSize={30} />
+      {/* Header：統一用 DetailHeader 的 FormHeader 規格（80px，返回鍵 30×30） */}
+      <DetailHeader title={item.name} onBack={() => navigate(-1)} />
 
       {/* 狀態／編號徽章：y=110、高 30、藍底圓角 10、padding 7 15、16/400。
           這一排跟下方圖片框同寬（畫面寬 −40、最寬 340、置中）：狀態靠左、編號靠右，左右都對齊圖片框。

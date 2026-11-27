@@ -1,37 +1,35 @@
 /**
  * 詳情頁共用版型（inner page-16 我的遺失物詳情／page-19 我的拾獲物詳情）。
  * inner 這兩頁是絕對定位，數值不同（標頭 90／109、資訊卡 175／230、白色欄左緣 109／111），
- * 所以標頭與資訊列的位置都由呼叫端以 inner 的數值傳入。
+ * 所以資訊列的位置由呼叫端以 inner 的數值傳入；標頭已統一成 FormHeader 的規格，不再傳數值。
  */
 import { ChevronLeftIcon, CircleCheckIcon } from './icons'
 import { asset } from '../lib/asset'
 
-export function DetailHeader({ title, onBack, height, titleTop, backLeft, backTop, backSize }) {
-  // header 延伸到狀態列底下（safe-header-bleed），inner 的數值本來就含狀態列（約 59px）。
-  // 整組移到「狀態列下方 5px」：iPhone PWA（狀態列 59）跟原本一樣；
-  // LINE App／瀏覽器裡沒有狀態列（safe-area＝0），不留狀態列的空白，返回鍵改離頂端 25px。
-  const shift = `calc(max(env(safe-area-inset-top, 0px), 20px) + ${5 - Math.min(titleTop, backTop)}px)`
+/** 標頭規格跟 FormKit 的 FormHeader 一致（2026-11-27 統一全站頁首高度）：
+ * 80px（有瀏海時＝狀態列＋73px，見 index.css .safe-header；手機橫放 64px），返回鍵 30×30 垂直置中、left 22。
+ * 跟 FormHeader 不同的是標題可能很長（物品名稱、「幫你發Threads的協尋文」），所以保留截斷與窄螢幕縮字。 */
+export function DetailHeader({ title, onBack }) {
   return (
-    <header className="safe-header-bleed relative w-full shrink-0 rounded-b-[20px] bg-card land:col-span-full land:mx-[calc(50%-50vw)] land:w-screen md:col-span-full md:mx-[calc(50%-50vw)] md:w-screen" style={{ height: `calc(${height}px + ${shift})` }}>
-      <button
-        type="button"
-        onClick={onBack}
-        aria-label="返回"
-        className="back-hit absolute focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-        style={{ left: backLeft, top: `calc(${backTop}px + ${shift})`, width: backSize, height: backSize }}
-      >
-        <ChevronLeftIcon style={{ width: backSize, height: backSize }} />
-      </button>
-      {/* truncate 會 overflow:hidden，20px 字的字形比 20px 行高略高、頂端會被切；
-          上下各多 4px padding 並把 top 往上移 4px，文字位置不變但不再被切。
-          字級 20px；螢幕窄於 378px 時隨寬度縮小（320 寬約 17px），長標題（如「幫你發Threads的協尋文」）才放得下
-          標題整排寬、疊在返回鍵上面，所以設 pointer-events-none，點擊才會落到返回鍵 */}
-      <h1
-        className="pointer-events-none absolute left-0 w-full truncate px-[60px] py-1 text-center text-[clamp(17px,5.3vw,20px)] font-bold leading-5 text-brown"
-        style={{ top: `calc(${titleTop - 4}px + ${shift})` }}
-      >
-        {title}
-      </h1>
+    <header className="safe-header relative w-full shrink-0 rounded-b-[20px] bg-card [--header-h:80px]
+                       land:col-span-full land:mx-[calc(50%-50vw)] land:w-screen land:[--header-h:64px]
+                       md:col-span-full md:mx-[calc(50%-50vw)] md:w-screen">
+      <div className="relative flex h-full items-center justify-center">
+        <button
+          type="button"
+          onClick={onBack}
+          aria-label="返回"
+          className="back-hit absolute left-[22px] top-1/2 h-[30px] w-[30px] -translate-y-1/2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
+        >
+          <ChevronLeftIcon className="h-[30px] w-[30px]" />
+        </button>
+        {/* truncate 會 overflow:hidden，20px 字的字形比 20px 行高略高、頂端會被切，所以上下各多 4px padding。
+            字級 20px；螢幕窄於 378px 時隨寬度縮小（320 寬約 17px），長標題才放得下。
+            標題整排寬、疊在返回鍵上面，所以設 pointer-events-none，點擊才會落到返回鍵 */}
+        <h1 className="pointer-events-none w-full truncate px-[60px] py-1 text-center text-[clamp(17px,5.3vw,20px)] font-bold leading-5 text-brown">
+          {title}
+        </h1>
+      </div>
     </header>
   )
 }

@@ -99,7 +99,7 @@ export default function AdminSosPage() {
 
   return (
     <div className="mx-auto min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[720px] bg-paper pb-[calc(24px+env(safe-area-inset-bottom))]">
-      <DetailHeader title="協尋文審核" onBack={() => navigate('/')} height={90} titleTop={55} backLeft={20} backTop={50} backSize={30} />
+      <DetailHeader title="協尋文審核" onBack={() => navigate('/')} />
 
       <div className="flex gap-2 px-5 pt-4">
         {TABS.map((t) => (

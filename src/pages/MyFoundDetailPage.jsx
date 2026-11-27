@@ -52,8 +52,8 @@ export default function MyFoundDetailPage() {
     <>
     {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
     <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[100px] land:grid land:max-w-none land:grid-cols-[repeat(2,minmax(0,340px))] land:content-start land:items-start land:justify-center land:gap-x-7 land:gap-y-3 land:[grid-auto-flow:row_dense] land:pb-6 md:grid md:max-w-none md:grid-cols-[repeat(2,minmax(0,340px))] md:content-start md:items-start md:justify-center md:gap-x-7 md:gap-y-3 md:[grid-auto-flow:row_dense] md:pb-6 lg:hidden">
-      {/* Header 109px：標題 top:70、返回鍵 35×35 在 (26,62)（page-19 比 page-16 高） */}
-      <DetailHeader title={item.name} onBack={() => navigate(-1)} height={109} titleTop={70} backLeft={25} backTop={62} backSize={35} />
+      {/* Header：統一用 DetailHeader 的 FormHeader 規格（80px，返回鍵 30×30） */}
+      <DetailHeader title={item.name} onBack={() => navigate(-1)} />
 
       {/* 編號徽章：同遺失物詳情的徽章樣式（高 30、藍底圓角 10、padding 0 15、16/400）。
           拾獲物只有「保管中」一種狀態、沒有狀態徽章，編號靠左、左緣對齊下方圖片框（這一排跟圖片框同寬）；
