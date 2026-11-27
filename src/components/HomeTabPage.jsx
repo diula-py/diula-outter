@@ -20,11 +20,15 @@ import FloatingStickers from './FloatingStickers'
  * 插圖跟文案沿用手機版同一份資料（hero.image / hero.desktop），只是排版換成
  * 大尺寸的左文右圖 flex，不是手機版那套絕對定位。
  */
+// hero.bg 有半透明色（尋找＝rgba 黃 60%），直接當底色的話後面的漂浮貼紙（FloatingStickers）
+// 會透出來。底下先墊一層白色（＝頁面底色，看起來完全一樣），貼紙就會被 Banner 擋住。
+const heroBg = (bg) => ({ background: `linear-gradient(${bg}, ${bg}), #fff` })
+
 function DesktopHeroSlide({ hero }) {
   return (
     <section
       className="flex w-full items-center gap-16 rounded-[40px] border border-brown p-16 box-border"
-      style={{ background: hero.bg }}
+      style={heroBg(hero.bg)}
     >
       <div className="flex max-w-[600px] flex-1 flex-col items-start gap-5">
         <h1 className="m-0 text-[32px] font-bold leading-[38px] tracking-[-0.64px] text-brown">
@@ -180,7 +184,7 @@ export default function HomeTabPage({ title, items, hero, tour }) {
         {hero && (
           <div
             className="relative mt-[18px] h-[190px] w-[calc(100%-40px)] max-w-[350px] overflow-hidden rounded-[10px] border border-brown land:hidden md:max-w-[500px]"
-            style={{ background: hero.bg }}
+            style={heroBg(hero.bg)}
           >
             <img
               src={hero.image.src}
