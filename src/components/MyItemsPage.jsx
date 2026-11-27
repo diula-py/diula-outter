@@ -10,6 +10,7 @@ import { LOST_STATUS, statusColor } from '../data/itemStatus'
 import { normalizeIdWording } from '../lib/text'
 import { friendlyError } from '../lib/errors'
 import { LoadingInline } from './LoadingScreen'
+import { FormHeader } from './FormKit'
 
 /**
  * 「我的遺失物／我的拾獲物」清單頁（inner page-15／page-18）。
@@ -71,48 +72,35 @@ export default function MyItemsPage({ title, kind, detailBase, emptyText }) {
     <>
     {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
     <div className="mx-auto flex min-h-[calc(100dvh-var(--top-inset))] w-full max-w-[393px] flex-col items-center bg-paper pb-[120px] land:max-w-none land:pb-[80px] md:max-w-[700px] lg:hidden">
-      {/* inner 的數值含狀態列（約 59px）。iPhone PWA（狀態列 59）跟原本一樣；
-          LINE App／瀏覽器裡沒有狀態列（safe-area＝0），整組上移、不留狀態列的空白（返回鍵離頂端 30px）。 */}
-      <header
-        className="safe-header-bleed relative w-full shrink-0 rounded-b-[20px] bg-card land:h-[calc(140px+var(--hshift))]!"
-        style={{ '--hshift': 'calc(max(env(safe-area-inset-top, 0px), 20px) - 59px)', height: 'calc(174px + var(--hshift))' }}
-      >
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          aria-label="返回"
-          className="back-hit absolute left-[21px] top-[calc(69px+var(--hshift))] h-[30px] w-[30px] land:top-[calc(49px+var(--hshift))] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown"
-        >
-          <ChevronLeftIcon className="h-[30px] w-[30px]" />
-        </button>
-        <h1 className="pointer-events-none absolute left-0 top-[calc(74px+var(--hshift))] w-full text-center text-xl font-bold leading-5 text-brown land:top-[calc(54px+var(--hshift))]">{title}</h1>
+      {/* 頁首用共用的 FormHeader（2026-11-28）：高度、標題、返回鍵位置跟其他頁一致。
+          日曆與搜尋列移到頁首下方的白底上（米色頁首只放標題）；日曆按鈕改淺灰，避免被看成「已選取」的米色。 */}
+      <FormHeader title={title} onBack={() => navigate(-1)} />
 
-        <div className="absolute left-1/2 top-[calc(109px+var(--hshift))] flex w-[calc(100%-40px)] max-w-[340px] -translate-x-1/2 gap-[10px] land:top-[calc(89px+var(--hshift))] land:max-w-[708px] md:max-w-[708px]">
-          <label className="relative flex h-[47px] w-[97px] shrink-0 items-center justify-center rounded-[50px] border border-black bg-card">
-            <CalendarIcon className="pointer-events-none h-5 w-5" />
-            {dateFilter && <span className="pointer-events-none absolute right-[14px] top-2 h-2 w-2 rounded-full bg-error" />}
-            <input
-              type="date"
-              value={dateFilter}
-              onChange={(e) => setDateFilter(e.target.value)}
-              aria-label="依日期篩選"
-              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-            />
-          </label>
-          <div className="box-border flex h-[45px] min-w-0 flex-1 items-center gap-2 rounded-[10px] border border-black bg-input px-[15px] py-[10px]">
-            <MagnifyingGlassIcon className="h-4 w-4 shrink-0" />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="搜尋"
-              className="h-[25px] w-full bg-transparent p-0 text-sm leading-[25px] text-brown outline-none placeholder:text-[#888]"
-            />
-          </div>
+      <div className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] gap-[10px] land:mt-3 land:max-w-[708px] md:max-w-[708px]">
+        <label className="relative flex h-[47px] w-[97px] shrink-0 items-center justify-center rounded-[50px] border border-black bg-input">
+          <CalendarIcon className="pointer-events-none h-5 w-5" />
+          {dateFilter && <span className="pointer-events-none absolute right-[14px] top-2 h-2 w-2 rounded-full bg-error" />}
+          <input
+            type="date"
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+            aria-label="依日期篩選"
+            className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+          />
+        </label>
+        <div className="box-border flex h-[45px] min-w-0 flex-1 items-center gap-2 rounded-[10px] border border-black bg-input px-[15px] py-[10px]">
+          <MagnifyingGlassIcon className="h-4 w-4 shrink-0" />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="搜尋"
+            className="h-[25px] w-full bg-transparent p-0 text-sm leading-[25px] text-brown outline-none placeholder:text-[#888]"
+          />
         </div>
-      </header>
+      </div>
 
-      <div className="mt-5 flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-[15px]
+      <div className="mt-[15px] flex w-[calc(100%-40px)] max-w-[340px] flex-col gap-[15px]
                       land:mt-3 land:grid land:max-w-[708px] land:grid-cols-2 land:items-start land:gap-[14px]
                       md:grid md:max-w-[708px] md:grid-cols-2 md:items-start md:gap-[14px]">
         {loading && <LoadingInline className="land:col-span-full md:col-span-full" />}
