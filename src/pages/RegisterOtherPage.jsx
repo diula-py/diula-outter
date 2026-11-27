@@ -89,7 +89,7 @@ export default function RegisterOtherPage() {
     {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
     <div className="lg:hidden">
       <FormPage>
-        <FormHeader title="非證件類遺失物登錄" onBack={() => navigate(-1)} />
+        <FormHeader title="非證件類拾獲物登錄" onBack={() => navigate(-1)} />
 
         <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
         <UploadBox
@@ -144,7 +144,7 @@ export default function RegisterOtherPage() {
           <button type="button" onClick={() => navigate(-1)} aria-label="返回" className="flex h-[30px] w-[30px] shrink-0 items-center justify-center">
             <ChevronLeftIcon className="h-[30px] w-[30px] text-brown" />
           </button>
-          <h1 className="m-0 text-2xl font-normal text-brown">非證件類遺失物登錄</h1>
+          <h1 className="m-0 text-2xl font-normal text-brown">非證件類拾獲物登錄</h1>
         </div>
 
         <input ref={fileRef} type="file" accept="image/*" onChange={handlePhoto} className="hidden" />

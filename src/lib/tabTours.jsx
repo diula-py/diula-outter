@@ -47,12 +47,12 @@ export const TOURS = {
     steps: [
       {
         targets: ['found-id'],
-        title: '證件類遺失物登錄',
+        title: '證件類拾獲物登錄',
         body: <>撿到證件？拍照、打碼、填時間地點就能登錄，身分證和健保卡還會自動打碼！{NOTE_FOUND}</>,
       },
       {
         targets: ['found-other'],
-        title: '非證件類遺失物登錄',
+        title: '非證件類拾獲物登錄',
         body: <>將非證件的物品拍一張照片，AI 會幫你產生標籤，再填時間和地點就能登錄。{NOTE_FOUND}</>,
       },
       {
