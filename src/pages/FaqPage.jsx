@@ -358,7 +358,8 @@ export default function FaqPage() {
                               focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brown
                               ${sel ? 'border-[1.5px] bg-card' : 'border bg-input'}`}
                 >
-                  {s.title}
+                  {/* 行高的上下留白照 Comfortaa 算，中文字會偏上約 1px，往下移才會在膠囊正中 */}
+                  <span className="relative top-px">{s.title}</span>
                 </button>
               )
             })}
