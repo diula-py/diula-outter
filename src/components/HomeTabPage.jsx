@@ -31,6 +31,7 @@ function DesktopHeroSlide({ hero }) {
             <span key={i} className="block">{line}</span>
           ))}
         </h1>
+        {hero.desktop.logo && <img src={hero.desktop.logo} alt="DiuLa!" className="h-7" />}
         <p className="m-0 text-lg leading-[29px] text-brown">{hero.desktop.subtitle}</p>
         <p className="m-0 text-sm leading-relaxed text-brown">{hero.desktop.tagline}</p>
       </div>

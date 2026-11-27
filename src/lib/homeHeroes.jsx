@@ -17,6 +17,7 @@ export const FIND_HERO = {
   // content 是絕對定位、照 350×190 的小卡片調的，放大會整組擠在左上角，要另外排）。
   desktop: {
     title: ['東西不見了', '別擔心'],
+    logo: asset('/icons/diula-logo-cropped.png'),
     subtitle: '是你與失物重逢的捷徑',
     tagline: '省時省力｜自動尋找｜擴大協尋',
   },
