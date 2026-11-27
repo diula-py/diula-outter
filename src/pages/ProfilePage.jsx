@@ -7,6 +7,7 @@ import DesktopFooter from '../components/DesktopFooter'
 import SectionTitle from '../components/SectionTitle'
 import { asset } from '../lib/asset'
 import { useAuth } from '../context/AuthContext'
+import FloatingStickers from '../components/FloatingStickers'
 
 function MenuButton({ icon, label, onClick }) {
   return (
@@ -41,6 +42,9 @@ export default function ProfilePage() {
   }
 
   return (
+    <>
+    {/* 背景漂浮貼紙：fixed、z-index -1，在內容後面（見 FloatingStickers 註解） */}
+    <FloatingStickers />
     <div className="flex flex-1 flex-col items-center">
       {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
       <div className="flex flex-1 w-full flex-col items-center
@@ -176,5 +180,6 @@ export default function ProfilePage() {
         </WireDialog>
       )}
     </div>
+    </>
   )
 }
