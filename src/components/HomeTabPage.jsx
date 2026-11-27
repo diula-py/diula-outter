@@ -12,6 +12,7 @@ import { asset } from '../lib/asset'
 import { FIND_ITEMS, REGISTER_ITEMS } from '../lib/homeMenuItems'
 import { FIND_HERO, FOUND_HERO } from '../lib/homeHeroes'
 import { openTour } from '../lib/tours'
+import FloatingStickers from './FloatingStickers'
 
 /**
  * 桌機版 Hero 卡片本體：維持原本桌機版的大尺寸（滿版寬、p-16、rounded-[40px]），
@@ -156,6 +157,9 @@ export default function HomeTabPage({ title, items, hero, tour }) {
   }
 
   return (
+    <>
+    {/* 背景漂浮貼紙：fixed、z-index -1，在內容後面（見 FloatingStickers 註解） */}
+    <FloatingStickers />
     <div className="flex flex-col items-center lg:block">
       {/* ======== 手機／手機橫放：維持原本版型，桌機（lg:）整個藏起來 ======== */}
       <div className="flex w-full flex-col items-center lg:hidden">
@@ -250,5 +254,6 @@ export default function HomeTabPage({ title, items, hero, tour }) {
         </WireDialog>
       )}
     </div>
+    </>
   )
 }
